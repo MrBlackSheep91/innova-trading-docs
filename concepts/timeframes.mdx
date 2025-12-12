@@ -1,0 +1,120 @@
+---
+title: 'Timeframes'
+description: 'Understanding timeframes in the InnovaTrading API'
+---
+
+## Available Timeframes
+
+InnovaTrading uses **minutes** as the standard unit for timeframes:
+
+| Name | Minutes | Code |
+|------|---------|------|
+| 1 Minute | `1` | M1 |
+| 5 Minutes | `5` | M5 |
+| 15 Minutes | `15` | M15 |
+| 30 Minutes | `30` | M30 |
+| 1 Hour | `60` | H1 |
+| 4 Hours | `240` | H4 |
+| Daily | `1440` | D1 |
+| Weekly | `10080` | W1 |
+
+## Using Timeframes in API Requests
+
+### Getting Bars
+
+```bash
+# 1-hour bars
+GET /api/external/bars/EURUSD/60?limit=500
+
+# 4-hour bars
+GET /api/external/bars/EURUSD/240?limit=500
+
+# Daily bars
+GET /api/external/bars/EURUSD/1440?limit=500
+```
+
+### Submitting Indicators
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,  // H1
+  "indicator_name": "My Signals",
+  "points": [...]
+}
+```
+
+## Timeframe Selection
+
+<CardGroup cols={2}>
+  <Card title="Lower Timeframes (M1-M15)" icon="bolt">
+    - More data points
+    - More noise
+    - Good for scalping strategies
+    - Higher API usage
+  </Card>
+  <Card title="Higher Timeframes (H1-D1)" icon="mountain">
+    - Cleaner signals
+    - Less noise
+    - Good for swing trading
+    - Lower API usage
+  </Card>
+</CardGroup>
+
+## Multi-Timeframe Analysis
+
+You can create indicators that analyze multiple timeframes:
+
+```python
+# Fetch data from multiple timeframes
+h1_bars = get_bars("EURUSD", 60, limit=100)
+h4_bars = get_bars("EURUSD", 240, limit=100)
+d1_bars = get_bars("EURUSD", 1440, limit=100)
+
+# Find confluence
+h1_trend = calculate_trend(h1_bars)
+h4_trend = calculate_trend(h4_bars)
+d1_trend = calculate_trend(d1_bars)
+
+# Generate signal only when all align
+if h1_trend == h4_trend == d1_trend:
+    generate_signal(...)
+```
+
+<Tip>
+  When using multi-timeframe analysis, submit your indicator to the **lowest** timeframe you analyzed. This ensures signals appear on the most detailed chart.
+</Tip>
+
+## Bar Time Alignment
+
+Bars are aligned to their **opening time** in UTC:
+
+| Timeframe | Bar Time Example |
+|-----------|------------------|
+| M1 | `2025-12-12 14:01:00` |
+| M5 | `2025-12-12 14:05:00` |
+| M15 | `2025-12-12 14:15:00` |
+| H1 | `2025-12-12 14:00:00` |
+| H4 | `2025-12-12 12:00:00` |
+| D1 | `2025-12-12 00:00:00` |
+
+<Warning>
+  Always use the `time` field from the /bars response when creating indicators. Don't calculate timestamps manually as they may not align with actual bars.
+</Warning>
+
+## Rate Limits by Timeframe
+
+Higher timeframes consume fewer API calls:
+
+| Timeframe | Bars per Day | Recommended Refresh |
+|-----------|--------------|---------------------|
+| M1 | 1440 | Every 1 minute |
+| M5 | 288 | Every 5 minutes |
+| M15 | 96 | Every 15 minutes |
+| H1 | 24 | Every hour |
+| H4 | 6 | Every 4 hours |
+| D1 | 1 | Once per day |
+
+<Tip>
+  To optimize API usage, use higher timeframes when possible and batch your indicator submissions.
+</Tip>

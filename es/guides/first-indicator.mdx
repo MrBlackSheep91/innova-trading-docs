@@ -1,0 +1,511 @@
+---
+title: 'Tu Primer Indicador'
+description: 'Guia paso a paso para crear tu primer indicador externo'
+---
+
+En este tutorial, construiras un indicador simple de **Cruce de Medias Moviles** que genera senales de COMPRA/VENTA en el chart de InnovaTrading.
+
+## Requisitos Previos
+
+- Una API key (contactanos para obtener una)
+- Python 3.8+ o Node.js 16+
+- Comprension basica de conceptos de trading
+
+## Lo que Construiremos
+
+Un indicador de Cruce de Medias Moviles que:
+1. Calcula Medias Moviles Simples de 20 y 50 periodos
+2. Genera una senal de **COMPRA** cuando la MA rapida cruza por encima de la lenta
+3. Genera una senal de **VENTA** cuando la MA rapida cruza por debajo de la lenta
+
+## Paso 1: Configurar tu Proyecto
+
+<CodeGroup>
+
+```bash Python
+mkdir cruce_ma
+cd cruce_ma
+pip install requests pandas
+```
+
+```bash JavaScript
+mkdir cruce_ma
+cd cruce_ma
+npm init -y
+npm install axios
+```
+
+</CodeGroup>
+
+## Paso 2: Crear la Configuracion
+
+Crea un archivo `config.py` o `config.js`:
+
+<CodeGroup>
+
+```python config.py
+API_KEY = "tu_api_key_aqui"
+BASE_URL = "https://api.innova-trading.com"
+
+# Configuracion del indicador
+SYMBOL = "EURUSD"
+TIMEFRAME = 60  # 1 hora
+MA_RAPIDA = 20
+MA_LENTA = 50
+```
+
+```javascript config.js
+module.exports = {
+  API_KEY: "tu_api_key_aqui",
+  BASE_URL: "https://api.innova-trading.com",
+  SYMBOL: "EURUSD",
+  TIMEFRAME: 60,
+  MA_RAPIDA: 20,
+  MA_LENTA: 50,
+};
+```
+
+</CodeGroup>
+
+## Paso 3: Obtener Datos de Mercado
+
+<CodeGroup>
+
+```python main.py
+import requests
+import pandas as pd
+from config import API_KEY, BASE_URL, SYMBOL, TIMEFRAME
+
+def obtener_barras(limit=100):
+    """Obtener barras OHLC de la API."""
+    url = f"{BASE_URL}/api/external/bars/{SYMBOL}/{TIMEFRAME}"
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+
+    response = requests.get(url, params={"limit": limit}, headers=headers)
+    response.raise_for_status()
+
+    data = response.json()
+    df = pd.DataFrame(data["bars"])
+    return df
+
+# Probarlo
+if __name__ == "__main__":
+    barras = obtener_barras(100)
+    print(f"Obtenidas {len(barras)} barras")
+    print(barras.tail())
+```
+
+```javascript main.js
+const axios = require("axios");
+const config = require("./config");
+
+async function obtenerBarras(limit = 100) {
+  const url = `${config.BASE_URL}/api/external/bars/${config.SYMBOL}/${config.TIMEFRAME}`;
+
+  const response = await axios.get(url, {
+    params: { limit },
+    headers: { Authorization: `Bearer ${config.API_KEY}` },
+  });
+
+  return response.data.bars;
+}
+
+// Probarlo
+(async () => {
+  const barras = await obtenerBarras(100);
+  console.log(`Obtenidas ${barras.length} barras`);
+  console.log(barras.slice(-5));
+})();
+```
+
+</CodeGroup>
+
+Ejecutalo para verificar:
+
+```bash
+python main.py
+# o
+node main.js
+```
+
+## Paso 4: Calcular Medias Moviles
+
+<CodeGroup>
+
+```python main.py
+from config import MA_RAPIDA, MA_LENTA
+
+def calcular_sma(df, periodo, columna="close"):
+    """Calcular Media Movil Simple."""
+    return df[columna].rolling(window=periodo).mean()
+
+def agregar_medias_moviles(df):
+    """Agregar MAs rapida y lenta al dataframe."""
+    df["ma_rapida"] = calcular_sma(df, MA_RAPIDA)
+    df["ma_lenta"] = calcular_sma(df, MA_LENTA)
+    return df
+
+# Probarlo
+if __name__ == "__main__":
+    barras = obtener_barras(100)
+    barras = agregar_medias_moviles(barras)
+    print(barras[["time", "close", "ma_rapida", "ma_lenta"]].tail())
+```
+
+```javascript main.js
+const config = require("./config");
+
+function calcularSMA(barras, periodo, campo = "close") {
+  const resultado = [];
+  for (let i = 0; i < barras.length; i++) {
+    if (i < periodo - 1) {
+      resultado.push(null);
+    } else {
+      const slice = barras.slice(i - periodo + 1, i + 1);
+      const suma = slice.reduce((acc, barra) => acc + barra[campo], 0);
+      resultado.push(suma / periodo);
+    }
+  }
+  return resultado;
+}
+
+function agregarMediasMoviles(barras) {
+  const maRapida = calcularSMA(barras, config.MA_RAPIDA);
+  const maLenta = calcularSMA(barras, config.MA_LENTA);
+
+  return barras.map((barra, i) => ({
+    ...barra,
+    ma_rapida: maRapida[i],
+    ma_lenta: maLenta[i],
+  }));
+}
+```
+
+</CodeGroup>
+
+## Paso 5: Detectar Cruces
+
+<CodeGroup>
+
+```python main.py
+def detectar_cruces(df):
+    """
+    Detectar cruces de MA y generar puntos de senal.
+
+    Retorna lista de puntos de senal en formato API.
+    """
+    puntos = []
+
+    for i in range(1, len(df)):
+        prev = df.iloc[i - 1]
+        curr = df.iloc[i]
+
+        # Saltar si las MAs no estan calculadas aun
+        if pd.isna(prev["ma_rapida"]) or pd.isna(curr["ma_lenta"]):
+            continue
+
+        # Cruce alcista: MA rapida cruza por encima de MA lenta
+        diff_prev = prev["ma_rapida"] - prev["ma_lenta"]
+        diff_curr = curr["ma_rapida"] - curr["ma_lenta"]
+
+        if diff_prev <= 0 and diff_curr > 0:
+            # Senal de COMPRA
+            puntos.append({
+                "time": int(curr["time"]),
+                "type": "low",
+                "price": float(curr["low"]) - 0.0005,
+                "label": "COMPRA",
+                "color": "#3b82f6",
+                "shape": "arrowUp",
+                "size": 2
+            })
+
+        elif diff_prev >= 0 and diff_curr < 0:
+            # Senal de VENTA
+            puntos.append({
+                "time": int(curr["time"]),
+                "type": "high",
+                "price": float(curr["high"]) + 0.0005,
+                "label": "VENTA",
+                "color": "#f97316",
+                "shape": "arrowDown",
+                "size": 2
+            })
+
+    return puntos
+```
+
+```javascript main.js
+function detectarCruces(barras) {
+  const puntos = [];
+
+  for (let i = 1; i < barras.length; i++) {
+    const prev = barras[i - 1];
+    const curr = barras[i];
+
+    // Saltar si las MAs no estan calculadas aun
+    if (prev.ma_rapida === null || curr.ma_lenta === null) {
+      continue;
+    }
+
+    // Cruce alcista: MA rapida cruza por encima de MA lenta
+    const diffPrev = prev.ma_rapida - prev.ma_lenta;
+    const diffCurr = curr.ma_rapida - curr.ma_lenta;
+
+    if (diffPrev <= 0 && diffCurr > 0) {
+      // Senal de COMPRA
+      puntos.push({
+        time: curr.time,
+        type: "low",
+        price: curr.low - 0.0005,
+        label: "COMPRA",
+        color: "#3b82f6",
+        shape: "arrowUp",
+        size: 2,
+      });
+    } else if (diffPrev >= 0 && diffCurr < 0) {
+      // Senal de VENTA
+      puntos.push({
+        time: curr.time,
+        type: "high",
+        price: curr.high + 0.0005,
+        label: "VENTA",
+        color: "#f97316",
+        shape: "arrowDown",
+        size: 2,
+      });
+    }
+  }
+
+  return puntos;
+}
+```
+
+</CodeGroup>
+
+## Paso 6: Enviar a InnovaTrading
+
+<CodeGroup>
+
+```python main.py
+def enviar_indicador(puntos):
+    """Enviar puntos de indicador a la API."""
+    if not puntos:
+        print("No hay senales para enviar")
+        return None
+
+    url = f"{BASE_URL}/api/external/indicators/cruce_ma"
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "symbol": SYMBOL,
+        "timeframe": TIMEFRAME,
+        "indicator_name": f"Cruce MA ({MA_RAPIDA}/{MA_LENTA})",
+        "version": "1.0",
+        "points": puntos,
+        "metadata": {
+            "ma_rapida": MA_RAPIDA,
+            "ma_lenta": MA_LENTA,
+            "total_senales": len(puntos)
+        }
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()
+```
+
+```javascript main.js
+async function enviarIndicador(puntos) {
+  if (puntos.length === 0) {
+    console.log("No hay senales para enviar");
+    return null;
+  }
+
+  const url = `${config.BASE_URL}/api/external/indicators/cruce_ma`;
+
+  const payload = {
+    symbol: config.SYMBOL,
+    timeframe: config.TIMEFRAME,
+    indicator_name: `Cruce MA (${config.MA_RAPIDA}/${config.MA_LENTA})`,
+    version: "1.0",
+    points: puntos,
+    metadata: {
+      ma_rapida: config.MA_RAPIDA,
+      ma_lenta: config.MA_LENTA,
+      total_senales: puntos.length,
+    },
+  };
+
+  const response = await axios.post(url, payload, {
+    headers: {
+      Authorization: `Bearer ${config.API_KEY}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data;
+}
+```
+
+</CodeGroup>
+
+## Paso 7: Unir Todo
+
+<CodeGroup>
+
+```python main.py
+def main():
+    print("=" * 50)
+    print("Indicador Cruce de Medias Moviles")
+    print("=" * 50)
+
+    # 1. Obtener datos
+    print("\n1. Obteniendo datos de mercado...")
+    barras = obtener_barras(500)
+    print(f"   Obtenidas {len(barras)} barras")
+
+    # 2. Calcular MAs
+    print("\n2. Calculando medias moviles...")
+    barras = agregar_medias_moviles(barras)
+
+    # 3. Detectar cruces
+    print("\n3. Detectando cruces...")
+    senales = detectar_cruces(barras)
+    print(f"   Encontradas {len(senales)} senales")
+
+    if senales:
+        print("\n   Senales recientes:")
+        for s in senales[-5:]:
+            print(f"   - {s['label']} a {s['price']:.5f}")
+
+    # 4. Enviar a API
+    print("\n4. Enviando a InnovaTrading...")
+    resultado = enviar_indicador(senales)
+
+    if resultado:
+        print(f"   Exito! {resultado['points_received']} puntos enviados")
+        print(f"   Expira: {resultado['expires_at']}")
+    else:
+        print("   No hay senales para enviar")
+
+    print("\n" + "=" * 50)
+    print("Listo! Revisa tu chart para ver las senales.")
+    print("=" * 50)
+
+if __name__ == "__main__":
+    main()
+```
+
+```javascript main.js
+async function main() {
+  console.log("=".repeat(50));
+  console.log("Indicador Cruce de Medias Moviles");
+  console.log("=".repeat(50));
+
+  try {
+    // 1. Obtener datos
+    console.log("\n1. Obteniendo datos de mercado...");
+    let barras = await obtenerBarras(500);
+    console.log(`   Obtenidas ${barras.length} barras`);
+
+    // 2. Calcular MAs
+    console.log("\n2. Calculando medias moviles...");
+    barras = agregarMediasMoviles(barras);
+
+    // 3. Detectar cruces
+    console.log("\n3. Detectando cruces...");
+    const senales = detectarCruces(barras);
+    console.log(`   Encontradas ${senales.length} senales`);
+
+    if (senales.length > 0) {
+      console.log("\n   Senales recientes:");
+      senales.slice(-5).forEach((s) => {
+        console.log(`   - ${s.label} a ${s.price.toFixed(5)}`);
+      });
+    }
+
+    // 4. Enviar a API
+    console.log("\n4. Enviando a InnovaTrading...");
+    const resultado = await enviarIndicador(senales);
+
+    if (resultado) {
+      console.log(`   Exito! ${resultado.points_received} puntos enviados`);
+      console.log(`   Expira: ${resultado.expires_at}`);
+    }
+
+    console.log("\n" + "=".repeat(50));
+    console.log("Listo! Revisa tu chart para ver las senales.");
+    console.log("=".repeat(50));
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
+
+main();
+```
+
+</CodeGroup>
+
+## Paso 8: Ejecutalo!
+
+```bash
+python main.py
+# o
+node main.js
+```
+
+Salida esperada:
+
+```
+==================================================
+Indicador Cruce de Medias Moviles
+==================================================
+
+1. Obteniendo datos de mercado...
+   Obtenidas 500 barras
+
+2. Calculando medias moviles...
+
+3. Detectando cruces...
+   Encontradas 8 senales
+
+   Senales recientes:
+   - COMPRA a 1.10250
+   - VENTA a 1.10450
+   - COMPRA a 1.10300
+
+4. Enviando a InnovaTrading...
+   Exito! 8 puntos enviados
+   Expira: 2025-12-13T14:00:00Z
+
+==================================================
+Listo! Revisa tu chart para ver las senales.
+==================================================
+```
+
+## Paso 9: Ver en el Chart
+
+1. Abre InnovaTrading
+2. Navega al chart de EURUSD H1
+3. Abre el panel de **Indicadores Externos**
+4. Tu indicador "Cruce MA" deberia aparecer
+5. Activa el toggle para ver las senales
+
+<Check>
+  Felicidades! Has construido tu primer indicador externo.
+</Check>
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="Agregar Stop Loss y Take Profit" icon="shield" href="/es/guides/signal-best-practices">
+    Haz tus senales accionables con niveles de gestion de riesgo
+  </Card>
+  <Card title="Actualizaciones Continuas" icon="rotate" href="/es/guides/continuous-integration">
+    Configura actualizaciones automaticas de senales
+  </Card>
+</CardGroup>

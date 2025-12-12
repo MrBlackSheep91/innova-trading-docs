@@ -1,0 +1,172 @@
+---
+title: 'Obtener Barras'
+api: 'GET /api/external/bars/{symbol}/{timeframe}'
+description: 'Obtener datos OHLC historicos para un simbolo'
+---
+
+## Solicitud
+
+<ParamField path="symbol" type="string" required>
+  Simbolo de trading (ej: `EURUSD`, `GBPUSD`, `XAUUSD`)
+</ParamField>
+
+<ParamField path="timeframe" type="integer" required>
+  Timeframe en minutos. Valores soportados: `1`, `5`, `15`, `30`, `60`, `240`, `1440`
+</ParamField>
+
+<ParamField query="limit" type="integer" default="100">
+  Numero de barras a obtener (maximo 500)
+</ParamField>
+
+## Respuesta
+
+<ResponseField name="success" type="boolean">
+  Indica si la solicitud fue exitosa
+</ResponseField>
+
+<ResponseField name="symbol" type="string">
+  El simbolo solicitado
+</ResponseField>
+
+<ResponseField name="timeframe" type="integer">
+  El timeframe en minutos
+</ResponseField>
+
+<ResponseField name="count" type="integer">
+  Numero de barras retornadas
+</ResponseField>
+
+<ResponseField name="bars" type="array">
+  Array de barras OHLC
+
+  <Expandable title="Objeto Barra">
+    <ResponseField name="time" type="integer">
+      Timestamp Unix del tiempo de apertura de la barra
+    </ResponseField>
+    <ResponseField name="open" type="float">
+      Precio de apertura
+    </ResponseField>
+    <ResponseField name="high" type="float">
+      Precio maximo
+    </ResponseField>
+    <ResponseField name="low" type="float">
+      Precio minimo
+    </ResponseField>
+    <ResponseField name="close" type="float">
+      Precio de cierre
+    </ResponseField>
+    <ResponseField name="volume" type="integer">
+      Volumen de trading
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET "https://api.innova-trading.com/api/external/bars/EURUSD/60?limit=100" \
+  -H "Authorization: Bearer TU_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.innova-trading.com/api/external/bars/EURUSD/60",
+    params={"limit": 100},
+    headers={"Authorization": "Bearer TU_API_KEY"}
+)
+
+data = response.json()
+barras = data["bars"]
+
+# Acceder a la ultima barra
+ultima_barra = barras[-1]
+print(f"Cierre: {ultima_barra['close']}")
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "https://api.innova-trading.com/api/external/bars/EURUSD/60?limit=100",
+  {
+    headers: { Authorization: "Bearer TU_API_KEY" }
+  }
+);
+
+const { bars } = await response.json();
+
+// Acceder a la ultima barra
+const ultimaBarra = bars[bars.length - 1];
+console.log(`Cierre: ${ultimaBarra.close}`);
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Respuesta Exitosa
+{
+  "success": true,
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "count": 100,
+  "bars": [
+    {
+      "time": 1765534800,
+      "open": 1.0915,
+      "high": 1.0938,
+      "low": 1.0910,
+      "close": 1.0932,
+      "volume": 12500
+    },
+    {
+      "time": 1765538400,
+      "open": 1.0932,
+      "high": 1.0945,
+      "low": 1.0925,
+      "close": 1.0940,
+      "volume": 11200
+    }
+  ]
+}
+```
+
+```json Simbolo No Encontrado
+{
+  "error": "not_found",
+  "message": "Simbolo 'INVALID' no encontrado o no tienes acceso"
+}
+```
+
+```json Timeframe Invalido
+{
+  "error": "invalid_timeframe",
+  "message": "Timeframe debe ser uno de: 1, 5, 15, 30, 60, 240, 1440"
+}
+```
+
+</ResponseExample>
+
+## Notas
+
+<Note>
+  Las barras se retornan ordenadas por tiempo **de mas antigua a mas reciente**.
+  La ultima barra del array es la mas reciente.
+</Note>
+
+<Warning>
+  El campo `time` es critico para enviar indicadores.
+  Siempre usa los valores de `time` de esta respuesta al crear puntos de senal.
+</Warning>
+
+## Timeframes Soportados
+
+| Timeframe | Minutos | Descripcion |
+|-----------|---------|-------------|
+| M1 | 1 | 1 minuto |
+| M5 | 5 | 5 minutos |
+| M15 | 15 | 15 minutos |
+| M30 | 30 | 30 minutos |
+| H1 | 60 | 1 hora |
+| H4 | 240 | 4 horas |
+| D1 | 1440 | Diario |

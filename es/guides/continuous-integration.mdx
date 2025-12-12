@@ -1,0 +1,397 @@
+---
+title: 'Integracion Continua'
+description: 'Manten tus indicadores actualizados automaticamente'
+---
+
+Los indicadores externos expiran despues de **24 horas**. Para mantener tus senales visibles, necesitas actualizarlas continuamente.
+
+## Estrategias de Actualizacion
+
+<CardGroup cols={2}>
+  <Card title="Cron Job" icon="clock">
+    Tarea programada simple que corre a intervalos
+  </Card>
+  <Card title="Webhook" icon="webhook">
+    Activar actualizaciones basadas en eventos
+  </Card>
+  <Card title="Servicio Always-On" icon="server">
+    Proceso de larga duracion con scheduler interno
+  </Card>
+  <Card title="Serverless" icon="cloud">
+    AWS Lambda, Google Cloud Functions, etc.
+  </Card>
+</CardGroup>
+
+## Opcion 1: Cron Job (Linux/Mac)
+
+El approach mas simple para servidores con soporte cron.
+
+### Configuracion
+
+1. Crea tu script de indicador:
+
+```python
+#!/usr/bin/env python3
+# /home/user/indicadores/actualizar_senales.py
+
+import requests
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+API_KEY = "tu_api_key"
+BASE_URL = "https://api.innova-trading.com"
+
+def main():
+    try:
+        logger.info("Iniciando actualizacion de senales...")
+
+        # Tu logica de indicador aqui
+        barras = obtener_barras()
+        senales = calcular_senales(barras)
+        resultado = enviar_senales(senales)
+
+        logger.info(f"Actualizadas {resultado['points_received']} senales")
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise
+
+if __name__ == "__main__":
+    main()
+```
+
+2. Agregar a crontab:
+
+```bash
+# Editar crontab
+crontab -e
+
+# Agregar esta linea para correr cada hora
+0 * * * * /usr/bin/python3 /home/user/indicadores/actualizar_senales.py >> /var/log/indicadores.log 2>&1
+
+# O cada 15 minutos
+*/15 * * * * /usr/bin/python3 /home/user/indicadores/actualizar_senales.py >> /var/log/indicadores.log 2>&1
+```
+
+## Opcion 2: Python Scheduler
+
+Para mas control, usa la libreria `schedule` de Python:
+
+```python
+import schedule
+import time
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+def actualizar_eurusd_h1():
+    """Actualizar senales EURUSD H1."""
+    logger.info("Actualizando EURUSD H1...")
+    try:
+        # Tu logica aqui
+        pass
+    except Exception as e:
+        logger.error(f"Error: {e}")
+
+def actualizar_gbpusd_h4():
+    """Actualizar senales GBPUSD H4."""
+    logger.info("Actualizando GBPUSD H4...")
+    try:
+        # Tu logica aqui
+        pass
+    except Exception as e:
+        logger.error(f"Error: {e}")
+
+# Programar trabajos
+schedule.every(1).hours.do(actualizar_eurusd_h1)
+schedule.every(4).hours.do(actualizar_gbpusd_h4)
+
+# Tambien correr a horas especificas
+schedule.every().day.at("00:00").do(actualizar_eurusd_h1)
+schedule.every().day.at("08:00").do(actualizar_eurusd_h1)
+schedule.every().day.at("16:00").do(actualizar_eurusd_h1)
+
+logger.info("Scheduler iniciado. Presiona Ctrl+C para salir.")
+
+# Ejecucion inicial
+actualizar_eurusd_h1()
+actualizar_gbpusd_h4()
+
+# Mantener corriendo
+while True:
+    schedule.run_pending()
+    time.sleep(60)
+```
+
+Ejecutar con:
+
+```bash
+# Correr en background
+nohup python scheduler.py > scheduler.log 2>&1 &
+
+# O con screen
+screen -S indicadores
+python scheduler.py
+# Presiona Ctrl+A, D para desconectar
+```
+
+## Opcion 3: Node.js con node-cron
+
+```javascript
+const cron = require("node-cron");
+const axios = require("axios");
+
+const API_KEY = "tu_api_key";
+const BASE_URL = "https://api.innova-trading.com";
+
+async function actualizarSenales(symbol, timeframe) {
+  console.log(`[${new Date().toISOString()}] Actualizando ${symbol} ${timeframe}m`);
+
+  try {
+    // Tu logica aqui
+    const barras = await obtenerBarras(symbol, timeframe);
+    const senales = calcularSenales(barras);
+    const resultado = await enviarSenales(senales);
+
+    console.log(`Actualizadas ${resultado.points_received} senales`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+}
+
+// Correr cada hora
+cron.schedule("0 * * * *", () => {
+  actualizarSenales("EURUSD", 60);
+});
+
+// Correr cada 4 horas
+cron.schedule("0 */4 * * *", () => {
+  actualizarSenales("GBPUSD", 240);
+});
+
+// Correr al abrir el mercado (5 PM EST = 22:00 UTC Domingo)
+cron.schedule("0 22 * * 0", () => {
+  console.log("Apertura de mercado - actualizacion completa");
+  actualizarSenales("EURUSD", 60);
+  actualizarSenales("GBPUSD", 60);
+});
+
+console.log("Scheduler iniciado");
+
+// Ejecucion inicial
+actualizarSenales("EURUSD", 60);
+```
+
+## Opcion 4: Contenedor Docker
+
+Crea un servicio de indicador containerizado:
+
+```dockerfile
+# Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "scheduler.py"]
+```
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  servicio-indicador:
+    build: .
+    restart: always
+    environment:
+      - API_KEY=${API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./logs:/app/logs
+```
+
+Desplegar:
+
+```bash
+docker-compose up -d
+```
+
+## Opcion 5: AWS Lambda (Serverless)
+
+### handler.py
+
+```python
+import json
+import os
+import requests
+
+def lambda_handler(event, context):
+    """Handler AWS Lambda para actualizacion de indicadores."""
+    API_KEY = event.get("api_key") or os.environ.get("API_KEY")
+    symbol = event.get("symbol", "EURUSD")
+    timeframe = event.get("timeframe", 60)
+
+    try:
+        # Obtener y calcular
+        barras = obtener_barras(symbol, timeframe, API_KEY)
+        senales = calcular_senales(barras)
+        resultado = enviar_senales(senales, API_KEY)
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "success": True,
+                "points": resultado["points_received"]
+            })
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
+```
+
+### Regla CloudWatch Event
+
+```json
+{
+  "schedule": "rate(1 hour)",
+  "input": {
+    "symbol": "EURUSD",
+    "timeframe": 60
+  }
+}
+```
+
+## Opcion 6: GitHub Actions
+
+CI/CD gratis con GitHub:
+
+```yaml
+# .github/workflows/actualizar-indicadores.yml
+name: Actualizar Indicadores
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Cada hora
+  workflow_dispatch:  # Trigger manual
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Actualizar senales
+        env:
+          API_KEY: ${{ secrets.INNOVA_API_KEY }}
+        run: python actualizar_senales.py
+```
+
+<Warning>
+  GitHub Actions tiene un intervalo minimo de 5 minutos para workflows programados, y los jobs pueden retrasarse durante periodos de alta carga.
+</Warning>
+
+## Monitoreo y Alertas
+
+### Mejores Practicas de Logging
+
+```python
+import logging
+from datetime import datetime
+
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[
+        logging.FileHandler('indicador.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+def actualizar_con_logging():
+    inicio = datetime.now()
+    logger.info(f"Iniciando actualizacion para EURUSD H1")
+
+    try:
+        barras = obtener_barras()
+        logger.info(f"Obtenidas {len(barras)} barras")
+
+        senales = calcular_senales(barras)
+        logger.info(f"Generadas {len(senales)} senales")
+
+        resultado = enviar_senales(senales)
+        logger.info(f"Enviados {resultado['points_received']} puntos")
+
+        transcurrido = (datetime.now() - inicio).total_seconds()
+        logger.info(f"Actualizacion completada en {transcurrido:.2f}s")
+
+    except Exception as e:
+        logger.error(f"Actualizacion fallida: {e}", exc_info=True)
+        raise
+```
+
+## Configuracion Recomendada
+
+<Steps>
+  <Step title="Desarrollo">
+    Ejecuciones manuales con `python actualizar_senales.py`
+  </Step>
+  <Step title="Testing">
+    Scheduler local con libreria `schedule`
+  </Step>
+  <Step title="Produccion">
+    Contenedor Docker o servicio cloud (Lambda/Cloud Functions)
+  </Step>
+  <Step title="Monitoreo">
+    Agregar logging, health checks y alertas
+  </Step>
+</Steps>
+
+## Guia de Frecuencia
+
+| Timeframe | Intervalo Actualizacion | Por Que |
+|-----------|-------------------------|---------|
+| M1 | 1 minuto | Senales tiempo real |
+| M5 | 5 minutos | Casi tiempo real |
+| M15 | 15 minutos | Balanceado |
+| H1 | 1 hora | Coincidir con cierre de barra |
+| H4 | 4 horas | Coincidir con cierre de barra |
+| D1 | Diario al abrir mercado | Una vez al dia |
+
+<Tip>
+  Para la mayoria de estrategias, actualizar al cierre de barra es suficiente.
+  Esto reduce llamadas API y asegura que las senales se basen en barras completas.
+</Tip>
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="Mejores Practicas" icon="check" href="/es/guides/signal-best-practices">
+    Mejorar calidad de senales
+  </Card>
+  <Card title="Referencia API" icon="book" href="/es/api-reference/introduction">
+    Documentacion completa de la API
+  </Card>
+</CardGroup>

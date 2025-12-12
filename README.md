@@ -1,43 +1,152 @@
-# Mintlify Starter Kit
+# InnovaTrading API Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+Professional API documentation powered by [Mintlify](https://mintlify.com).
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Local Development
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+### Prerequisites
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+- Node.js 18+
+- npm or yarn
 
-## Development
+### Install Mintlify CLI
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
-npm i -g mint
+```bash
+npm i -g mintlify
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+### Run locally
+
+```bash
+cd docs-site
+mintlify dev
+```
+
+Open http://localhost:3000 to see the docs.
+
+## Deployment
+
+### Option 1: Mintlify Hosting (Recommended)
+
+1. Go to [mintlify.com](https://mintlify.com) and sign up
+2. Connect your GitHub repository
+3. Set the docs directory to `docs-site`
+4. Configure custom domain: `docs.innova-trading.com`
+
+### Option 2: Manual Build
+
+```bash
+# Build static files
+mintlify build
+
+# Output is in .mintlify/output
+```
+
+### Option 3: Vercel/Netlify
+
+1. Fork or push to GitHub
+2. Connect to Vercel/Netlify
+3. Build command: `cd docs-site && npx mintlify build`
+4. Output directory: `docs-site/.mintlify/output`
+
+## Custom Domain Setup
+
+To use `docs.innova-trading.com`:
+
+1. Add CNAME record in your DNS:
+   ```
+   docs.innova-trading.com -> cname.mintlify.com
+   ```
+
+2. Configure in Mintlify dashboard under Settings > Domains
+
+## Structure
 
 ```
-mint dev
+docs-site/
+├── mint.json              # Main configuration
+├── introduction.mdx       # Welcome page
+├── quickstart.mdx         # 5-minute guide
+├── authentication.mdx     # API key docs
+├── api-reference/         # API endpoints
+│   ├── introduction.mdx
+│   ├── market-data/
+│   │   ├── get-bars.mdx
+│   │   └── get-symbols.mdx
+│   └── indicators/
+│       ├── submit-indicator.mdx
+│       ├── get-indicator.mdx
+│       ├── delete-indicator.mdx
+│       └── list-indicators.mdx
+├── concepts/              # Core concepts
+│   ├── signals.mdx
+│   ├── indicators.mdx
+│   └── timeframes.mdx
+├── sdks/                  # SDK documentation
+│   ├── overview.mdx
+│   ├── python.mdx
+│   └── javascript.mdx
+├── guides/                # How-to guides
+│   ├── first-indicator.mdx
+│   ├── signal-best-practices.mdx
+│   └── continuous-integration.mdx
+└── logo/                  # Branding
+    ├── dark.svg
+    └── light.svg
 ```
 
-View your local preview at `http://localhost:3000`.
+## Adding New Pages
 
-## Publishing changes
+1. Create a new `.mdx` file in the appropriate directory
+2. Add frontmatter:
+   ```mdx
+   ---
+   title: 'Page Title'
+   description: 'Page description'
+   ---
+   ```
+3. Add the page to `mint.json` navigation
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+## API Endpoint Documentation
 
-## Need help?
+For API endpoints, use this format:
 
-### Troubleshooting
+```mdx
+---
+title: 'Endpoint Name'
+api: 'METHOD /path'
+description: 'What this endpoint does'
+---
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+## Request
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+<ParamField path="param" type="string" required>
+  Description
+</ParamField>
+
+## Response
+
+<ResponseField name="field" type="string">
+  Description
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X GET "https://api.innova-trading.com/path"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "success": true
+}
+```
+</ResponseExample>
+```
+
+## Resources
+
+- [Mintlify Documentation](https://mintlify.com/docs)
+- [MDX Syntax](https://mdxjs.com/)
+- [Mintlify Components](https://mintlify.com/docs/components)

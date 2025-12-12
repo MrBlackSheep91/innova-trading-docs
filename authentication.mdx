@@ -1,0 +1,172 @@
+---
+title: 'Authentication'
+description: 'Learn how to authenticate with the InnovaTrading API'
+---
+
+## API Keys
+
+All API requests require authentication using a Bearer token in the `Authorization` header.
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Getting Your API Key
+
+<Steps>
+  <Step title="Log in to InnovaTrading">
+    Go to [innova-trading.com](https://innova-trading.com) and sign in to your account.
+  </Step>
+  <Step title="Navigate to Settings">
+    Click on your profile and go to **Settings** → **API Keys**.
+  </Step>
+  <Step title="Create a New Key">
+    Click **"Create API Key"**, give it a name, and copy the generated key.
+
+    <Warning>
+      The API key is only shown once. Store it securely!
+    </Warning>
+  </Step>
+</Steps>
+
+## Using Your API Key
+
+<CodeGroup>
+
+```bash cURL
+curl https://api.innova-trading.com/api/external/bars \
+  -H "Authorization: Bearer sk_live_abc123..."
+```
+
+```python Python
+import requests
+
+API_KEY = "sk_live_abc123..."
+
+response = requests.get(
+    "https://api.innova-trading.com/api/external/bars",
+    params={"symbol": "EURUSD", "timeframe": 60},
+    headers={"Authorization": f"Bearer {API_KEY}"}
+)
+```
+
+```javascript JavaScript
+const API_KEY = "sk_live_abc123...";
+
+const response = await fetch(
+  "https://api.innova-trading.com/api/external/bars?symbol=EURUSD&timeframe=60",
+  {
+    headers: { Authorization: `Bearer ${API_KEY}` }
+  }
+);
+```
+
+</CodeGroup>
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Never expose in client code" icon="eye-slash">
+    API keys should only be used server-side. Never include them in frontend JavaScript.
+  </Card>
+  <Card title="Use environment variables" icon="lock">
+    Store your API key in environment variables, not in source code.
+  </Card>
+  <Card title="Rotate regularly" icon="rotate">
+    Generate new API keys periodically and revoke old ones.
+  </Card>
+  <Card title="Use separate keys" icon="key">
+    Create different keys for development and production.
+  </Card>
+</CardGroup>
+
+## Environment Variables
+
+<CodeGroup>
+
+```bash .env
+INNOVA_API_KEY=sk_live_abc123...
+```
+
+```python Python
+import os
+
+API_KEY = os.environ.get("INNOVA_API_KEY")
+```
+
+```javascript JavaScript
+const API_KEY = process.env.INNOVA_API_KEY;
+```
+
+</CodeGroup>
+
+## Error Responses
+
+### 401 Unauthorized
+
+Missing or invalid API key:
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing Authorization header"
+}
+```
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Invalid API key"
+}
+```
+
+### 403 Forbidden
+
+Valid API key but no access to the requested resource:
+
+```json
+{
+  "error": "forbidden",
+  "message": "Symbol XAUUSD not allowed for your API key",
+  "allowed_symbols": ["EURUSD", "GBPUSD", "USDJPY"]
+}
+```
+
+## API Key Permissions
+
+Each API key has specific permissions:
+
+| Permission | Description |
+|------------|-------------|
+| `read:bars` | Fetch OHLC market data |
+| `write:indicators` | Submit indicator signals |
+| `read:indicators` | Read submitted indicators |
+| `delete:indicators` | Delete indicators |
+
+<Note>
+  By default, new API keys have all permissions enabled. Contact support for custom permission setups.
+</Note>
+
+## Rate Limiting
+
+API keys are rate-limited based on your plan:
+
+| Plan | Requests/Hour | Concurrent |
+|------|---------------|------------|
+| Free | 100 | 5 |
+| Pro | 1,000 | 20 |
+| Enterprise | Custom | Custom |
+
+When rate limited, you'll receive:
+
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Please wait before retrying.",
+  "retry_after": 60
+}
+```
+
+<Tip>
+  Use exponential backoff when hitting rate limits. Start with a 1-second delay and double it with each retry.
+</Tip>

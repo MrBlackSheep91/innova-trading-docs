@@ -1,0 +1,354 @@
+---
+title: 'Enviar Indicador'
+api: 'POST /api/external/indicators/{indicator_id}'
+description: 'Enviar senales de trading para mostrar en el chart'
+---
+
+## Solicitud
+
+<ParamField path="indicator_id" type="string" required>
+  Identificador unico para tu indicador. Usa solo caracteres alfanumericos y guiones bajos.
+
+  Ejemplos: `mis_senales`, `smart_money_v2`, `inside_bar_detector`
+</ParamField>
+
+### Parametros del Body
+
+<ParamField body="symbol" type="string" required>
+  Simbolo de trading (ej: `EURUSD`)
+</ParamField>
+
+<ParamField body="timeframe" type="integer" required>
+  Timeframe en minutos (1, 5, 15, 60, 240, 1440)
+</ParamField>
+
+<ParamField body="indicator_name" type="string" required>
+  Nombre legible que se muestra en la UI
+</ParamField>
+
+<ParamField body="version" type="string" default="1.0">
+  Version de tu indicador
+</ParamField>
+
+<ParamField body="points" type="array" required>
+  Array de puntos de senal a mostrar en el chart
+
+  <Expandable title="Objeto Punto">
+    <ParamField body="time" type="integer" required>
+      Timestamp Unix de la barra. **Debe coincidir con una barra del endpoint /bars.**
+    </ParamField>
+    <ParamField body="type" type="string" required>
+      Posicion relativa a la barra:
+      - `high` - Arriba de la vela
+      - `low` - Debajo de la vela
+    </ParamField>
+    <ParamField body="price" type="float" required>
+      Nivel de precio donde aparece el punto
+    </ParamField>
+    <ParamField body="label" type="string">
+      Etiqueta de texto (ej: `COMPRA`, `VENTA`, `TP1`, `SL`)
+    </ParamField>
+    <ParamField body="color" type="string">
+      Codigo de color hex (ej: `#22c55e` para verde)
+    </ParamField>
+    <ParamField body="shape" type="string" default="circle">
+      Forma: `circle`, `arrowUp`, `arrowDown`, `square`
+    </ParamField>
+    <ParamField body="size" type="integer" default="1">
+      Tamano: 1 (pequeno), 2 (mediano), 3 (grande)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Metadata opcional para tu indicador (analytics, descripcion, etc.)
+</ParamField>
+
+## Respuesta
+
+<ResponseField name="success" type="boolean">
+  Indica si la senal se almaceno correctamente
+</ResponseField>
+
+<ResponseField name="indicator_id" type="string">
+  El ID del indicador
+</ResponseField>
+
+<ResponseField name="points_received" type="integer">
+  Numero de puntos que se almacenaron
+</ResponseField>
+
+<ResponseField name="symbol" type="string">
+  El simbolo
+</ResponseField>
+
+<ResponseField name="timeframe" type="integer">
+  El timeframe
+</ResponseField>
+
+<ResponseField name="expires_at" type="string">
+  Fecha ISO 8601 cuando los datos expiraran (24 horas)
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.innova-trading.com/api/external/indicators/mis_senales" \
+  -H "Authorization: Bearer TU_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbol": "EURUSD",
+    "timeframe": 60,
+    "indicator_name": "Mis Senales de Trading",
+    "points": [
+      {
+        "time": 1765540800,
+        "type": "low",
+        "price": 1.1725,
+        "label": "COMPRA",
+        "color": "#3b82f6",
+        "shape": "arrowUp",
+        "size": 2
+      },
+      {
+        "time": 1765540800,
+        "type": "low",
+        "price": 1.1700,
+        "label": "SL",
+        "color": "#ef4444",
+        "shape": "square",
+        "size": 1
+      },
+      {
+        "time": 1765540800,
+        "type": "high",
+        "price": 1.1750,
+        "label": "TP1",
+        "color": "#22c55e",
+        "shape": "circle",
+        "size": 1
+      }
+    ],
+    "metadata": {
+      "signal_type": "COMPRA",
+      "strategy": "ICT"
+    }
+  }'
+```
+
+```python Python
+import requests
+
+senal = {
+    "symbol": "EURUSD",
+    "timeframe": 60,
+    "indicator_name": "Mis Senales de Trading",
+    "points": [
+        {
+            "time": 1765540800,
+            "type": "low",
+            "price": 1.1725,
+            "label": "COMPRA",
+            "color": "#3b82f6",
+            "shape": "arrowUp",
+            "size": 2
+        },
+        {
+            "time": 1765540800,
+            "type": "low",
+            "price": 1.1700,
+            "label": "SL",
+            "color": "#ef4444",
+            "shape": "square",
+            "size": 1
+        },
+        {
+            "time": 1765540800,
+            "type": "high",
+            "price": 1.1750,
+            "label": "TP1",
+            "color": "#22c55e",
+            "shape": "circle",
+            "size": 1
+        }
+    ]
+}
+
+response = requests.post(
+    "https://api.innova-trading.com/api/external/indicators/mis_senales",
+    json=senal,
+    headers={
+        "Authorization": "Bearer TU_API_KEY",
+        "Content-Type": "application/json"
+    }
+)
+```
+
+```javascript JavaScript
+const senal = {
+  symbol: "EURUSD",
+  timeframe: 60,
+  indicator_name: "Mis Senales de Trading",
+  points: [
+    {
+      time: 1765540800,
+      type: "low",
+      price: 1.1725,
+      label: "COMPRA",
+      color: "#3b82f6",
+      shape: "arrowUp",
+      size: 2
+    },
+    {
+      time: 1765540800,
+      type: "low",
+      price: 1.17,
+      label: "SL",
+      color: "#ef4444",
+      shape: "square",
+      size: 1
+    },
+    {
+      time: 1765540800,
+      type: "high",
+      price: 1.175,
+      label: "TP1",
+      color: "#22c55e",
+      shape: "circle",
+      size: 1
+    }
+  ]
+};
+
+const response = await fetch(
+  "https://api.innova-trading.com/api/external/indicators/mis_senales",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer TU_API_KEY",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(senal)
+  }
+);
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Respuesta Exitosa
+{
+  "success": true,
+  "indicator_id": "mis_senales",
+  "points_received": 3,
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "expires_at": "2025-12-13T12:00:00Z",
+  "message": "Datos del indicador almacenados exitosamente"
+}
+```
+
+```json Error de Validacion
+{
+  "error": "validation_error",
+  "message": "Punto 0: type debe ser 'high' o 'low'",
+  "point_index": 0
+}
+```
+
+</ResponseExample>
+
+## Ejemplo de Senal de Trading Completa
+
+Una senal profesional incluye Entrada, Stop Loss y multiples Take Profits:
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "indicator_name": "Senales Smart Money",
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1725,
+      "label": "ENTRADA",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1695,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1755,
+      "label": "TP1",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1785,
+      "label": "TP2",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1815,
+      "label": "TP3",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    }
+  ],
+  "metadata": {
+    "signal_type": "COMPRA",
+    "entry_price": 1.1725,
+    "stop_loss": 1.1695,
+    "risk_pips": 30,
+    "risk_reward": "1:3",
+    "strategy": "Order Block + FVG"
+  }
+}
+```
+
+## Referencia de Colores
+
+| Uso | Color | Hex |
+|-----|-------|-----|
+| Compra / Long | Azul | `#3b82f6` |
+| Venta / Short | Naranja | `#f97316` |
+| Stop Loss | Rojo | `#ef4444` |
+| Take Profit | Verde | `#22c55e` |
+| Neutral | Amarillo | `#eab308` |
+
+## Referencia de Formas
+
+| Forma | Mejor Uso |
+|-------|-----------|
+| `arrowUp` | Senales de compra |
+| `arrowDown` | Senales de venta |
+| `circle` | Niveles de take profit |
+| `square` | Stop loss, niveles importantes |
+
+<Warning>
+  **Los datos expiran despues de 24 horas.** Tu servicio debe re-enviar senales periodicamente para mantenerlas visibles.
+</Warning>
+
+<Tip>
+  Puedes enviar multiples puntos con el mismo `time` para mostrar Entrada, SL y TPs en la misma vela.
+</Tip>

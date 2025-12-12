@@ -1,0 +1,1417 @@
+---
+title: 'Ejemplos Completos'
+description: 'Scripts listos para copiar y pegar - Indicadores completos de principio a fin'
+---
+
+Esta pagina contiene **scripts completos** que puedes copiar, pegar y ejecutar directamente. Cada ejemplo es un indicador funcional de principio a fin.
+
+## Ejemplo 1: Detector de Swing Points (HH/HL/LH/LL)
+
+Detecta Higher Highs, Higher Lows, Lower Highs y Lower Lows - la base del analisis de estructura de mercado.
+
+<Tabs>
+  <Tab title="Python">
+```python
+#!/usr/bin/env python3
+"""
+Detector de Swing Points - InnovaTrading External Indicator
+Detecta HH, HL, LH, LL en el chart
+"""
+
+import requests
+import pandas as pd
+from typing import List, Dict, Any
+
+# === CONFIGURACION ===
+API_KEY = "TU_API_KEY"
+BASE_URL = "https://api.innova-trading.com"
+SYMBOL = "EURUSD"
+TIMEFRAME = 60  # H1
+SWING_LOOKBACK = 5  # Barras a cada lado para confirmar swing
+
+# === CLIENTE API ===
+def obtener_barras(symbol: str, timeframe: int, limit: int = 500) -> pd.DataFrame:
+    url = f"{BASE_URL}/api/external/bars/{symbol}/{timeframe}"
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+    response = requests.get(url, params={"limit": limit}, headers=headers)
+    response.raise_for_status()
+    return pd.DataFrame(response.json()["bars"])
+
+def enviar_indicador(indicator_id: str, points: List[Dict], symbol: str, timeframe: int):
+    url = f"{BASE_URL}/api/external/indicators/{indicator_id}"
+    headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+    payload = {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "indicator_name": "Swing Points (HH/HL/LH/LL)",
+        "version": "1.0",
+        "points": points,
+        "metadata": {"lookback": SWING_LOOKBACK, "total_swings": len(points)}
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+# === LOGICA DEL INDICADOR ===
+def es_swing_high(df: pd.DataFrame, index: int, lookback: int) -> bool:
+    """Verifica si el indice es un swing high."""
+    if index < lookback or index >= len(df) - lookback:
+        return False
+
+    current_high = df.iloc[index]["high"]
+    for i in range(index - lookback, index + lookback + 1):
+        if i != index and df.iloc[i]["high"] >= current_high:
+            return False
+    return True
+
+def es_swing_low(df: pd.DataFrame, index: int, lookback: int) -> bool:
+    """Verifica si el indice es un swing low."""
+    if index < lookback or index >= len(df) - lookback:
+        return False
+
+    current_low = df.iloc[index]["low"]
+    for i in range(index - lookback, index + lookback + 1):
+        if i != index and df.iloc[i]["low"] <= current_low:
+            return False
+    return True
+
+def detectar_swing_points(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """Detectar swing points y clasificarlos como HH/HL/LH/LL."""
+    puntos = []
+
+    # Encontrar todos los swings
+    swing_highs = []
+    swing_lows = []
+
+    for i in range(len(df)):
+        if es_swing_high(df, i, SWING_LOOKBACK):
+            swing_highs.append({"index": i, "price": df.iloc[i]["high"], "time": df.iloc[i]["time"]})
+        if es_swing_low(df, i, SWING_LOOKBACK):
+            swing_lows.append({"index": i, "price": df.iloc[i]["low"], "time": df.iloc[i]["time"]})
+
+    # Clasificar Swing Highs como HH o LH
+    for i, sh in enumerate(swing_highs):
+        if i == 0:
+            label = "SH"  # Primer swing, sin comparacion
+            color = "#94a3b8"
+        else:
+            prev_high = swing_highs[i-1]["price"]
+            if sh["price"] > prev_high:
+                label = "HH"  # Higher High
+                color = "#22c55e"  # Verde
+            else:
+                label = "LH"  # Lower High
+                color = "#ef4444"  # Rojo
+
+        puntos.append({
+            "time": int(sh["time"]),
+            "type": "high",
+            "price": float(sh["price"]),
+            "label": label,
+            "color": color,
+            "shape": "circle",
+            "size": 1 if label == "SH" else 2
+        })
+
+    # Clasificar Swing Lows como HL o LL
+    for i, sl in enumerate(swing_lows):
+        if i == 0:
+            label = "SL"  # Primer swing, sin comparacion
+            color = "#94a3b8"
+        else:
+            prev_low = swing_lows[i-1]["price"]
+            if sl["price"] > prev_low:
+                label = "HL"  # Higher Low
+                color = "#22c55e"  # Verde
+            else:
+                label = "LL"  # Lower Low
+                color = "#ef4444"  # Rojo
+
+        puntos.append({
+            "time": int(sl["time"]),
+            "type": "low",
+            "price": float(sl["price"]),
+            "label": label,
+            "color": color,
+            "shape": "circle",
+            "size": 1 if label == "SL" else 2
+        })
+
+    return puntos
+
+# === MAIN ===
+def main():
+    print("=" * 50)
+    print("Detector de Swing Points")
+    print("=" * 50)
+
+    print(f"\n1. Obteniendo barras {SYMBOL} {TIMEFRAME}m...")
+    df = obtener_barras(SYMBOL, TIMEFRAME, 500)
+    print(f"   Obtenidas {len(df)} barras")
+
+    print("\n2. Detectando swing points...")
+    puntos = detectar_swing_points(df)
+
+    # Contar tipos
+    hh = sum(1 for p in puntos if p["label"] == "HH")
+    hl = sum(1 for p in puntos if p["label"] == "HL")
+    lh = sum(1 for p in puntos if p["label"] == "LH")
+    ll = sum(1 for p in puntos if p["label"] == "LL")
+
+    print(f"   HH: {hh}, HL: {hl}, LH: {lh}, LL: {ll}")
+
+    print("\n3. Enviando a InnovaTrading...")
+    resultado = enviar_indicador("swing_points", puntos, SYMBOL, TIMEFRAME)
+    print(f"   Enviados {resultado['points_received']} puntos")
+    print(f"   Expira: {resultado['expires_at']}")
+
+    print("\n" + "=" * 50)
+    print("Listo! Revisa el chart.")
+    print("=" * 50)
+
+if __name__ == "__main__":
+    main()
+```
+  </Tab>
+  <Tab title="JavaScript">
+```javascript
+/**
+ * Detector de Swing Points - InnovaTrading External Indicator
+ * Detecta HH, HL, LH, LL en el chart
+ */
+
+const axios = require("axios");
+
+// === CONFIGURACION ===
+const API_KEY = "TU_API_KEY";
+const BASE_URL = "https://api.innova-trading.com";
+const SYMBOL = "EURUSD";
+const TIMEFRAME = 60; // H1
+const SWING_LOOKBACK = 5;
+
+// === CLIENTE API ===
+async function obtenerBarras(symbol, timeframe, limit = 500) {
+  const response = await axios.get(
+    `${BASE_URL}/api/external/bars/${symbol}/${timeframe}`,
+    {
+      params: { limit },
+      headers: { Authorization: `Bearer ${API_KEY}` },
+    }
+  );
+  return response.data.bars;
+}
+
+async function enviarIndicador(indicatorId, points, symbol, timeframe) {
+  const response = await axios.post(
+    `${BASE_URL}/api/external/indicators/${indicatorId}`,
+    {
+      symbol,
+      timeframe,
+      indicator_name: "Swing Points (HH/HL/LH/LL)",
+      version: "1.0",
+      points,
+      metadata: { lookback: SWING_LOOKBACK, total_swings: points.length },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+}
+
+// === LOGICA DEL INDICADOR ===
+function esSwingHigh(barras, index, lookback) {
+  if (index < lookback || index >= barras.length - lookback) return false;
+
+  const currentHigh = barras[index].high;
+  for (let i = index - lookback; i <= index + lookback; i++) {
+    if (i !== index && barras[i].high >= currentHigh) return false;
+  }
+  return true;
+}
+
+function esSwingLow(barras, index, lookback) {
+  if (index < lookback || index >= barras.length - lookback) return false;
+
+  const currentLow = barras[index].low;
+  for (let i = index - lookback; i <= index + lookback; i++) {
+    if (i !== index && barras[i].low <= currentLow) return false;
+  }
+  return true;
+}
+
+function detectarSwingPoints(barras) {
+  const puntos = [];
+  const swingHighs = [];
+  const swingLows = [];
+
+  // Encontrar todos los swings
+  for (let i = 0; i < barras.length; i++) {
+    if (esSwingHigh(barras, i, SWING_LOOKBACK)) {
+      swingHighs.push({
+        index: i,
+        price: barras[i].high,
+        time: barras[i].time,
+      });
+    }
+    if (esSwingLow(barras, i, SWING_LOOKBACK)) {
+      swingLows.push({
+        index: i,
+        price: barras[i].low,
+        time: barras[i].time,
+      });
+    }
+  }
+
+  // Clasificar Swing Highs
+  swingHighs.forEach((sh, i) => {
+    let label, color;
+    if (i === 0) {
+      label = "SH";
+      color = "#94a3b8";
+    } else {
+      const prevHigh = swingHighs[i - 1].price;
+      if (sh.price > prevHigh) {
+        label = "HH";
+        color = "#22c55e";
+      } else {
+        label = "LH";
+        color = "#ef4444";
+      }
+    }
+
+    puntos.push({
+      time: sh.time,
+      type: "high",
+      price: sh.price,
+      label,
+      color,
+      shape: "circle",
+      size: label === "SH" ? 1 : 2,
+    });
+  });
+
+  // Clasificar Swing Lows
+  swingLows.forEach((sl, i) => {
+    let label, color;
+    if (i === 0) {
+      label = "SL";
+      color = "#94a3b8";
+    } else {
+      const prevLow = swingLows[i - 1].price;
+      if (sl.price > prevLow) {
+        label = "HL";
+        color = "#22c55e";
+      } else {
+        label = "LL";
+        color = "#ef4444";
+      }
+    }
+
+    puntos.push({
+      time: sl.time,
+      type: "low",
+      price: sl.price,
+      label,
+      color,
+      shape: "circle",
+      size: label === "SL" ? 1 : 2,
+    });
+  });
+
+  return puntos;
+}
+
+// === MAIN ===
+async function main() {
+  console.log("=".repeat(50));
+  console.log("Detector de Swing Points");
+  console.log("=".repeat(50));
+
+  console.log(`\n1. Obteniendo barras ${SYMBOL} ${TIMEFRAME}m...`);
+  const barras = await obtenerBarras(SYMBOL, TIMEFRAME, 500);
+  console.log(`   Obtenidas ${barras.length} barras`);
+
+  console.log("\n2. Detectando swing points...");
+  const puntos = detectarSwingPoints(barras);
+
+  const hh = puntos.filter((p) => p.label === "HH").length;
+  const hl = puntos.filter((p) => p.label === "HL").length;
+  const lh = puntos.filter((p) => p.label === "LH").length;
+  const ll = puntos.filter((p) => p.label === "LL").length;
+
+  console.log(`   HH: ${hh}, HL: ${hl}, LH: ${lh}, LL: ${ll}`);
+
+  console.log("\n3. Enviando a InnovaTrading...");
+  const resultado = await enviarIndicador("swing_points", puntos, SYMBOL, TIMEFRAME);
+  console.log(`   Enviados ${resultado.points_received} puntos`);
+  console.log(`   Expira: ${resultado.expires_at}`);
+
+  console.log("\n" + "=".repeat(50));
+  console.log("Listo! Revisa el chart.");
+  console.log("=".repeat(50));
+}
+
+main().catch(console.error);
+```
+  </Tab>
+</Tabs>
+
+---
+
+## Ejemplo 2: RSI con Zonas de Sobrecompra/Sobreventa
+
+Calcula RSI y marca zonas de sobrecompra (>70) y sobreventa (<30).
+
+<Tabs>
+  <Tab title="Python">
+```python
+#!/usr/bin/env python3
+"""
+Indicador RSI - InnovaTrading External Indicator
+Marca zonas de sobrecompra y sobreventa
+"""
+
+import requests
+import pandas as pd
+from typing import List, Dict, Any
+
+# === CONFIGURACION ===
+API_KEY = "TU_API_KEY"
+BASE_URL = "https://api.innova-trading.com"
+SYMBOL = "EURUSD"
+TIMEFRAME = 60
+RSI_PERIODO = 14
+RSI_SOBRECOMPRA = 70
+RSI_SOBREVENTA = 30
+
+def obtener_barras(symbol: str, timeframe: int, limit: int = 500) -> pd.DataFrame:
+    url = f"{BASE_URL}/api/external/bars/{symbol}/{timeframe}"
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+    response = requests.get(url, params={"limit": limit}, headers=headers)
+    response.raise_for_status()
+    return pd.DataFrame(response.json()["bars"])
+
+def enviar_indicador(indicator_id: str, points: List[Dict], symbol: str, timeframe: int, metadata: Dict = None):
+    url = f"{BASE_URL}/api/external/indicators/{indicator_id}"
+    headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+    payload = {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "indicator_name": f"RSI({RSI_PERIODO}) Signals",
+        "version": "1.0",
+        "points": points,
+        "metadata": metadata or {}
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+def calcular_rsi(df: pd.DataFrame, periodo: int = 14) -> pd.Series:
+    """Calcular RSI usando metodo de Wilder."""
+    delta = df["close"].diff()
+
+    ganancia = delta.where(delta > 0, 0)
+    perdida = (-delta).where(delta < 0, 0)
+
+    avg_ganancia = ganancia.ewm(alpha=1/periodo, min_periods=periodo).mean()
+    avg_perdida = perdida.ewm(alpha=1/periodo, min_periods=periodo).mean()
+
+    rs = avg_ganancia / avg_perdida
+    rsi = 100 - (100 / (1 + rs))
+
+    return rsi
+
+def detectar_senales_rsi(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """Detectar cruces de RSI en zonas extremas."""
+    df["rsi"] = calcular_rsi(df, RSI_PERIODO)
+    puntos = []
+
+    for i in range(1, len(df)):
+        prev_rsi = df.iloc[i-1]["rsi"]
+        curr_rsi = df.iloc[i]["rsi"]
+        curr = df.iloc[i]
+
+        if pd.isna(prev_rsi) or pd.isna(curr_rsi):
+            continue
+
+        # RSI cruza hacia abajo de sobrecompra (senal de venta)
+        if prev_rsi >= RSI_SOBRECOMPRA and curr_rsi < RSI_SOBRECOMPRA:
+            puntos.append({
+                "time": int(curr["time"]),
+                "type": "high",
+                "price": float(curr["high"]) + 0.0003,
+                "label": f"OB",
+                "color": "#ef4444",
+                "shape": "arrowDown",
+                "size": 2
+            })
+
+        # RSI cruza hacia arriba de sobreventa (senal de compra)
+        if prev_rsi <= RSI_SOBREVENTA and curr_rsi > RSI_SOBREVENTA:
+            puntos.append({
+                "time": int(curr["time"]),
+                "type": "low",
+                "price": float(curr["low"]) - 0.0003,
+                "label": f"OS",
+                "color": "#22c55e",
+                "shape": "arrowUp",
+                "size": 2
+            })
+
+    return puntos
+
+def main():
+    print("=" * 50)
+    print(f"RSI({RSI_PERIODO}) Indicator")
+    print("=" * 50)
+
+    print(f"\n1. Obteniendo barras {SYMBOL} {TIMEFRAME}m...")
+    df = obtener_barras(SYMBOL, TIMEFRAME, 500)
+    print(f"   Obtenidas {len(df)} barras")
+
+    print("\n2. Calculando RSI y detectando senales...")
+    puntos = detectar_senales_rsi(df)
+
+    ob_count = sum(1 for p in puntos if p["label"] == "OB")
+    os_count = sum(1 for p in puntos if p["label"] == "OS")
+
+    print(f"   Sobrecompra (OB): {ob_count}")
+    print(f"   Sobreventa (OS): {os_count}")
+
+    if puntos:
+        print("\n3. Enviando a InnovaTrading...")
+        resultado = enviar_indicador(
+            "rsi_signals",
+            puntos,
+            SYMBOL,
+            TIMEFRAME,
+            {
+                "rsi_periodo": RSI_PERIODO,
+                "sobrecompra": RSI_SOBRECOMPRA,
+                "sobreventa": RSI_SOBREVENTA,
+                "senales_ob": ob_count,
+                "senales_os": os_count
+            }
+        )
+        print(f"   Enviados {resultado['points_received']} puntos")
+    else:
+        print("\n   No se encontraron senales RSI")
+
+    print("\n" + "=" * 50)
+
+if __name__ == "__main__":
+    main()
+```
+  </Tab>
+  <Tab title="JavaScript">
+```javascript
+/**
+ * Indicador RSI - InnovaTrading External Indicator
+ * Marca zonas de sobrecompra y sobreventa
+ */
+
+const axios = require("axios");
+
+// === CONFIGURACION ===
+const API_KEY = "TU_API_KEY";
+const BASE_URL = "https://api.innova-trading.com";
+const SYMBOL = "EURUSD";
+const TIMEFRAME = 60;
+const RSI_PERIODO = 14;
+const RSI_SOBRECOMPRA = 70;
+const RSI_SOBREVENTA = 30;
+
+async function obtenerBarras(symbol, timeframe, limit = 500) {
+  const response = await axios.get(
+    `${BASE_URL}/api/external/bars/${symbol}/${timeframe}`,
+    {
+      params: { limit },
+      headers: { Authorization: `Bearer ${API_KEY}` },
+    }
+  );
+  return response.data.bars;
+}
+
+async function enviarIndicador(indicatorId, points, symbol, timeframe, metadata = {}) {
+  const response = await axios.post(
+    `${BASE_URL}/api/external/indicators/${indicatorId}`,
+    {
+      symbol,
+      timeframe,
+      indicator_name: `RSI(${RSI_PERIODO}) Signals`,
+      version: "1.0",
+      points,
+      metadata,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+}
+
+function calcularRSI(barras, periodo = 14) {
+  const closes = barras.map((b) => b.close);
+  const rsi = new Array(closes.length).fill(null);
+
+  // Calcular cambios
+  const changes = [];
+  for (let i = 1; i < closes.length; i++) {
+    changes.push(closes[i] - closes[i - 1]);
+  }
+
+  // Calcular ganancias y perdidas promedio inicial
+  let avgGain = 0;
+  let avgLoss = 0;
+
+  for (let i = 0; i < periodo; i++) {
+    if (changes[i] > 0) avgGain += changes[i];
+    else avgLoss += Math.abs(changes[i]);
+  }
+
+  avgGain /= periodo;
+  avgLoss /= periodo;
+
+  // Primer RSI
+  if (avgLoss === 0) {
+    rsi[periodo] = 100;
+  } else {
+    const rs = avgGain / avgLoss;
+    rsi[periodo] = 100 - 100 / (1 + rs);
+  }
+
+  // RSI suavizado (Wilder)
+  for (let i = periodo; i < changes.length; i++) {
+    const change = changes[i];
+    const gain = change > 0 ? change : 0;
+    const loss = change < 0 ? Math.abs(change) : 0;
+
+    avgGain = (avgGain * (periodo - 1) + gain) / periodo;
+    avgLoss = (avgLoss * (periodo - 1) + loss) / periodo;
+
+    if (avgLoss === 0) {
+      rsi[i + 1] = 100;
+    } else {
+      const rs = avgGain / avgLoss;
+      rsi[i + 1] = 100 - 100 / (1 + rs);
+    }
+  }
+
+  return rsi;
+}
+
+function detectarSenalesRSI(barras) {
+  const rsi = calcularRSI(barras, RSI_PERIODO);
+  const puntos = [];
+
+  for (let i = 1; i < barras.length; i++) {
+    const prevRsi = rsi[i - 1];
+    const currRsi = rsi[i];
+
+    if (prevRsi === null || currRsi === null) continue;
+
+    // Cruce hacia abajo de sobrecompra
+    if (prevRsi >= RSI_SOBRECOMPRA && currRsi < RSI_SOBRECOMPRA) {
+      puntos.push({
+        time: barras[i].time,
+        type: "high",
+        price: barras[i].high + 0.0003,
+        label: "OB",
+        color: "#ef4444",
+        shape: "arrowDown",
+        size: 2,
+      });
+    }
+
+    // Cruce hacia arriba de sobreventa
+    if (prevRsi <= RSI_SOBREVENTA && currRsi > RSI_SOBREVENTA) {
+      puntos.push({
+        time: barras[i].time,
+        type: "low",
+        price: barras[i].low - 0.0003,
+        label: "OS",
+        color: "#22c55e",
+        shape: "arrowUp",
+        size: 2,
+      });
+    }
+  }
+
+  return puntos;
+}
+
+async function main() {
+  console.log("=".repeat(50));
+  console.log(`RSI(${RSI_PERIODO}) Indicator`);
+  console.log("=".repeat(50));
+
+  console.log(`\n1. Obteniendo barras ${SYMBOL} ${TIMEFRAME}m...`);
+  const barras = await obtenerBarras(SYMBOL, TIMEFRAME, 500);
+  console.log(`   Obtenidas ${barras.length} barras`);
+
+  console.log("\n2. Calculando RSI y detectando senales...");
+  const puntos = detectarSenalesRSI(barras);
+
+  const obCount = puntos.filter((p) => p.label === "OB").length;
+  const osCount = puntos.filter((p) => p.label === "OS").length;
+
+  console.log(`   Sobrecompra (OB): ${obCount}`);
+  console.log(`   Sobreventa (OS): ${osCount}`);
+
+  if (puntos.length > 0) {
+    console.log("\n3. Enviando a InnovaTrading...");
+    const resultado = await enviarIndicador("rsi_signals", puntos, SYMBOL, TIMEFRAME, {
+      rsi_periodo: RSI_PERIODO,
+      sobrecompra: RSI_SOBRECOMPRA,
+      sobreventa: RSI_SOBREVENTA,
+      senales_ob: obCount,
+      senales_os: osCount,
+    });
+    console.log(`   Enviados ${resultado.points_received} puntos`);
+  } else {
+    console.log("\n   No se encontraron senales RSI");
+  }
+
+  console.log("\n" + "=".repeat(50));
+}
+
+main().catch(console.error);
+```
+  </Tab>
+</Tabs>
+
+---
+
+## Ejemplo 3: Generador de Senales de Trade Completas
+
+Genera senales de COMPRA/VENTA con Entrada, Stop Loss y multiples Take Profits.
+
+<Tabs>
+  <Tab title="Python">
+```python
+#!/usr/bin/env python3
+"""
+Generador de Senales de Trade Completas
+Entrada + SL + TP1 + TP2 + TP3
+"""
+
+import requests
+import pandas as pd
+from typing import List, Dict, Any
+from datetime import datetime
+
+# === CONFIGURACION ===
+API_KEY = "TU_API_KEY"
+BASE_URL = "https://api.innova-trading.com"
+SYMBOL = "EURUSD"
+TIMEFRAME = 60
+
+# Parametros de trading
+ATR_PERIODO = 14
+SL_ATR_MULTIPLIER = 1.5
+TP1_ATR_MULTIPLIER = 1.5  # 1:1
+TP2_ATR_MULTIPLIER = 3.0  # 1:2
+TP3_ATR_MULTIPLIER = 4.5  # 1:3
+
+def obtener_barras(symbol: str, timeframe: int, limit: int = 500) -> pd.DataFrame:
+    url = f"{BASE_URL}/api/external/bars/{symbol}/{timeframe}"
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+    response = requests.get(url, params={"limit": limit}, headers=headers)
+    response.raise_for_status()
+    return pd.DataFrame(response.json()["bars"])
+
+def enviar_indicador(indicator_id: str, points: List[Dict], symbol: str, timeframe: int, metadata: Dict = None):
+    url = f"{BASE_URL}/api/external/indicators/{indicator_id}"
+    headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+    payload = {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "indicator_name": "Trade Signals (Entry + SL + TPs)",
+        "version": "1.0",
+        "points": points,
+        "metadata": metadata or {}
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+def calcular_atr(df: pd.DataFrame, periodo: int = 14) -> pd.Series:
+    """Calcular Average True Range."""
+    high = df["high"]
+    low = df["low"]
+    close = df["close"].shift(1)
+
+    tr1 = high - low
+    tr2 = abs(high - close)
+    tr3 = abs(low - close)
+
+    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+    atr = tr.rolling(window=periodo).mean()
+
+    return atr
+
+def detectar_setup_bullish(df: pd.DataFrame, index: int) -> bool:
+    """Detectar setup alcista simple (3 velas alcistas consecutivas)."""
+    if index < 3:
+        return False
+
+    for i in range(index - 2, index + 1):
+        if df.iloc[i]["close"] <= df.iloc[i]["open"]:
+            return False
+
+    return True
+
+def detectar_setup_bearish(df: pd.DataFrame, index: int) -> bool:
+    """Detectar setup bajista simple (3 velas bajistas consecutivas)."""
+    if index < 3:
+        return False
+
+    for i in range(index - 2, index + 1):
+        if df.iloc[i]["close"] >= df.iloc[i]["open"]:
+            return False
+
+    return True
+
+def generar_senales_trade(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """Generar senales de trade completas."""
+    df["atr"] = calcular_atr(df, ATR_PERIODO)
+    puntos = []
+
+    # Solo revisar las ultimas 50 barras para senales recientes
+    for i in range(max(ATR_PERIODO, 3), min(len(df), len(df))):
+        curr = df.iloc[i]
+        atr = curr["atr"]
+
+        if pd.isna(atr):
+            continue
+
+        tiempo_barra = int(curr["time"])
+
+        # Setup alcista
+        if detectar_setup_bullish(df, i):
+            entrada = float(curr["close"])
+            sl = entrada - (atr * SL_ATR_MULTIPLIER)
+            tp1 = entrada + (atr * TP1_ATR_MULTIPLIER)
+            tp2 = entrada + (atr * TP2_ATR_MULTIPLIER)
+            tp3 = entrada + (atr * TP3_ATR_MULTIPLIER)
+
+            # Punto de entrada
+            puntos.append({
+                "time": tiempo_barra,
+                "type": "low",
+                "price": entrada,
+                "label": "COMPRA",
+                "color": "#3b82f6",
+                "shape": "arrowUp",
+                "size": 2
+            })
+
+            # Stop Loss
+            puntos.append({
+                "time": tiempo_barra,
+                "type": "low",
+                "price": sl,
+                "label": "SL",
+                "color": "#ef4444",
+                "shape": "square",
+                "size": 1
+            })
+
+            # Take Profits
+            for tp_num, tp_price in enumerate([tp1, tp2, tp3], 1):
+                puntos.append({
+                    "time": tiempo_barra,
+                    "type": "high",
+                    "price": tp_price,
+                    "label": f"TP{tp_num}",
+                    "color": "#22c55e",
+                    "shape": "circle",
+                    "size": 1
+                })
+
+        # Setup bajista
+        elif detectar_setup_bearish(df, i):
+            entrada = float(curr["close"])
+            sl = entrada + (atr * SL_ATR_MULTIPLIER)
+            tp1 = entrada - (atr * TP1_ATR_MULTIPLIER)
+            tp2 = entrada - (atr * TP2_ATR_MULTIPLIER)
+            tp3 = entrada - (atr * TP3_ATR_MULTIPLIER)
+
+            # Punto de entrada
+            puntos.append({
+                "time": tiempo_barra,
+                "type": "high",
+                "price": entrada,
+                "label": "VENTA",
+                "color": "#f97316",
+                "shape": "arrowDown",
+                "size": 2
+            })
+
+            # Stop Loss
+            puntos.append({
+                "time": tiempo_barra,
+                "type": "high",
+                "price": sl,
+                "label": "SL",
+                "color": "#ef4444",
+                "shape": "square",
+                "size": 1
+            })
+
+            # Take Profits
+            for tp_num, tp_price in enumerate([tp1, tp2, tp3], 1):
+                puntos.append({
+                    "time": tiempo_barra,
+                    "type": "low",
+                    "price": tp_price,
+                    "label": f"TP{tp_num}",
+                    "color": "#22c55e",
+                    "shape": "circle",
+                    "size": 1
+                })
+
+    return puntos
+
+def main():
+    print("=" * 50)
+    print("Generador de Senales de Trade Completas")
+    print("=" * 50)
+
+    print(f"\n1. Obteniendo barras {SYMBOL} {TIMEFRAME}m...")
+    df = obtener_barras(SYMBOL, TIMEFRAME, 200)
+    print(f"   Obtenidas {len(df)} barras")
+
+    print("\n2. Generando senales de trade...")
+    puntos = generar_senales_trade(df)
+
+    compras = sum(1 for p in puntos if p["label"] == "COMPRA")
+    ventas = sum(1 for p in puntos if p["label"] == "VENTA")
+
+    print(f"   Senales COMPRA: {compras}")
+    print(f"   Senales VENTA: {ventas}")
+    print(f"   Total puntos: {len(puntos)}")
+
+    if puntos:
+        print("\n3. Enviando a InnovaTrading...")
+        resultado = enviar_indicador(
+            "trade_signals",
+            puntos,
+            SYMBOL,
+            TIMEFRAME,
+            {
+                "atr_periodo": ATR_PERIODO,
+                "sl_multiplier": SL_ATR_MULTIPLIER,
+                "tp_multipliers": [TP1_ATR_MULTIPLIER, TP2_ATR_MULTIPLIER, TP3_ATR_MULTIPLIER],
+                "compras": compras,
+                "ventas": ventas
+            }
+        )
+        print(f"   Enviados {resultado['points_received']} puntos")
+        print(f"   Expira: {resultado['expires_at']}")
+    else:
+        print("\n   No se encontraron setups de trade")
+
+    print("\n" + "=" * 50)
+
+if __name__ == "__main__":
+    main()
+```
+  </Tab>
+  <Tab title="JavaScript">
+```javascript
+/**
+ * Generador de Senales de Trade Completas
+ * Entrada + SL + TP1 + TP2 + TP3
+ */
+
+const axios = require("axios");
+
+// === CONFIGURACION ===
+const API_KEY = "TU_API_KEY";
+const BASE_URL = "https://api.innova-trading.com";
+const SYMBOL = "EURUSD";
+const TIMEFRAME = 60;
+
+// Parametros de trading
+const ATR_PERIODO = 14;
+const SL_ATR_MULTIPLIER = 1.5;
+const TP1_ATR_MULTIPLIER = 1.5;
+const TP2_ATR_MULTIPLIER = 3.0;
+const TP3_ATR_MULTIPLIER = 4.5;
+
+async function obtenerBarras(symbol, timeframe, limit = 500) {
+  const response = await axios.get(
+    `${BASE_URL}/api/external/bars/${symbol}/${timeframe}`,
+    {
+      params: { limit },
+      headers: { Authorization: `Bearer ${API_KEY}` },
+    }
+  );
+  return response.data.bars;
+}
+
+async function enviarIndicador(indicatorId, points, symbol, timeframe, metadata = {}) {
+  const response = await axios.post(
+    `${BASE_URL}/api/external/indicators/${indicatorId}`,
+    {
+      symbol,
+      timeframe,
+      indicator_name: "Trade Signals (Entry + SL + TPs)",
+      version: "1.0",
+      points,
+      metadata,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+}
+
+function calcularATR(barras, periodo = 14) {
+  const tr = [];
+
+  for (let i = 1; i < barras.length; i++) {
+    const high = barras[i].high;
+    const low = barras[i].low;
+    const prevClose = barras[i - 1].close;
+
+    const tr1 = high - low;
+    const tr2 = Math.abs(high - prevClose);
+    const tr3 = Math.abs(low - prevClose);
+
+    tr.push(Math.max(tr1, tr2, tr3));
+  }
+
+  const atr = new Array(barras.length).fill(null);
+
+  for (let i = periodo; i < barras.length; i++) {
+    let sum = 0;
+    for (let j = i - periodo; j < i; j++) {
+      sum += tr[j];
+    }
+    atr[i] = sum / periodo;
+  }
+
+  return atr;
+}
+
+function detectarSetupBullish(barras, index) {
+  if (index < 3) return false;
+
+  for (let i = index - 2; i <= index; i++) {
+    if (barras[i].close <= barras[i].open) return false;
+  }
+
+  return true;
+}
+
+function detectarSetupBearish(barras, index) {
+  if (index < 3) return false;
+
+  for (let i = index - 2; i <= index; i++) {
+    if (barras[i].close >= barras[i].open) return false;
+  }
+
+  return true;
+}
+
+function generarSenalesTrade(barras) {
+  const atr = calcularATR(barras, ATR_PERIODO);
+  const puntos = [];
+
+  for (let i = Math.max(ATR_PERIODO, 3); i < barras.length; i++) {
+    const curr = barras[i];
+    const atrValue = atr[i];
+
+    if (atrValue === null) continue;
+
+    const tiempoBarra = curr.time;
+
+    // Setup alcista
+    if (detectarSetupBullish(barras, i)) {
+      const entrada = curr.close;
+      const sl = entrada - atrValue * SL_ATR_MULTIPLIER;
+      const tp1 = entrada + atrValue * TP1_ATR_MULTIPLIER;
+      const tp2 = entrada + atrValue * TP2_ATR_MULTIPLIER;
+      const tp3 = entrada + atrValue * TP3_ATR_MULTIPLIER;
+
+      puntos.push({
+        time: tiempoBarra,
+        type: "low",
+        price: entrada,
+        label: "COMPRA",
+        color: "#3b82f6",
+        shape: "arrowUp",
+        size: 2,
+      });
+
+      puntos.push({
+        time: tiempoBarra,
+        type: "low",
+        price: sl,
+        label: "SL",
+        color: "#ef4444",
+        shape: "square",
+        size: 1,
+      });
+
+      [tp1, tp2, tp3].forEach((tpPrice, idx) => {
+        puntos.push({
+          time: tiempoBarra,
+          type: "high",
+          price: tpPrice,
+          label: `TP${idx + 1}`,
+          color: "#22c55e",
+          shape: "circle",
+          size: 1,
+        });
+      });
+    }
+
+    // Setup bajista
+    else if (detectarSetupBearish(barras, i)) {
+      const entrada = curr.close;
+      const sl = entrada + atrValue * SL_ATR_MULTIPLIER;
+      const tp1 = entrada - atrValue * TP1_ATR_MULTIPLIER;
+      const tp2 = entrada - atrValue * TP2_ATR_MULTIPLIER;
+      const tp3 = entrada - atrValue * TP3_ATR_MULTIPLIER;
+
+      puntos.push({
+        time: tiempoBarra,
+        type: "high",
+        price: entrada,
+        label: "VENTA",
+        color: "#f97316",
+        shape: "arrowDown",
+        size: 2,
+      });
+
+      puntos.push({
+        time: tiempoBarra,
+        type: "high",
+        price: sl,
+        label: "SL",
+        color: "#ef4444",
+        shape: "square",
+        size: 1,
+      });
+
+      [tp1, tp2, tp3].forEach((tpPrice, idx) => {
+        puntos.push({
+          time: tiempoBarra,
+          type: "low",
+          price: tpPrice,
+          label: `TP${idx + 1}`,
+          color: "#22c55e",
+          shape: "circle",
+          size: 1,
+        });
+      });
+    }
+  }
+
+  return puntos;
+}
+
+async function main() {
+  console.log("=".repeat(50));
+  console.log("Generador de Senales de Trade Completas");
+  console.log("=".repeat(50));
+
+  console.log(`\n1. Obteniendo barras ${SYMBOL} ${TIMEFRAME}m...`);
+  const barras = await obtenerBarras(SYMBOL, TIMEFRAME, 200);
+  console.log(`   Obtenidas ${barras.length} barras`);
+
+  console.log("\n2. Generando senales de trade...");
+  const puntos = generarSenalesTrade(barras);
+
+  const compras = puntos.filter((p) => p.label === "COMPRA").length;
+  const ventas = puntos.filter((p) => p.label === "VENTA").length;
+
+  console.log(`   Senales COMPRA: ${compras}`);
+  console.log(`   Senales VENTA: ${ventas}`);
+  console.log(`   Total puntos: ${puntos.length}`);
+
+  if (puntos.length > 0) {
+    console.log("\n3. Enviando a InnovaTrading...");
+    const resultado = await enviarIndicador("trade_signals", puntos, SYMBOL, TIMEFRAME, {
+      atr_periodo: ATR_PERIODO,
+      sl_multiplier: SL_ATR_MULTIPLIER,
+      tp_multipliers: [TP1_ATR_MULTIPLIER, TP2_ATR_MULTIPLIER, TP3_ATR_MULTIPLIER],
+      compras,
+      ventas,
+    });
+    console.log(`   Enviados ${resultado.points_received} puntos`);
+    console.log(`   Expira: ${resultado.expires_at}`);
+  } else {
+    console.log("\n   No se encontraron setups de trade");
+  }
+
+  console.log("\n" + "=".repeat(50));
+}
+
+main().catch(console.error);
+```
+  </Tab>
+</Tabs>
+
+---
+
+## Ejemplo 4: Niveles de Soporte y Resistencia
+
+Detecta niveles de soporte y resistencia basados en pivots.
+
+```python
+#!/usr/bin/env python3
+"""
+Detector de Soporte y Resistencia
+Basado en swing highs/lows con confluencia
+"""
+
+import requests
+import pandas as pd
+from typing import List, Dict, Any
+from collections import defaultdict
+
+# === CONFIGURACION ===
+API_KEY = "TU_API_KEY"
+BASE_URL = "https://api.innova-trading.com"
+SYMBOL = "EURUSD"
+TIMEFRAME = 60
+LOOKBACK = 5
+TOLERANCIA = 0.0010  # 10 pips para agrupar niveles
+
+def obtener_barras(symbol: str, timeframe: int, limit: int = 500) -> pd.DataFrame:
+    url = f"{BASE_URL}/api/external/bars/{symbol}/{timeframe}"
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+    response = requests.get(url, params={"limit": limit}, headers=headers)
+    response.raise_for_status()
+    return pd.DataFrame(response.json()["bars"])
+
+def enviar_indicador(indicator_id: str, points: List[Dict], symbol: str, timeframe: int, metadata: Dict = None):
+    url = f"{BASE_URL}/api/external/indicators/{indicator_id}"
+    headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+    payload = {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "indicator_name": "Soporte & Resistencia",
+        "version": "1.0",
+        "points": points,
+        "metadata": metadata or {}
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+def encontrar_pivots(df: pd.DataFrame, lookback: int = 5) -> tuple:
+    """Encontrar pivot highs y lows."""
+    resistencias = []
+    soportes = []
+
+    for i in range(lookback, len(df) - lookback):
+        # Pivot High
+        es_pivot_high = True
+        for j in range(i - lookback, i + lookback + 1):
+            if j != i and df.iloc[j]["high"] >= df.iloc[i]["high"]:
+                es_pivot_high = False
+                break
+        if es_pivot_high:
+            resistencias.append({
+                "price": df.iloc[i]["high"],
+                "time": df.iloc[i]["time"],
+                "index": i
+            })
+
+        # Pivot Low
+        es_pivot_low = True
+        for j in range(i - lookback, i + lookback + 1):
+            if j != i and df.iloc[j]["low"] <= df.iloc[i]["low"]:
+                es_pivot_low = False
+                break
+        if es_pivot_low:
+            soportes.append({
+                "price": df.iloc[i]["low"],
+                "time": df.iloc[i]["time"],
+                "index": i
+            })
+
+    return resistencias, soportes
+
+def agrupar_niveles(niveles: List[Dict], tolerancia: float) -> List[Dict]:
+    """Agrupar niveles cercanos y contar toques."""
+    if not niveles:
+        return []
+
+    # Ordenar por precio
+    niveles_ordenados = sorted(niveles, key=lambda x: x["price"])
+
+    grupos = []
+    grupo_actual = [niveles_ordenados[0]]
+
+    for nivel in niveles_ordenados[1:]:
+        if nivel["price"] - grupo_actual[0]["price"] <= tolerancia:
+            grupo_actual.append(nivel)
+        else:
+            # Finalizar grupo
+            precio_promedio = sum(n["price"] for n in grupo_actual) / len(grupo_actual)
+            grupos.append({
+                "price": precio_promedio,
+                "toques": len(grupo_actual),
+                "primer_toque": min(n["time"] for n in grupo_actual),
+                "ultimo_toque": max(n["time"] for n in grupo_actual)
+            })
+            grupo_actual = [nivel]
+
+    # Agregar ultimo grupo
+    if grupo_actual:
+        precio_promedio = sum(n["price"] for n in grupo_actual) / len(grupo_actual)
+        grupos.append({
+            "price": precio_promedio,
+            "toques": len(grupo_actual),
+            "primer_toque": min(n["time"] for n in grupo_actual),
+            "ultimo_toque": max(n["time"] for n in grupo_actual)
+        })
+
+    return grupos
+
+def generar_puntos_sr(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """Generar puntos de soporte y resistencia."""
+    resistencias_raw, soportes_raw = encontrar_pivots(df, LOOKBACK)
+
+    resistencias = agrupar_niveles(resistencias_raw, TOLERANCIA)
+    soportes = agrupar_niveles(soportes_raw, TOLERANCIA)
+
+    puntos = []
+    ultima_barra = df.iloc[-1]
+    tiempo_actual = int(ultima_barra["time"])
+
+    # Agregar resistencias (solo las mas fuertes)
+    for r in sorted(resistencias, key=lambda x: x["toques"], reverse=True)[:5]:
+        fuerza = "FUERTE" if r["toques"] >= 3 else ""
+        puntos.append({
+            "time": tiempo_actual,
+            "type": "high",
+            "price": round(r["price"], 5),
+            "label": f"R{r['toques']}{fuerza}",
+            "color": "#ef4444" if r["toques"] >= 3 else "#fca5a5",
+            "shape": "square",
+            "size": 2 if r["toques"] >= 3 else 1
+        })
+
+    # Agregar soportes (solo los mas fuertes)
+    for s in sorted(soportes, key=lambda x: x["toques"], reverse=True)[:5]:
+        fuerza = "FUERTE" if s["toques"] >= 3 else ""
+        puntos.append({
+            "time": tiempo_actual,
+            "type": "low",
+            "price": round(s["price"], 5),
+            "label": f"S{s['toques']}{fuerza}",
+            "color": "#22c55e" if s["toques"] >= 3 else "#86efac",
+            "shape": "square",
+            "size": 2 if s["toques"] >= 3 else 1
+        })
+
+    return puntos
+
+def main():
+    print("=" * 50)
+    print("Detector de Soporte y Resistencia")
+    print("=" * 50)
+
+    print(f"\n1. Obteniendo barras {SYMBOL} {TIMEFRAME}m...")
+    df = obtener_barras(SYMBOL, TIMEFRAME, 500)
+    print(f"   Obtenidas {len(df)} barras")
+
+    print("\n2. Detectando niveles S/R...")
+    puntos = generar_puntos_sr(df)
+
+    resistencias = [p for p in puntos if p["type"] == "high"]
+    soportes = [p for p in puntos if p["type"] == "low"]
+
+    print(f"   Resistencias: {len(resistencias)}")
+    print(f"   Soportes: {len(soportes)}")
+
+    if puntos:
+        print("\n3. Enviando a InnovaTrading...")
+        resultado = enviar_indicador(
+            "soporte_resistencia",
+            puntos,
+            SYMBOL,
+            TIMEFRAME,
+            {
+                "lookback": LOOKBACK,
+                "tolerancia_pips": TOLERANCIA * 10000,
+                "total_niveles": len(puntos)
+            }
+        )
+        print(f"   Enviados {resultado['points_received']} puntos")
+        print(f"   Expira: {resultado['expires_at']}")
+
+    print("\n" + "=" * 50)
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+## Referencia Rapida
+
+### Formato de Punto
+
+```python
+punto = {
+    "time": 1765540800,        # Unix timestamp (OBLIGATORIO)
+    "type": "high" | "low",    # Posicion en la vela (OBLIGATORIO)
+    "price": 1.1725,           # Precio exacto (OBLIGATORIO)
+    "label": "COMPRA",         # Texto a mostrar
+    "color": "#3b82f6",        # Color hexadecimal
+    "shape": "arrowUp",        # circle, arrowUp, arrowDown, square
+    "size": 2                  # 1 (pequeno), 2 (mediano), 3 (grande)
+}
+```
+
+### Colores Recomendados
+
+| Elemento | Color | Hex |
+|----------|-------|-----|
+| Compra | Azul | `#3b82f6` |
+| Venta | Naranja | `#f97316` |
+| Stop Loss | Rojo | `#ef4444` |
+| Take Profit | Verde | `#22c55e` |
+| Neutral | Amarillo | `#eab308` |
+| Debil | Gris | `#94a3b8` |
+
+### Shapes Disponibles
+
+| Shape | Uso Comun |
+|-------|-----------|
+| `arrowUp` | Senales de compra |
+| `arrowDown` | Senales de venta |
+| `circle` | Niveles, TPs |
+| `square` | Stop Loss, S/R |
+
+---
+
+## Siguiente Paso
+
+<CardGroup cols={2}>
+  <Card title="Integracion Continua" icon="rotate" href="/es/guides/continuous-integration">
+    Automatiza actualizaciones
+  </Card>
+  <Card title="Referencia API" icon="book" href="/es/api-reference/introduction">
+    Documentacion completa
+  </Card>
+</CardGroup>

@@ -1,0 +1,101 @@
+---
+title: 'Introduccion a la API'
+description: 'Referencia completa de la API de InnovaTrading'
+---
+
+## URL Base
+
+Todas las solicitudes API usan la siguiente URL base:
+
+```
+https://api.innova-trading.com
+```
+
+## Autenticacion
+
+Todas las solicitudes requieren un header `Authorization` con tu API key:
+
+```bash
+Authorization: Bearer tu_api_key
+```
+
+## Formato de Respuesta
+
+Todas las respuestas son JSON. Las respuestas exitosas siguen esta estructura:
+
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+Las respuestas de error siguen esta estructura:
+
+```json
+{
+  "error": "codigo_error",
+  "message": "Descripcion legible del error"
+}
+```
+
+## Endpoints Disponibles
+
+### Datos de Mercado
+
+| Metodo | Endpoint | Descripcion |
+|--------|----------|-------------|
+| GET | `/api/external/bars/{symbol}/{timeframe}` | Obtener barras OHLC |
+| GET | `/api/external/symbols` | Listar simbolos disponibles |
+
+### Indicadores Externos
+
+| Metodo | Endpoint | Descripcion |
+|--------|----------|-------------|
+| POST | `/api/external/indicators/{indicator_id}` | Enviar indicador |
+| GET | `/api/external/indicators/{indicator_id}` | Obtener indicador |
+| DELETE | `/api/external/indicators/{indicator_id}` | Eliminar indicador |
+| GET | `/api/external/indicators` | Listar todos los indicadores |
+
+## Codigos de Estado HTTP
+
+| Codigo | Significado |
+|--------|-------------|
+| 200 | Exito |
+| 201 | Creado |
+| 400 | Solicitud Invalida - Verifica tus parametros |
+| 401 | No Autorizado - API key invalida |
+| 403 | Prohibido - Sin permisos para este recurso |
+| 404 | No Encontrado - El recurso no existe |
+| 429 | Demasiadas Solicitudes - Limite de tasa excedido |
+| 500 | Error del Servidor - Intenta de nuevo |
+
+## Limites de Tasa
+
+| Plan | Solicitudes/Hora | Barras/Solicitud |
+|------|------------------|------------------|
+| Basico | 100 | 500 |
+| Pro | 500 | 1000 |
+| Enterprise | Ilimitado | 5000 |
+
+<Note>
+  Si alcanzas el limite de tasa, recibiras un error 429 con un header `Retry-After` indicando cuantos segundos esperar.
+</Note>
+
+## Ejemplo de Solicitud
+
+```bash
+curl -X GET "https://api.innova-trading.com/api/external/bars/EURUSD/60?limit=100" \
+  -H "Authorization: Bearer tu_api_key"
+```
+
+## SDKs Oficiales
+
+<CardGroup cols={2}>
+  <Card title="Python" icon="python" href="/es/sdks/python">
+    SDK completo con soporte async
+  </Card>
+  <Card title="JavaScript" icon="js" href="/es/sdks/javascript">
+    Funciona en Node.js y navegadores
+  </Card>
+</CardGroup>

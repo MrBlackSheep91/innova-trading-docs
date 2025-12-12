@@ -1,0 +1,344 @@
+---
+title: 'Signal Best Practices'
+description: 'Tips for creating professional trading signals'
+---
+
+## Creating Actionable Signals
+
+A good trading signal is **actionable**. It tells the trader:
+- Where to enter
+- Where to place the stop loss
+- Where to take profits
+
+<Tip>
+  Always include Entry, Stop Loss, and at least one Take Profit in your signals.
+</Tip>
+
+## Signal Structure
+
+### Complete BUY Signal
+
+```json
+{
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1725,
+      "label": "BUY",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1695,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1755,
+      "label": "TP1",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1785,
+      "label": "TP2",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1815,
+      "label": "TP3",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    }
+  ],
+  "metadata": {
+    "signal_type": "BUY",
+    "entry": 1.1725,
+    "sl": 1.1695,
+    "tp1": 1.1755,
+    "tp2": 1.1785,
+    "tp3": 1.1815,
+    "risk_pips": 30,
+    "risk_reward": "1:3"
+  }
+}
+```
+
+## Risk Management
+
+### Calculate Risk/Reward
+
+```python
+def calculate_risk_reward(entry, stop_loss, take_profit):
+    """Calculate risk/reward ratio."""
+    risk = abs(entry - stop_loss)
+    reward = abs(take_profit - entry)
+    return reward / risk if risk > 0 else 0
+
+# Example
+entry = 1.1725
+sl = 1.1695
+tp = 1.1815
+
+rr = calculate_risk_reward(entry, sl, tp)
+print(f"Risk/Reward: 1:{rr:.1f}")  # Output: Risk/Reward: 1:3.0
+```
+
+### Minimum R:R Requirements
+
+| Signal Quality | Minimum R:R |
+|----------------|-------------|
+| Standard | 1:1 |
+| Good | 1:2 |
+| Excellent | 1:3+ |
+
+<Warning>
+  Signals with R:R below 1:1 are generally not worth taking. Consider filtering these out.
+</Warning>
+
+## Visual Hierarchy
+
+### Size Recommendations
+
+| Element | Size | Why |
+|---------|------|-----|
+| Entry | 2 | Most important - catches attention |
+| Stop Loss | 1 | Secondary - always visible |
+| Take Profits | 1 | Secondary - shows targets |
+
+### Color Consistency
+
+Always use consistent colors:
+
+| Element | Color | Hex |
+|---------|-------|-----|
+| BUY Entry | Blue | `#3b82f6` |
+| SELL Entry | Orange | `#f97316` |
+| Stop Loss | Red | `#ef4444` |
+| Take Profit | Green | `#22c55e` |
+| Neutral/Info | Yellow | `#eab308` |
+
+## Label Best Practices
+
+### DO
+
+- Use short labels: `BUY`, `SELL`, `TP1`, `SL`
+- Be consistent across signals
+- Include level numbers for TPs: `TP1`, `TP2`, `TP3`
+
+### DON'T
+
+- Avoid long labels: `Buy Entry Here at Support`
+- Don't use special characters that may not render
+- Don't mix naming conventions
+
+## Time Alignment
+
+<Warning>
+  Always use the `time` value from the /bars endpoint. Never calculate timestamps manually.
+</Warning>
+
+```python
+# CORRECT
+bars = get_bars("EURUSD", 60)
+signal_time = bars.iloc[-1]["time"]  # Use time from API
+
+# WRONG
+signal_time = int(datetime.now().timestamp())  # May not align with bars
+```
+
+## Multiple Signals on Same Bar
+
+You can place multiple points on the same bar by using the same `time` value:
+
+```python
+points = [
+    {"time": bar_time, "type": "low", "price": entry, "label": "BUY", ...},
+    {"time": bar_time, "type": "low", "price": sl, "label": "SL", ...},
+    {"time": bar_time, "type": "high", "price": tp1, "label": "TP1", ...},
+]
+```
+
+## Signal Spacing
+
+For visual clarity, add small offsets to prices:
+
+```python
+def create_buy_signal(bar, entry_price, sl_price, tp_prices):
+    """Create a BUY signal with proper spacing."""
+    points = []
+
+    # Entry - slightly below the low
+    points.append({
+        "time": int(bar["time"]),
+        "type": "low",
+        "price": entry_price,
+        "label": "BUY",
+        "color": "#3b82f6",
+        "shape": "arrowUp",
+        "size": 2
+    })
+
+    # SL - with offset below entry
+    points.append({
+        "time": int(bar["time"]),
+        "type": "low",
+        "price": sl_price,
+        "label": "SL",
+        "color": "#ef4444",
+        "shape": "square",
+        "size": 1
+    })
+
+    # TPs - with offsets above entry
+    for i, tp in enumerate(tp_prices, 1):
+        points.append({
+            "time": int(bar["time"]),
+            "type": "high",
+            "price": tp,
+            "label": f"TP{i}",
+            "color": "#22c55e",
+            "shape": "circle",
+            "size": 1
+        })
+
+    return points
+```
+
+## Metadata for Analytics
+
+Include metadata to track signal performance:
+
+```python
+metadata = {
+    # Signal details
+    "signal_type": "BUY",
+    "entry_price": 1.1725,
+    "stop_loss": 1.1695,
+    "take_profits": [1.1755, 1.1785, 1.1815],
+
+    # Risk metrics
+    "risk_pips": 30,
+    "reward_pips": 90,
+    "risk_reward": "1:3",
+
+    # Strategy info
+    "strategy": "ICT Order Block",
+    "timeframe": "H1",
+    "confluence_factors": ["OB", "FVG", "HTF Trend"],
+
+    # Confidence
+    "confidence": "high",  # low, medium, high
+
+    # Timestamp
+    "generated_at": datetime.utcnow().isoformat()
+}
+```
+
+## Filter Low-Quality Signals
+
+Before submitting, filter out weak signals:
+
+```python
+def is_quality_signal(entry, sl, tp, min_rr=1.5):
+    """Check if signal meets quality criteria."""
+    rr = calculate_risk_reward(entry, sl, tp)
+    return rr >= min_rr
+
+# Filter signals
+quality_signals = [
+    s for s in all_signals
+    if is_quality_signal(s["entry"], s["sl"], s["tp"])
+]
+```
+
+## Update Frequency
+
+| Timeframe | Recommended Update |
+|-----------|-------------------|
+| M1 | Every 1 minute |
+| M5 | Every 5 minutes |
+| M15 | Every 15 minutes |
+| H1 | Every hour |
+| H4 | Every 4 hours |
+| D1 | Once per day |
+
+<Tip>
+  Don't update too frequently - it wastes API calls and can cause visual flickering.
+</Tip>
+
+## Error Handling
+
+Always handle API errors gracefully:
+
+```python
+def safe_submit(points, max_retries=3):
+    """Submit with retry logic."""
+    for attempt in range(max_retries):
+        try:
+            return submit_indicator(points)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429:
+                # Rate limited - wait and retry
+                wait = 60 * (attempt + 1)
+                print(f"Rate limited. Waiting {wait}s...")
+                time.sleep(wait)
+            elif e.response.status_code >= 500:
+                # Server error - wait and retry
+                time.sleep(5 * (attempt + 1))
+            else:
+                raise
+    raise Exception("Max retries exceeded")
+```
+
+## Checklist
+
+Before deploying your indicator:
+
+<Steps>
+  <Step title="Verify time alignment">
+    Signals appear on the correct candles
+  </Step>
+  <Step title="Check visual hierarchy">
+    Entry is prominent, TPs/SL are secondary
+  </Step>
+  <Step title="Validate R:R ratios">
+    All signals meet minimum R:R requirements
+  </Step>
+  <Step title="Test on multiple timeframes">
+    Indicator works on H1, H4, D1
+  </Step>
+  <Step title="Add error handling">
+    Gracefully handle API errors
+  </Step>
+  <Step title="Include metadata">
+    Track signal performance
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Continuous Integration" icon="rotate" href="/guides/continuous-integration">
+    Set up automated signal updates
+  </Card>
+  <Card title="Python SDK" icon="python" href="/sdks/python">
+    Complete Python reference
+  </Card>
+</CardGroup>

@@ -1,33 +1,108 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'API Reference'
+description: 'Complete reference for all InnovaTrading API endpoints'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Base URL
 
-## Welcome
+All API requests should be made to:
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+```
+https://api.innova-trading.com
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+Include your API key in the `Authorization` header:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Response Format
+
+All responses are JSON with a consistent structure:
+
+### Success Response
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+  "success": true,
+  "data": { ... }
+}
 ```
+
+### Error Response
+
+```json
+{
+  "error": "error_code",
+  "message": "Human-readable error message",
+  "details": { ... }
+}
+```
+
+## HTTP Status Codes
+
+| Code | Description |
+|------|-------------|
+| `200` | Success |
+| `201` | Created |
+| `400` | Bad Request - Invalid parameters |
+| `401` | Unauthorized - Invalid or missing API key |
+| `403` | Forbidden - No access to resource |
+| `404` | Not Found |
+| `429` | Rate Limit Exceeded |
+| `500` | Internal Server Error |
+| `503` | Service Unavailable |
+
+## Available Endpoints
+
+### Market Data
+
+<CardGroup cols={2}>
+  <Card title="GET /api/external/bars" href="/api-reference/market-data/get-bars">
+    Fetch OHLC candlestick data
+  </Card>
+  <Card title="GET /api/external/symbols" href="/api-reference/market-data/get-symbols">
+    List available trading symbols
+  </Card>
+</CardGroup>
+
+### External Indicators
+
+<CardGroup cols={2}>
+  <Card title="POST /api/external/indicators/{id}" href="/api-reference/indicators/submit-indicator">
+    Submit indicator signals
+  </Card>
+  <Card title="GET /api/external/indicators/{id}" href="/api-reference/indicators/get-indicator">
+    Retrieve indicator data
+  </Card>
+  <Card title="DELETE /api/external/indicators/{id}" href="/api-reference/indicators/delete-indicator">
+    Delete an indicator
+  </Card>
+  <Card title="GET /api/external/indicators" href="/api-reference/indicators/list-indicators">
+    List all your indicators
+  </Card>
+</CardGroup>
+
+## Pagination
+
+Endpoints that return lists support pagination:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `limit` | integer | Maximum items to return (default: 100) |
+| `before_time` | integer | Unix timestamp for pagination |
+
+## Rate Limits
+
+| Endpoint | Limit |
+|----------|-------|
+| GET /bars | 100/hour |
+| POST /indicators | 100/hour |
+| GET /indicators | 200/hour |
+
+<Note>
+  Rate limits are per API key. Contact us for higher limits.
+</Note>
