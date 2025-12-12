@@ -10,11 +10,7 @@
   "colors": {
     "primary": "#3B82F6",
     "light": "#60A5FA",
-    "dark": "#1E40AF",
-    "anchors": {
-      "from": "#3B82F6",
-      "to": "#8B5CF6"
-    }
+    "dark": "#1E40AF"
   },
   "topbarLinks": [
     {
@@ -26,16 +22,6 @@
     "name": "Get API Key",
     "url": "https://innova-trading.com/settings/api"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    },
-    {
-      "name": "SDKs",
-      "url": "sdks"
-    }
-  ],
   "anchors": [
     {
       "name": "GitHub",
@@ -48,63 +34,80 @@
       "url": "https://discord.gg/innovatrading"
     }
   ],
-  "navigation": [
-    {
-      "group": "Get Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "authentication"
-      ]
-    },
-    {
-      "group": "Core Concepts",
-      "pages": [
-        "concepts/signals",
-        "concepts/indicators",
-        "concepts/timeframes"
-      ]
-    },
-    {
-      "group": "API Reference",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Market Data",
-      "pages": [
-        "api-reference/market-data/get-bars",
-        "api-reference/market-data/get-symbols"
-      ]
-    },
-    {
-      "group": "External Indicators",
-      "pages": [
-        "api-reference/indicators/submit-indicator",
-        "api-reference/indicators/get-indicator",
-        "api-reference/indicators/delete-indicator",
-        "api-reference/indicators/list-indicators"
-      ]
-    },
-    {
-      "group": "SDKs",
-      "pages": [
-        "sdks/overview",
-        "sdks/python",
-        "sdks/javascript"
-      ]
-    },
-    {
-      "group": "Guides",
-      "pages": [
-        "guides/first-indicator",
-        "guides/complete-examples",
-        "guides/signal-best-practices",
-        "guides/continuous-integration"
-      ]
-    }
-  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/signals",
+              "concepts/indicators",
+              "concepts/timeframes"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/first-indicator",
+              "guides/complete-examples",
+              "guides/signal-best-practices",
+              "guides/continuous-integration"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Market Data",
+            "pages": [
+              "api-reference/market-data/get-bars",
+              "api-reference/market-data/get-symbols"
+            ]
+          },
+          {
+            "group": "External Indicators",
+            "pages": [
+              "api-reference/indicators/submit-indicator",
+              "api-reference/indicators/get-indicator",
+              "api-reference/indicators/delete-indicator",
+              "api-reference/indicators/list-indicators"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SDKs",
+        "groups": [
+          {
+            "group": "SDKs",
+            "pages": [
+              "sdks/overview",
+              "sdks/python",
+              "sdks/javascript"
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "footerSocials": {
     "twitter": "https://twitter.com/innovatrading",
     "github": "https://github.com/InnovaTrading"
