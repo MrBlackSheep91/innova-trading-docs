@@ -60,6 +60,37 @@ description: 'Submit trading signals to be displayed on the chart'
   </Expandable>
 </ParamField>
 
+<ParamField body="lines" type="array">
+  Array of horizontal lines to display on the chart (e.g., SL/TP levels that extend across multiple bars)
+
+  <Expandable title="Line Object">
+    <ParamField body="id" type="string" required>
+      Unique identifier for the line (e.g., `signal_001_sl`)
+    </ParamField>
+    <ParamField body="price" type="float" required>
+      Price level where the line is drawn
+    </ParamField>
+    <ParamField body="start_time" type="integer" required>
+      Unix timestamp where the line starts
+    </ParamField>
+    <ParamField body="bars" type="integer" required>
+      Number of bars the line extends forward
+    </ParamField>
+    <ParamField body="label" type="string">
+      Text label (e.g., `SL`, `TP1`, `Entry`)
+    </ParamField>
+    <ParamField body="color" type="string">
+      Hex color code (e.g., `#ef4444` for red)
+    </ParamField>
+    <ParamField body="style" type="string" default="solid">
+      Line style: `solid`, `dashed`, `dotted`
+    </ParamField>
+    <ParamField body="width" type="integer" default="1">
+      Line width: 1, 2, or 3
+    </ParamField>
+  </Expandable>
+</ParamField>
+
 <ParamField body="metadata" type="object">
   Optional metadata for your indicator (analytics, description, etc.)
 </ParamField>
@@ -76,6 +107,10 @@ description: 'Submit trading signals to be displayed on the chart'
 
 <ResponseField name="points_received" type="integer">
   Number of points that were stored
+</ResponseField>
+
+<ResponseField name="lines_received" type="integer">
+  Number of lines that were stored
 </ResponseField>
 
 <ResponseField name="symbol" type="string">
@@ -352,3 +387,80 @@ A professional trading signal includes Entry, Stop Loss, and multiple Take Profi
 <Tip>
   You can submit multiple points with the same `time` to show Entry, SL, and TPs on the same candle.
 </Tip>
+
+## Using Lines for SL/TP Levels
+
+Lines are perfect for showing Stop Loss and Take Profit levels that extend across multiple bars:
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "indicator_name": "Inside Bar Signals",
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1725,
+      "label": "BUY",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    }
+  ],
+  "lines": [
+    {
+      "id": "signal_001_sl",
+      "price": 1.1695,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "SL",
+      "color": "#ef4444",
+      "style": "dashed",
+      "width": 1
+    },
+    {
+      "id": "signal_001_tp1",
+      "price": 1.1755,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "TP1",
+      "color": "#22c55e",
+      "style": "dotted",
+      "width": 1
+    },
+    {
+      "id": "signal_001_tp2",
+      "price": 1.1785,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "TP2",
+      "color": "#10b981",
+      "style": "dotted",
+      "width": 1
+    },
+    {
+      "id": "signal_001_tp3",
+      "price": 1.1815,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "TP3",
+      "color": "#059669",
+      "style": "dotted",
+      "width": 1
+    }
+  ]
+}
+```
+
+## Line Style Reference
+
+| Style | Best For |
+|-------|----------|
+| `solid` | Entry levels, important zones |
+| `dashed` | Stop Loss levels |
+| `dotted` | Take Profit targets |
+
+<Info>
+  **Lines vs Points**: Use **points** for markers (arrows, circles) on specific candles. Use **lines** for horizontal levels that extend across multiple bars (SL/TP zones).
+</Info>
