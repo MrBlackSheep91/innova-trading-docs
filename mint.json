@@ -35,73 +35,165 @@
     }
   ],
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Documentation",
-        "groups": [
+        "language": "en",
+        "tabs": [
           {
-            "group": "Get Started",
-            "pages": [
-              "introduction",
-              "quickstart",
-              "authentication"
+            "tab": "Documentation",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "introduction",
+                  "quickstart",
+                  "authentication"
+                ]
+              },
+              {
+                "group": "Core Concepts",
+                "pages": [
+                  "concepts/signals",
+                  "concepts/indicators",
+                  "concepts/timeframes"
+                ]
+              },
+              {
+                "group": "Guides",
+                "pages": [
+                  "guides/first-indicator",
+                  "guides/complete-examples",
+                  "guides/signal-best-practices",
+                  "guides/continuous-integration"
+                ]
+              },
+              {
+                "group": "Examples",
+                "pages": [
+                  "examples/inside-bar"
+                ]
+              }
             ]
           },
           {
-            "group": "Core Concepts",
-            "pages": [
-              "concepts/signals",
-              "concepts/indicators",
-              "concepts/timeframes"
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": [
+                  "api-reference/introduction"
+                ]
+              },
+              {
+                "group": "Market Data",
+                "pages": [
+                  "api-reference/market-data/get-bars",
+                  "api-reference/market-data/get-symbols"
+                ]
+              },
+              {
+                "group": "External Indicators",
+                "pages": [
+                  "api-reference/indicators/submit-indicator",
+                  "api-reference/indicators/get-indicator",
+                  "api-reference/indicators/delete-indicator",
+                  "api-reference/indicators/list-indicators"
+                ]
+              }
             ]
           },
           {
-            "group": "Guides",
-            "pages": [
-              "guides/first-indicator",
-              "guides/complete-examples",
-              "guides/signal-best-practices",
-              "guides/continuous-integration"
+            "tab": "SDKs",
+            "groups": [
+              {
+                "group": "SDKs",
+                "pages": [
+                  "sdks/overview",
+                  "sdks/python",
+                  "sdks/javascript"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
-        "groups": [
+        "language": "es",
+        "tabs": [
           {
-            "group": "Overview",
-            "pages": [
-              "api-reference/introduction"
+            "tab": "Documentación",
+            "groups": [
+              {
+                "group": "Primeros Pasos",
+                "pages": [
+                  "es/introduction",
+                  "es/quickstart",
+                  "es/authentication"
+                ]
+              },
+              {
+                "group": "Conceptos",
+                "pages": [
+                  "es/concepts/signals",
+                  "es/concepts/indicators",
+                  "es/concepts/timeframes"
+                ]
+              },
+              {
+                "group": "Guías",
+                "pages": [
+                  "es/guides/first-indicator",
+                  "es/guides/complete-examples",
+                  "es/guides/signal-best-practices",
+                  "es/guides/continuous-integration"
+                ]
+              },
+              {
+                "group": "Ejemplos",
+                "pages": [
+                  "es/examples/inside-bar"
+                ]
+              }
             ]
           },
           {
-            "group": "Market Data",
-            "pages": [
-              "api-reference/market-data/get-bars",
-              "api-reference/market-data/get-symbols"
+            "tab": "Referencia API",
+            "groups": [
+              {
+                "group": "General",
+                "pages": [
+                  "es/api-reference/introduction"
+                ]
+              },
+              {
+                "group": "Datos de Mercado",
+                "pages": [
+                  "es/api-reference/market-data/get-bars",
+                  "es/api-reference/market-data/get-symbols"
+                ]
+              },
+              {
+                "group": "Indicadores Externos",
+                "pages": [
+                  "es/api-reference/indicators/submit-indicator",
+                  "es/api-reference/indicators/get-indicator",
+                  "es/api-reference/indicators/delete-indicator",
+                  "es/api-reference/indicators/list-indicators"
+                ]
+              }
             ]
           },
           {
-            "group": "External Indicators",
-            "pages": [
-              "api-reference/indicators/submit-indicator",
-              "api-reference/indicators/get-indicator",
-              "api-reference/indicators/delete-indicator",
-              "api-reference/indicators/list-indicators"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "SDKs",
-        "groups": [
-          {
-            "group": "SDKs",
-            "pages": [
-              "sdks/overview",
-              "sdks/python",
-              "sdks/javascript"
+            "tab": "SDKs",
+            "groups": [
+              {
+                "group": "SDKs",
+                "pages": [
+                  "es/sdks/overview",
+                  "es/sdks/python",
+                  "es/sdks/javascript"
+                ]
+              }
             ]
           }
         ]

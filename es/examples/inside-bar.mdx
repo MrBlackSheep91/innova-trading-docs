@@ -1,0 +1,353 @@
+---
+title: 'Indicador Inside Bar'
+description: 'Ejemplo completo: Detectar patrones Inside Bar y generar senales de trading con Entry, SL y lineas TP'
+---
+
+## Descripcion General
+
+Este ejemplo muestra como construir un indicador de trading completo que:
+
+1. Obtiene datos OHLC de la API
+2. Detecta patrones Inside Bar
+3. Genera senales BUY/SELL con Entry, Stop Loss y Take Profit
+4. Usa **lineas** para mostrar niveles SL/TP que se extienden a traves de multiples barras
+
+<Info>
+  **Patron Inside Bar**: Una vela donde el maximo es menor que el maximo de la vela anterior Y el minimo es mayor que el minimo de la vela anterior.
+</Info>
+
+## Codigo Python Completo
+
+```python
+#!/usr/bin/env python3
+"""
+Indicador Inside Bar
+====================
+Detecta patrones Inside Bar y genera senales de trading con
+lineas de Entry, Stop Loss y Take Profit en el chart.
+"""
+
+import requests
+from typing import List, Dict, Any
+
+# =============================================================================
+# CONFIGURACION
+# =============================================================================
+
+API_BASE_URL = "https://api.innova-trading.com"
+API_KEY = "tu_api_key_aqui"  # Obtener desde Dashboard Settings
+
+SYMBOL = "EURUSD"
+TIMEFRAME = 60  # H1 (1 hora en minutos)
+BARS_TO_FETCH = 500
+
+# Parametros de senal
+SIGNAL_DELAY_BARS = 3    # Colocar senal 3 barras despues del inside bar
+SL_MULTIPLIER = 2        # SL = 2x rango del Inside Bar
+TP_RR_RATIOS = [1, 2, 3] # Riesgo:Recompensa para TP1, TP2, TP3
+LINE_EXTEND_BARS = 10    # Lineas se extienden 10 barras
+
+# Colores
+COLOR_BUY = "#3b82f6"    # Azul
+COLOR_SELL = "#ef4444"   # Rojo
+COLOR_SL = "#ef4444"     # Rojo
+COLOR_TP1 = "#22c55e"    # Verde
+COLOR_TP2 = "#10b981"    # Esmeralda
+COLOR_TP3 = "#059669"    # Verde oscuro
+
+
+# =============================================================================
+# FUNCIONES API
+# =============================================================================
+
+def get_bars(symbol: str, timeframe: int, limit: int = 500) -> List[Dict]:
+    """Obtener barras OHLC de la API"""
+    response = requests.get(
+        f"{API_BASE_URL}/api/external/bars",
+        params={"symbol": symbol, "timeframe": timeframe, "limit": limit},
+        headers={"Authorization": f"Bearer {API_KEY}"}
+    )
+
+    if response.status_code != 200:
+        raise Exception(f"Error al obtener barras: {response.status_code}")
+
+    return response.json()["bars"]
+
+
+def submit_indicator(
+    indicator_id: str,
+    symbol: str,
+    timeframe: int,
+    indicator_name: str,
+    points: List[Dict],
+    lines: List[Dict]
+) -> Dict:
+    """Enviar datos del indicador a la API"""
+    response = requests.post(
+        f"{API_BASE_URL}/api/external/indicators/{indicator_id}",
+        json={
+            "symbol": symbol,
+            "timeframe": timeframe,
+            "indicator_name": indicator_name,
+            "version": "1.0",
+            "points": points,
+            "lines": lines
+        },
+        headers={
+            "Authorization": f"Bearer {API_KEY}",
+            "Content-Type": "application/json"
+        }
+    )
+
+    if response.status_code not in [200, 201]:
+        raise Exception(f"Error al enviar: {response.status_code}")
+
+    return response.json()
+
+
+# =============================================================================
+# DETECCION INSIDE BAR
+# =============================================================================
+
+def detect_inside_bars(bars: List[Dict]) -> List[Dict]:
+    """
+    Detectar patrones Inside Bar.
+
+    Inside Bar = High < High Anterior AND Low > Low Anterior
+    """
+    inside_bars = []
+
+    for i in range(1, len(bars)):
+        current = bars[i]
+        previous = bars[i - 1]
+
+        is_inside = (
+            current["high"] < previous["high"] and
+            current["low"] > previous["low"]
+        )
+
+        if is_inside:
+            # Alcista si cierre > apertura
+            is_bullish = current["close"] > current["open"]
+
+            inside_bars.append({
+                "bar_index": i,
+                "time": current["time"],
+                "high": current["high"],
+                "low": current["low"],
+                "close": current["close"],
+                "is_bullish": is_bullish,
+                "range": current["high"] - current["low"]
+            })
+
+    return inside_bars
+
+
+def generate_signals(bars: List[Dict], inside_bars: List[Dict]) -> tuple:
+    """Generar senales de trading desde patrones Inside Bar"""
+    points = []
+    lines = []
+    signal_count = 0
+    tf_seconds = TIMEFRAME * 60
+
+    for ib in inside_bars:
+        # Barra de senal = 3 barras despues del inside bar
+        signal_bar_index = ib["bar_index"] + SIGNAL_DELAY_BARS
+
+        if signal_bar_index >= len(bars):
+            continue
+
+        signal_bar = bars[signal_bar_index]
+        signal_time = signal_bar["time"]
+
+        # Calcular riesgo
+        ib_range = ib["range"]
+        risk = ib_range * SL_MULTIPLIER
+
+        signal_count += 1
+        signal_id = f"ib_{signal_count:03d}"
+
+        if ib["is_bullish"]:
+            # Senal de COMPRA
+            entry = signal_bar["close"]
+            sl = entry - risk
+            tps = [entry + (risk * rr) for rr in TP_RR_RATIOS]
+
+            points.append({
+                "time": signal_time,
+                "type": "low",
+                "price": entry,
+                "label": "COMPRA",
+                "color": COLOR_BUY,
+                "shape": "arrowUp",
+                "size": 2
+            })
+        else:
+            # Senal de VENTA
+            entry = signal_bar["close"]
+            sl = entry + risk
+            tps = [entry - (risk * rr) for rr in TP_RR_RATIOS]
+
+            points.append({
+                "time": signal_time,
+                "type": "high",
+                "price": entry,
+                "label": "VENTA",
+                "color": COLOR_SELL,
+                "shape": "arrowDown",
+                "size": 2
+            })
+
+        # Agregar linea de Stop Loss
+        lines.append({
+            "id": f"{signal_id}_sl",
+            "price": sl,
+            "start_time": signal_time,
+            "bars": LINE_EXTEND_BARS,
+            "label": "SL",
+            "color": COLOR_SL,
+            "style": "dashed",
+            "width": 1
+        })
+
+        # Agregar lineas de Take Profit
+        tp_colors = [COLOR_TP1, COLOR_TP2, COLOR_TP3]
+        for idx, (tp, color) in enumerate(zip(tps, tp_colors), 1):
+            lines.append({
+                "id": f"{signal_id}_tp{idx}",
+                "price": tp,
+                "start_time": signal_time,
+                "bars": LINE_EXTEND_BARS,
+                "label": f"TP{idx}",
+                "color": color,
+                "style": "dotted",
+                "width": 1
+            })
+
+    return points, lines
+
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
+def main():
+    print(f"Obteniendo {BARS_TO_FETCH} barras de {SYMBOL} {TIMEFRAME}m...")
+    bars = get_bars(SYMBOL, TIMEFRAME, BARS_TO_FETCH)
+    print(f"Recibidas {len(bars)} barras")
+
+    print("Detectando Inside Bars...")
+    inside_bars = detect_inside_bars(bars)
+    print(f"Encontrados {len(inside_bars)} Inside Bars")
+
+    print("Generando senales...")
+    points, lines = generate_signals(bars, inside_bars)
+    print(f"Generadas {len(points)} senales con {len(lines)} lineas")
+
+    print("Enviando a la API...")
+    result = submit_indicator(
+        indicator_id="inside_bar_signals",
+        symbol=SYMBOL,
+        timeframe=TIMEFRAME,
+        indicator_name="Senales Inside Bar",
+        points=points,
+        lines=lines
+    )
+
+    print(f"Exito! Puntos: {result['points_received']}, Lineas: {result['lines_received']}")
+    print(f"Ver en: https://innova-trading.com/trading?symbol={SYMBOL}")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+## Como Funciona
+
+### 1. Deteccion Inside Bar
+
+```python
+is_inside = (
+    current["high"] < previous["high"] and
+    current["low"] > previous["low"]
+)
+```
+
+El inside bar esta completamente "dentro" de la barra anterior (madre).
+
+### 2. Direccion de la Senal
+
+- **Inside Bar Alcista** (cierre > apertura) → Senal de COMPRA
+- **Inside Bar Bajista** (cierre < apertura) → Senal de VENTA
+
+### 3. Ubicacion de la Senal
+
+Las senales se colocan **3 barras despues** del inside bar para:
+- Confirmar el patron
+- Evitar senales falsas
+- Dar tiempo para confirmacion del breakout
+
+### 4. Gestion de Riesgo
+
+| Nivel | Calculo |
+|-------|---------|
+| Entry | Precio de cierre de la barra de senal |
+| Stop Loss | 2x rango del Inside Bar |
+| TP1 | 1:1 Riesgo/Recompensa |
+| TP2 | 1:2 Riesgo/Recompensa |
+| TP3 | 1:3 Riesgo/Recompensa |
+
+### 5. Lineas vs Puntos
+
+- **Puntos**: Flechas de entrada (COMPRA/VENTA)
+- **Lineas**: Niveles SL y TP que se extienden 10 barras hacia adelante
+
+## Ejecutar el Ejemplo
+
+```bash
+# Instalar dependencias
+pip install requests
+
+# Configurar tu API key
+export API_KEY="tu_api_key_aqui"
+
+# Ejecutar
+python inside_bar_indicator.py
+```
+
+## Salida Esperada
+
+```
+Obteniendo 500 barras de EURUSD 60m...
+Recibidas 500 barras
+Detectando Inside Bars...
+Encontrados 45 Inside Bars
+Generando senales...
+Generadas 42 senales con 168 lineas
+Enviando a la API...
+Exito! Puntos: 42, Lineas: 168
+Ver en: https://innova-trading.com/trading?symbol=EURUSD
+```
+
+## Ideas de Personalizacion
+
+<CardGroup cols={2}>
+  <Card title="Filtrar por Tendencia" icon="arrow-trend-up">
+    Solo tomar COMPRA cuando precio esta sobre EMA 200
+  </Card>
+  <Card title="Agregar Filtro de Volumen" icon="chart-bar">
+    Requerir volumen mayor al promedio en barra madre
+  </Card>
+  <Card title="Multiples Timeframes" icon="clock">
+    Confirmar senales en timeframe superior
+  </Card>
+  <Card title="Filtro de Sesion" icon="sun">
+    Solo operar durante sesiones Londres/NY
+  </Card>
+</CardGroup>
+
+## Descargar
+
+<Card title="Descargar Ejemplo Completo" icon="download" href="https://github.com/InnovaTrading/examples/blob/main/inside_bar_indicator.py">
+  Obtener el codigo completo desde nuestro repositorio GitHub
+</Card>

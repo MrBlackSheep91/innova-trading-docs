@@ -60,6 +60,37 @@ description: 'Enviar senales de trading para mostrar en el chart'
   </Expandable>
 </ParamField>
 
+<ParamField body="lines" type="array">
+  Array de lineas horizontales para mostrar en el chart (ej: niveles SL/TP que se extienden a traves de multiples barras)
+
+  <Expandable title="Objeto Linea">
+    <ParamField body="id" type="string" required>
+      Identificador unico para la linea (ej: `senal_001_sl`)
+    </ParamField>
+    <ParamField body="price" type="float" required>
+      Nivel de precio donde se dibuja la linea
+    </ParamField>
+    <ParamField body="start_time" type="integer" required>
+      Timestamp Unix donde comienza la linea
+    </ParamField>
+    <ParamField body="bars" type="integer" required>
+      Numero de barras que la linea se extiende hacia adelante
+    </ParamField>
+    <ParamField body="label" type="string">
+      Etiqueta de texto (ej: `SL`, `TP1`, `Entrada`)
+    </ParamField>
+    <ParamField body="color" type="string">
+      Codigo de color hex (ej: `#ef4444` para rojo)
+    </ParamField>
+    <ParamField body="style" type="string" default="solid">
+      Estilo de linea: `solid`, `dashed`, `dotted`
+    </ParamField>
+    <ParamField body="width" type="integer" default="1">
+      Ancho de linea: 1, 2, o 3
+    </ParamField>
+  </Expandable>
+</ParamField>
+
 <ParamField body="metadata" type="object">
   Metadata opcional para tu indicador (analytics, descripcion, etc.)
 </ParamField>
@@ -76,6 +107,10 @@ description: 'Enviar senales de trading para mostrar en el chart'
 
 <ResponseField name="points_received" type="integer">
   Numero de puntos que se almacenaron
+</ResponseField>
+
+<ResponseField name="lines_received" type="integer">
+  Numero de lineas que se almacenaron
 </ResponseField>
 
 <ResponseField name="symbol" type="string">
@@ -352,3 +387,80 @@ Una senal profesional incluye Entrada, Stop Loss y multiples Take Profits:
 <Tip>
   Puedes enviar multiples puntos con el mismo `time` para mostrar Entrada, SL y TPs en la misma vela.
 </Tip>
+
+## Usando Lineas para Niveles SL/TP
+
+Las lineas son perfectas para mostrar niveles de Stop Loss y Take Profit que se extienden a traves de multiples barras:
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "indicator_name": "Senales Inside Bar",
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1725,
+      "label": "COMPRA",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    }
+  ],
+  "lines": [
+    {
+      "id": "senal_001_sl",
+      "price": 1.1695,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "SL",
+      "color": "#ef4444",
+      "style": "dashed",
+      "width": 1
+    },
+    {
+      "id": "senal_001_tp1",
+      "price": 1.1755,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "TP1",
+      "color": "#22c55e",
+      "style": "dotted",
+      "width": 1
+    },
+    {
+      "id": "senal_001_tp2",
+      "price": 1.1785,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "TP2",
+      "color": "#10b981",
+      "style": "dotted",
+      "width": 1
+    },
+    {
+      "id": "senal_001_tp3",
+      "price": 1.1815,
+      "start_time": 1765540800,
+      "bars": 10,
+      "label": "TP3",
+      "color": "#059669",
+      "style": "dotted",
+      "width": 1
+    }
+  ]
+}
+```
+
+## Referencia de Estilos de Linea
+
+| Estilo | Mejor Uso |
+|--------|-----------|
+| `solid` | Niveles de entrada, zonas importantes |
+| `dashed` | Niveles de Stop Loss |
+| `dotted` | Objetivos de Take Profit |
+
+<Info>
+  **Lineas vs Puntos**: Usa **puntos** para marcadores (flechas, circulos) en velas especificas. Usa **lineas** para niveles horizontales que se extienden a traves de multiples barras (zonas SL/TP).
+</Info>
