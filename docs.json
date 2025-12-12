@@ -20,7 +20,7 @@
   ],
   "topbarCtaButton": {
     "name": "Get API Key",
-    "url": "https://innova-trading.com/settings/api"
+    "url": "/authentication"
   },
   "anchors": [
     {
