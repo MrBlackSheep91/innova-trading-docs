@@ -1,0 +1,100 @@
+---
+title: 'Simbolos Disponibles'
+api: 'GET /api/external/symbols'
+description: 'Obtener la lista de simbolos de trading disponibles para tu API key'
+---
+
+## Descripcion General
+
+Diferentes niveles de API key tienen acceso a diferentes simbolos. Usa este endpoint para ver cuales simbolos puedes usar.
+
+## Solicitud
+
+No se requieren parametros. La respuesta se basa en tu API key.
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.innova-trading.com/api/external/symbols" \
+  -H "Authorization: Bearer TU_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.innova-trading.com/api/external/symbols",
+    headers={"Authorization": "Bearer TU_API_KEY"}
+)
+
+simbolos = response.json()["symbols"]
+print(f"Simbolos disponibles: {simbolos}")
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "https://api.innova-trading.com/api/external/symbols",
+  {
+    headers: { Authorization: "Bearer TU_API_KEY" }
+  }
+);
+
+const { symbols } = await response.json();
+console.log("Simbolos disponibles:", symbols);
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Respuesta
+{
+  "success": true,
+  "symbols": ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD"],
+  "timeframes": [1, 5, 15, 60, 240, 1440]
+}
+```
+
+</ResponseExample>
+
+## Disponibilidad de Simbolos por Plan
+
+| Simbolo | Free | Pro | Enterprise |
+|---------|------|-----|------------|
+| EURUSD | ✅ | ✅ | ✅ |
+| GBPUSD | ❌ | ✅ | ✅ |
+| USDJPY | ❌ | ✅ | ✅ |
+| XAUUSD | ❌ | ✅ | ✅ |
+| Todo Forex | ❌ | ❌ | ✅ |
+| Crypto | ❌ | ❌ | ✅ |
+
+## Timeframes Soportados
+
+Todos los planes tienen acceso a estos timeframes:
+
+| Timeframe | Minutos | Descripcion |
+|-----------|---------|-------------|
+| M1 | 1 | 1 minuto |
+| M5 | 5 | 5 minutos |
+| M15 | 15 | 15 minutos |
+| H1 | 60 | 1 hora |
+| H4 | 240 | 4 horas |
+| D1 | 1440 | 1 dia |
+
+<Warning>
+  Usar un simbolo no disponible en tu plan retornara un error `403 Forbidden` con la lista de simbolos permitidos.
+</Warning>
+
+## Respuesta de Error
+
+```json
+{
+  "error": "forbidden",
+  "message": "Symbol BTCUSDT not allowed for your API key",
+  "allowed_symbols": ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD"]
+}
+```
+
+<Tip>
+  Actualiza a Pro o Enterprise para acceder a mas simbolos. Contactanos en support@innova-trading.com
+</Tip>

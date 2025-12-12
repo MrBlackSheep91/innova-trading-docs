@@ -72,6 +72,12 @@
                 "pages": [
                   "examples/inside-bar"
                 ]
+              },
+              {
+                "group": "Support",
+                "pages": [
+                  "troubleshooting"
+                ]
               }
             ]
           },
@@ -88,7 +94,8 @@
                 "group": "Market Data",
                 "pages": [
                   "api-reference/market-data/get-bars",
-                  "api-reference/market-data/get-symbols"
+                  "api-reference/market-data/get-symbols",
+                  "api-reference/market-data/available-symbols"
                 ]
               },
               {
@@ -153,6 +160,12 @@
                 "pages": [
                   "es/examples/inside-bar"
                 ]
+              },
+              {
+                "group": "Soporte",
+                "pages": [
+                  "es/troubleshooting"
+                ]
               }
             ]
           },
@@ -169,7 +182,8 @@
                 "group": "Datos de Mercado",
                 "pages": [
                   "es/api-reference/market-data/get-bars",
-                  "es/api-reference/market-data/get-symbols"
+                  "es/api-reference/market-data/get-symbols",
+                  "es/api-reference/market-data/available-symbols"
                 ]
               },
               {

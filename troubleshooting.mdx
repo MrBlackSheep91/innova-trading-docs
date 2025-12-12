@@ -1,0 +1,193 @@
+---
+title: 'Troubleshooting'
+description: 'Common errors and how to fix them'
+---
+
+## Common Errors
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Invalid API key"
+}
+```
+
+**Causes:**
+- Missing `Authorization` header
+- Invalid API key format (should be `Bearer YOUR_KEY`)
+- API key is less than 10 characters
+
+**Solution:**
+```bash
+# Correct format
+curl -H "Authorization: Bearer your_api_key_here" ...
+
+# Wrong (missing Bearer)
+curl -H "Authorization: your_api_key_here" ...
+```
+
+---
+
+### 403 Forbidden - Symbol Not Allowed
+
+```json
+{
+  "error": "forbidden",
+  "message": "Symbol BTCUSDT not allowed for your API key",
+  "allowed_symbols": ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD"]
+}
+```
+
+**Cause:** Your API key tier doesn't have access to this symbol.
+
+**Solution:**
+1. Use one of the `allowed_symbols` from the error message
+2. Upgrade your plan to access more symbols
+3. Call `GET /api/external/symbols` to see your available symbols
+
+---
+
+### 503 No Data Available
+
+```json
+{
+  "error": "no_data",
+  "message": "No bar data available. VPS/MT5 may be offline.",
+  "symbol": "EURUSD",
+  "timeframe": 60
+}
+```
+
+**Cause:** The data source (VPS/MT5) is temporarily offline.
+
+**Solutions:**
+1. Wait a few minutes and retry
+2. Check our [status page](https://status.innova-trading.com) for outages
+3. Use cached data if you have it
+
+<Warning>
+  This error is temporary. Our VPS typically reconnects within 5-15 minutes.
+</Warning>
+
+---
+
+### 422 Validation Error
+
+```json
+{
+  "error": "validation_error",
+  "message": "Point 0: type must be 'high' or 'low'",
+  "point_index": 0
+}
+```
+
+**Cause:** Invalid data in your request body.
+
+**Common issues:**
+- `type` must be exactly `"high"` or `"low"` (not `"HIGH"` or `"above"`)
+- `time` must be a valid Unix timestamp
+- `price` must be a number, not a string
+
+---
+
+### 404 Indicator Not Found
+
+```json
+{
+  "error": "not_found",
+  "message": "Indicator not found"
+}
+```
+
+**Causes:**
+1. Indicator hasn't been submitted yet
+2. Indicator expired (data expires after 24 hours)
+3. Wrong `indicator_id`, `symbol`, or `timeframe`
+
+**Solution:**
+```python
+# Make sure all three match
+GET /api/external/indicators/my_indicator?symbol=EURUSD&timeframe=60
+```
+
+---
+
+## Rate Limiting
+
+If you receive a `429 Too Many Requests` error:
+
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Limit: 100/hour",
+  "retry_after": 3600
+}
+```
+
+**Solutions:**
+1. Implement exponential backoff
+2. Cache responses where possible
+3. Upgrade to a higher tier for more requests
+
+---
+
+## Debugging Tips
+
+### 1. Check Your Request
+
+```python
+import requests
+
+response = requests.get(
+    "https://api.innova-trading.com/api/external/bars",
+    params={"symbol": "EURUSD", "timeframe": 60, "limit": 10},
+    headers={"Authorization": "Bearer YOUR_KEY"}
+)
+
+# Print full response for debugging
+print(f"Status: {response.status_code}")
+print(f"Headers: {response.headers}")
+print(f"Body: {response.text}")
+```
+
+### 2. Verify Your API Key Works
+
+```bash
+# Test with symbols endpoint (simplest)
+curl -v "https://api.innova-trading.com/api/external/symbols" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### 3. Check Indicator Data
+
+```python
+# List all your indicators
+response = requests.get(
+    "https://api.innova-trading.com/api/external/indicators",
+    headers={"Authorization": "Bearer YOUR_KEY"}
+)
+print(response.json())
+```
+
+---
+
+## Getting Help
+
+<CardGroup cols={2}>
+  <Card title="Discord" icon="discord" href="https://discord.gg/innovatrading">
+    Community support and discussions
+  </Card>
+  <Card title="Email" icon="envelope" href="mailto:support@innova-trading.com">
+    For account and billing issues
+  </Card>
+</CardGroup>
+
+<Note>
+  When reporting issues, please include:
+  - Your API key (first 8 characters only)
+  - The exact error message
+  - The request you made (URL, method, body)
+  - Timestamp when the error occurred
+</Note>
