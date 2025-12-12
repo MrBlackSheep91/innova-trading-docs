@@ -1,0 +1,193 @@
+---
+title: 'Solucion de Problemas'
+description: 'Errores comunes y como solucionarlos'
+---
+
+## Errores Comunes
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Invalid API key"
+}
+```
+
+**Causas:**
+- Falta el header `Authorization`
+- Formato de API key invalido (debe ser `Bearer TU_KEY`)
+- API key tiene menos de 10 caracteres
+
+**Solucion:**
+```bash
+# Formato correcto
+curl -H "Authorization: Bearer tu_api_key_aqui" ...
+
+# Incorrecto (falta Bearer)
+curl -H "Authorization: tu_api_key_aqui" ...
+```
+
+---
+
+### 403 Forbidden - Simbolo No Permitido
+
+```json
+{
+  "error": "forbidden",
+  "message": "Symbol BTCUSDT not allowed for your API key",
+  "allowed_symbols": ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD"]
+}
+```
+
+**Causa:** Tu nivel de API key no tiene acceso a este simbolo.
+
+**Solucion:**
+1. Usa uno de los `allowed_symbols` del mensaje de error
+2. Actualiza tu plan para acceder a mas simbolos
+3. Llama a `GET /api/external/symbols` para ver tus simbolos disponibles
+
+---
+
+### 503 No Data Available
+
+```json
+{
+  "error": "no_data",
+  "message": "No bar data available. VPS/MT5 may be offline.",
+  "symbol": "EURUSD",
+  "timeframe": 60
+}
+```
+
+**Causa:** La fuente de datos (VPS/MT5) esta temporalmente offline.
+
+**Soluciones:**
+1. Espera unos minutos y reintenta
+2. Revisa nuestra [pagina de estado](https://status.innova-trading.com) para outages
+3. Usa datos cacheados si los tienes
+
+<Warning>
+  Este error es temporal. Nuestro VPS tipicamente se reconecta en 5-15 minutos.
+</Warning>
+
+---
+
+### 422 Validation Error
+
+```json
+{
+  "error": "validation_error",
+  "message": "Point 0: type must be 'high' or 'low'",
+  "point_index": 0
+}
+```
+
+**Causa:** Datos invalidos en el body de tu request.
+
+**Problemas comunes:**
+- `type` debe ser exactamente `"high"` o `"low"` (no `"HIGH"` o `"above"`)
+- `time` debe ser un timestamp Unix valido
+- `price` debe ser un numero, no un string
+
+---
+
+### 404 Indicator Not Found
+
+```json
+{
+  "error": "not_found",
+  "message": "Indicator not found"
+}
+```
+
+**Causas:**
+1. El indicador no ha sido enviado aun
+2. El indicador expiro (los datos expiran despues de 24 horas)
+3. `indicator_id`, `symbol`, o `timeframe` incorrectos
+
+**Solucion:**
+```python
+# Asegurate que los tres coincidan
+GET /api/external/indicators/mi_indicador?symbol=EURUSD&timeframe=60
+```
+
+---
+
+## Rate Limiting
+
+Si recibes un error `429 Too Many Requests`:
+
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Limit: 100/hour",
+  "retry_after": 3600
+}
+```
+
+**Soluciones:**
+1. Implementa exponential backoff
+2. Cachea respuestas donde sea posible
+3. Actualiza a un tier superior para mas requests
+
+---
+
+## Tips de Debugging
+
+### 1. Verifica Tu Request
+
+```python
+import requests
+
+response = requests.get(
+    "https://api.innova-trading.com/api/external/bars",
+    params={"symbol": "EURUSD", "timeframe": 60, "limit": 10},
+    headers={"Authorization": "Bearer TU_KEY"}
+)
+
+# Imprime respuesta completa para debugging
+print(f"Status: {response.status_code}")
+print(f"Headers: {response.headers}")
+print(f"Body: {response.text}")
+```
+
+### 2. Verifica que Tu API Key Funciona
+
+```bash
+# Prueba con el endpoint de symbols (el mas simple)
+curl -v "https://api.innova-trading.com/api/external/symbols" \
+  -H "Authorization: Bearer TU_API_KEY"
+```
+
+### 3. Revisa Datos del Indicador
+
+```python
+# Lista todos tus indicadores
+response = requests.get(
+    "https://api.innova-trading.com/api/external/indicators",
+    headers={"Authorization": "Bearer TU_KEY"}
+)
+print(response.json())
+```
+
+---
+
+## Obtener Ayuda
+
+<CardGroup cols={2}>
+  <Card title="Discord" icon="discord" href="https://discord.gg/innovatrading">
+    Soporte de la comunidad y discusiones
+  </Card>
+  <Card title="Email" icon="envelope" href="mailto:support@innova-trading.com">
+    Para problemas de cuenta y facturacion
+  </Card>
+</CardGroup>
+
+<Note>
+  Al reportar problemas, por favor incluye:
+  - Tu API key (solo los primeros 8 caracteres)
+  - El mensaje de error exacto
+  - El request que hiciste (URL, metodo, body)
+  - Timestamp cuando ocurrio el error
+</Note>
