@@ -1,0 +1,122 @@
+---
+title: Introduction
+description: 'Build powerful trading indicators and signals with InnovaTrading API'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.svg"
+  alt="InnovaTrading API"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.svg"
+  alt="InnovaTrading API"
+/>
+
+## Welcome to InnovaTrading API
+
+InnovaTrading API allows developers to build custom indicators, send trading signals, and integrate their trading systems with our platform.
+
+<CardGroup cols={2}>
+  <Card
+    title="Quick Start"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get up and running in less than 5 minutes
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Explore all available endpoints
+  </Card>
+  <Card
+    title="Python SDK"
+    icon="python"
+    href="/sdks/python"
+  >
+    Install our Python library
+  </Card>
+  <Card
+    title="Examples"
+    icon="github"
+    href="https://github.com/InnovaTrading/examples"
+  >
+    Browse example implementations
+  </Card>
+</CardGroup>
+
+## What You Can Build
+
+<AccordionGroup>
+  <Accordion title="Custom Indicators">
+    Create your own technical indicators and display them on the chart. Support for:
+    - Entry/Exit signals
+    - Stop Loss & Take Profit levels
+    - Custom shapes and colors
+    - Multiple timeframes
+  </Accordion>
+  <Accordion title="Signal Providers">
+    Build a signal service that sends trading signals to multiple users:
+    - Real-time signal delivery
+    - Multi-symbol support
+    - Metadata and analytics
+  </Accordion>
+  <Accordion title="Automated Systems">
+    Connect your trading bots and algorithms:
+    - Fetch OHLC data
+    - Submit signals programmatically
+    - Monitor signal performance
+  </Accordion>
+</AccordionGroup>
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://api.innova-trading.com
+```
+
+## Authentication
+
+All endpoints require Bearer token authentication:
+
+```bash
+curl https://api.innova-trading.com/api/external/bars \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+<Note>
+  Get your API key from the [Dashboard Settings](https://innova-trading.com/settings/api).
+</Note>
+
+## Rate Limits
+
+| Plan | Requests/Hour | Max Bars/Request |
+|------|---------------|------------------|
+| Free | 100 | 1,000 |
+| Pro | 1,000 | 5,000 |
+| Enterprise | Unlimited | 10,000 |
+
+## Support
+
+<CardGroup cols={2}>
+  <Card
+    title="Discord Community"
+    icon="discord"
+    href="https://discord.gg/innovatrading"
+  >
+    Join our community for help and discussions
+  </Card>
+  <Card
+    title="Email Support"
+    icon="envelope"
+    href="mailto:support@innova-trading.com"
+  >
+    Contact us directly for enterprise inquiries
+  </Card>
+</CardGroup>
