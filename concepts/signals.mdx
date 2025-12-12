@@ -1,0 +1,231 @@
+---
+title: 'Trading Signals'
+description: 'Understanding signal format and best practices'
+---
+
+## What is a Signal?
+
+A **trading signal** is a visual indicator on a chart that shows:
+
+- **Entry point** - Where to enter a trade
+- **Stop Loss (SL)** - Where to exit if the trade goes wrong
+- **Take Profit (TP)** - Target levels to exit with profit
+
+## Signal Structure
+
+Each signal consists of one or more **points**. A complete trading signal typically has:
+
+```
+┌─────────────────────────────────┐
+│         TP3  ───○               │
+│         TP2  ───○               │
+│         TP1  ───○               │
+│                                 │
+│     ┌───┐                       │
+│     │   │  ◄── Candlestick      │
+│     └───┘                       │
+│                                 │
+│   ENTRY  ───▲                   │
+│      SL  ───■                   │
+└─────────────────────────────────┘
+```
+
+## Point Types
+
+### `type: "high"` - Above the candle
+
+Use for:
+- Take Profits on BUY signals
+- Entry/SL on SELL signals
+- Resistance levels
+
+### `type: "low"` - Below the candle
+
+Use for:
+- Entry on BUY signals
+- Stop Loss on BUY signals
+- Take Profits on SELL signals
+- Support levels
+
+## Complete BUY Signal Example
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "indicator_name": "My Signals",
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1725,
+      "label": "BUY",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1695,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1755,
+      "label": "TP1",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1785,
+      "label": "TP2",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1815,
+      "label": "TP3",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    }
+  ]
+}
+```
+
+## Complete SELL Signal Example
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "indicator_name": "My Signals",
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1780,
+      "label": "SELL",
+      "color": "#f97316",
+      "shape": "arrowDown",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1810,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1750,
+      "label": "TP1",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1720,
+      "label": "TP2",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    }
+  ]
+}
+```
+
+## Visual Reference
+
+### Shapes
+
+| Shape | Icon | Best For |
+|-------|------|----------|
+| `arrowUp` | ▲ | BUY entry |
+| `arrowDown` | ▼ | SELL entry |
+| `circle` | ● | Take Profit levels |
+| `square` | ■ | Stop Loss |
+
+### Colors
+
+| Element | Hex | Preview |
+|---------|-----|---------|
+| BUY Entry | `#3b82f6` | <span style={{color: '#3b82f6'}}>●</span> Blue |
+| SELL Entry | `#f97316` | <span style={{color: '#f97316'}}>●</span> Orange |
+| Stop Loss | `#ef4444` | <span style={{color: '#ef4444'}}>●</span> Red |
+| Take Profit | `#22c55e` | <span style={{color: '#22c55e'}}>●</span> Green |
+| Neutral | `#eab308` | <span style={{color: '#eab308'}}>●</span> Yellow |
+
+### Sizes
+
+| Size | Value | Use Case |
+|------|-------|----------|
+| Small | `1` | TP levels, secondary info |
+| Medium | `2` | Entry signals |
+| Large | `3` | High-priority alerts |
+
+## Metadata
+
+Use the `metadata` field to include additional information:
+
+```json
+{
+  "metadata": {
+    "signal_type": "BUY",
+    "entry_price": 1.1725,
+    "stop_loss": 1.1695,
+    "take_profit_1": 1.1755,
+    "take_profit_2": 1.1785,
+    "take_profit_3": 1.1815,
+    "risk_pips": 30,
+    "reward_pips": 90,
+    "risk_reward": "1:3",
+    "strategy": "ICT Order Block",
+    "confidence": "high",
+    "notes": "Strong bullish structure"
+  }
+}
+```
+
+<Tip>
+  Metadata is stored but not displayed on the chart.
+  Use it for analytics and tracking signal performance.
+</Tip>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use the time field" icon="clock">
+    Always use the `time` field from the /bars endpoint.
+    This ensures signals appear on the correct candle.
+  </Card>
+  <Card title="Clear labels" icon="tag">
+    Use short, clear labels like "BUY", "TP1", "SL".
+    Avoid long text that clutters the chart.
+  </Card>
+  <Card title="Consistent colors" icon="palette">
+    Stick to a consistent color scheme.
+    Green for profit, red for loss, blue/orange for entries.
+  </Card>
+  <Card title="Size hierarchy" icon="arrow-up-1-9">
+    Use larger sizes for important elements (entries)
+    and smaller sizes for secondary elements (TPs).
+  </Card>
+</CardGroup>

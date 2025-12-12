@@ -1,0 +1,223 @@
+---
+title: 'SDK Overview'
+description: 'Official SDKs and libraries for InnovaTrading API'
+---
+
+## Available SDKs
+
+We provide official examples and helper libraries for popular languages:
+
+<CardGroup cols={2}>
+  <Card title="Python" icon="python" href="/sdks/python">
+    Full-featured SDK with async support. Perfect for ML/AI strategies.
+  </Card>
+  <Card title="JavaScript" icon="js" href="/sdks/javascript">
+    Works in Node.js and browsers. Great for web-based tools.
+  </Card>
+</CardGroup>
+
+## Quick Comparison
+
+| Feature | Python | JavaScript |
+|---------|--------|------------|
+| Async Support | ✅ `asyncio` | ✅ `async/await` |
+| Type Hints | ✅ | ✅ TypeScript |
+| Data Analysis | ✅ pandas, numpy | ⚠️ Limited |
+| ML Libraries | ✅ sklearn, tensorflow | ⚠️ tensorflow.js |
+| Real-time Updates | ✅ | ✅ |
+
+## Installation
+
+<CodeGroup>
+
+```bash Python
+pip install requests pandas
+```
+
+```bash JavaScript (Node.js)
+npm install axios
+```
+
+```bash JavaScript (Browser)
+# No installation needed - use fetch API
+```
+
+</CodeGroup>
+
+## Basic Usage
+
+All SDKs follow the same pattern:
+
+### 1. Initialize with API Key
+
+<CodeGroup>
+
+```python Python
+API_KEY = "your_api_key"
+BASE_URL = "https://api.innova-trading.com"
+headers = {"Authorization": f"Bearer {API_KEY}"}
+```
+
+```javascript JavaScript
+const API_KEY = "your_api_key";
+const BASE_URL = "https://api.innova-trading.com";
+const headers = { Authorization: `Bearer ${API_KEY}` };
+```
+
+</CodeGroup>
+
+### 2. Fetch Market Data
+
+<CodeGroup>
+
+```python Python
+import requests
+
+response = requests.get(
+    f"{BASE_URL}/api/external/bars/EURUSD/60",
+    params={"limit": 100},
+    headers=headers
+)
+bars = response.json()["bars"]
+```
+
+```javascript JavaScript
+const response = await fetch(
+  `${BASE_URL}/api/external/bars/EURUSD/60?limit=100`,
+  { headers }
+);
+const { bars } = await response.json();
+```
+
+</CodeGroup>
+
+### 3. Submit Indicator
+
+<CodeGroup>
+
+```python Python
+signal = {
+    "symbol": "EURUSD",
+    "timeframe": 60,
+    "indicator_name": "My Signals",
+    "points": [
+        {
+            "time": bars[-1]["time"],
+            "type": "low",
+            "price": 1.1725,
+            "label": "BUY",
+            "color": "#3b82f6",
+            "shape": "arrowUp",
+            "size": 2
+        }
+    ]
+}
+
+response = requests.post(
+    f"{BASE_URL}/api/external/indicators/my_signals",
+    json=signal,
+    headers=headers
+)
+print(response.json())
+```
+
+```javascript JavaScript
+const signal = {
+  symbol: "EURUSD",
+  timeframe: 60,
+  indicator_name: "My Signals",
+  points: [
+    {
+      time: bars[bars.length - 1].time,
+      type: "low",
+      price: 1.1725,
+      label: "BUY",
+      color: "#3b82f6",
+      shape: "arrowUp",
+      size: 2
+    }
+  ]
+};
+
+const response = await fetch(
+  `${BASE_URL}/api/external/indicators/my_signals`,
+  {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(signal)
+  }
+);
+console.log(await response.json());
+```
+
+</CodeGroup>
+
+## Error Handling
+
+All SDKs should handle common errors:
+
+| Status Code | Meaning | Action |
+|-------------|---------|--------|
+| 401 | Invalid API key | Check your credentials |
+| 403 | Symbol not allowed | Request access to symbol |
+| 404 | Resource not found | Check endpoint URL |
+| 429 | Rate limited | Wait and retry |
+| 500 | Server error | Retry with backoff |
+
+<CodeGroup>
+
+```python Python
+try:
+    response = requests.post(url, json=data, headers=headers)
+    response.raise_for_status()
+    return response.json()
+except requests.exceptions.HTTPError as e:
+    if e.response.status_code == 429:
+        time.sleep(60)  # Wait 1 minute
+        return retry_request()
+    raise
+```
+
+```javascript JavaScript
+try {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    if (response.status === 429) {
+      await new Promise(r => setTimeout(r, 60000)); // Wait 1 minute
+      return retryRequest();
+    }
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return await response.json();
+} catch (error) {
+  console.error('Request failed:', error);
+  throw error;
+}
+```
+
+</CodeGroup>
+
+## Community SDKs
+
+Community-maintained SDKs (not officially supported):
+
+| Language | Repository | Maintainer |
+|----------|------------|------------|
+| Go | Coming soon | - |
+| Rust | Coming soon | - |
+| C# | Coming soon | - |
+
+<Note>
+  Want to create an SDK for another language? Contact us to get it listed here!
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Python SDK" icon="python" href="/sdks/python">
+    Complete Python reference
+  </Card>
+  <Card title="JavaScript SDK" icon="js" href="/sdks/javascript">
+    Complete JavaScript reference
+  </Card>
+</CardGroup>

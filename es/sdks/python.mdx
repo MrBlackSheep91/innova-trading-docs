@@ -1,0 +1,393 @@
+---
+title: 'SDK Python'
+description: 'Referencia completa de Python para la API de InnovaTrading'
+---
+
+## Instalacion
+
+```bash
+pip install requests pandas
+```
+
+## Clase Generadora de Senales Completa
+
+```python
+import requests
+import pandas as pd
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+
+class InnovaTradingClient:
+    """Cliente para la API de Indicadores Externos de InnovaTrading"""
+
+    def __init__(self, api_key: str, base_url: str = "https://api.innova-trading.com"):
+        self.api_key = api_key
+        self.base_url = base_url
+        self.headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+
+    def obtener_barras(
+        self,
+        symbol: str,
+        timeframe: int,
+        limit: int = 500
+    ) -> pd.DataFrame:
+        """
+        Obtener barras OHLC para un simbolo.
+
+        Args:
+            symbol: Par de trading (ej: "EURUSD")
+            timeframe: Timeframe en minutos (1, 5, 15, 60, 240, 1440)
+            limit: Numero de barras a obtener (max 500)
+
+        Returns:
+            DataFrame con columnas: time, open, high, low, close, volume
+        """
+        url = f"{self.base_url}/api/external/bars/{symbol}/{timeframe}"
+        response = requests.get(url, params={"limit": limit}, headers=self.headers)
+        response.raise_for_status()
+
+        data = response.json()
+        df = pd.DataFrame(data["bars"])
+        df["datetime"] = pd.to_datetime(df["time"], unit="s")
+        return df
+
+    def obtener_simbolos(self) -> List[str]:
+        """Obtener lista de simbolos disponibles para tu API key."""
+        url = f"{self.base_url}/api/external/symbols"
+        response = requests.get(url, headers=self.headers)
+        response.raise_for_status()
+        return response.json()["symbols"]
+
+    def enviar_indicador(
+        self,
+        indicator_id: str,
+        symbol: str,
+        timeframe: int,
+        indicator_name: str,
+        points: List[Dict[str, Any]],
+        metadata: Optional[Dict[str, Any]] = None,
+        version: str = "1.0"
+    ) -> Dict[str, Any]:
+        """
+        Enviar puntos de indicador para mostrar en el chart.
+
+        Args:
+            indicator_id: Identificador unico para tu indicador
+            symbol: Par de trading
+            timeframe: Timeframe en minutos
+            indicator_name: Nombre a mostrar en UI
+            points: Lista de puntos de senal
+            metadata: Datos de analytics opcionales
+            version: Version del indicador
+
+        Returns:
+            Respuesta de la API con confirmacion
+        """
+        url = f"{self.base_url}/api/external/indicators/{indicator_id}"
+
+        payload = {
+            "symbol": symbol,
+            "timeframe": timeframe,
+            "indicator_name": indicator_name,
+            "version": version,
+            "points": points
+        }
+
+        if metadata:
+            payload["metadata"] = metadata
+
+        response = requests.post(url, json=payload, headers=self.headers)
+        response.raise_for_status()
+        return response.json()
+
+    def obtener_indicador(
+        self,
+        indicator_id: str,
+        symbol: str,
+        timeframe: int
+    ) -> Dict[str, Any]:
+        """Obtener datos del indicador."""
+        url = f"{self.base_url}/api/external/indicators/{indicator_id}"
+        response = requests.get(
+            url,
+            params={"symbol": symbol, "timeframe": timeframe},
+            headers=self.headers
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def eliminar_indicador(
+        self,
+        indicator_id: str,
+        symbol: str,
+        timeframe: int
+    ) -> Dict[str, Any]:
+        """Eliminar datos del indicador."""
+        url = f"{self.base_url}/api/external/indicators/{indicator_id}"
+        response = requests.delete(
+            url,
+            params={"symbol": symbol, "timeframe": timeframe},
+            headers=self.headers
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def listar_indicadores(self) -> Dict[str, Any]:
+        """Listar todos los indicadores de tu API key."""
+        url = f"{self.base_url}/api/external/indicators"
+        response = requests.get(url, headers=self.headers)
+        response.raise_for_status()
+        return response.json()
+```
+
+## Ejemplos de Uso
+
+### Envio Basico de Senal
+
+```python
+# Inicializar cliente
+cliente = InnovaTradingClient("TU_API_KEY")
+
+# Obtener barras
+df = cliente.obtener_barras("EURUSD", 60, limit=100)
+
+# Crear una senal de COMPRA simple en la ultima barra
+puntos = [
+    {
+        "time": int(df.iloc[-1]["time"]),
+        "type": "low",
+        "price": float(df.iloc[-1]["close"]),
+        "label": "COMPRA",
+        "color": "#3b82f6",
+        "shape": "arrowUp",
+        "size": 2
+    }
+]
+
+# Enviar
+resultado = cliente.enviar_indicador(
+    indicator_id="mis_senales",
+    symbol="EURUSD",
+    timeframe=60,
+    indicator_name="Mis Senales de Trading",
+    points=puntos
+)
+
+print(f"Enviados {resultado['points_received']} puntos")
+```
+
+### Senal de Trade Completa (Entrada + SL + TPs)
+
+```python
+def crear_senal_trade(
+    cliente: InnovaTradingClient,
+    symbol: str,
+    timeframe: int,
+    tipo_senal: str,  # "COMPRA" o "VENTA"
+    precio_entrada: float,
+    stop_loss: float,
+    take_profits: List[float],
+    tiempo_barra: int
+) -> Dict[str, Any]:
+    """Crear senal de trade completa con Entrada, SL y TPs."""
+
+    puntos = []
+
+    # Punto de entrada
+    puntos.append({
+        "time": tiempo_barra,
+        "type": "low" if tipo_senal == "COMPRA" else "high",
+        "price": precio_entrada,
+        "label": tipo_senal,
+        "color": "#3b82f6" if tipo_senal == "COMPRA" else "#f97316",
+        "shape": "arrowUp" if tipo_senal == "COMPRA" else "arrowDown",
+        "size": 2
+    })
+
+    # Stop Loss
+    puntos.append({
+        "time": tiempo_barra,
+        "type": "low" if tipo_senal == "COMPRA" else "high",
+        "price": stop_loss,
+        "label": "SL",
+        "color": "#ef4444",
+        "shape": "square",
+        "size": 1
+    })
+
+    # Take Profits
+    for i, tp_precio in enumerate(take_profits, 1):
+        puntos.append({
+            "time": tiempo_barra,
+            "type": "high" if tipo_senal == "COMPRA" else "low",
+            "price": tp_precio,
+            "label": f"TP{i}",
+            "color": "#22c55e",
+            "shape": "circle",
+            "size": 1
+        })
+
+    # Calcular metadata
+    riesgo_pips = abs(precio_entrada - stop_loss) * 10000
+    ganancia_pips = abs(take_profits[-1] - precio_entrada) * 10000
+
+    metadata = {
+        "tipo_senal": tipo_senal,
+        "precio_entrada": precio_entrada,
+        "stop_loss": stop_loss,
+        "take_profits": take_profits,
+        "riesgo_pips": round(riesgo_pips, 1),
+        "ganancia_pips": round(ganancia_pips, 1),
+        "riesgo_beneficio": f"1:{round(ganancia_pips/riesgo_pips, 1)}"
+    }
+
+    return cliente.enviar_indicador(
+        indicator_id="senales_trade",
+        symbol=symbol,
+        timeframe=timeframe,
+        indicator_name="Senales de Trade",
+        points=puntos,
+        metadata=metadata
+    )
+
+# Uso
+cliente = InnovaTradingClient("TU_API_KEY")
+df = cliente.obtener_barras("EURUSD", 60, limit=1)
+
+resultado = crear_senal_trade(
+    cliente=cliente,
+    symbol="EURUSD",
+    timeframe=60,
+    tipo_senal="COMPRA",
+    precio_entrada=1.1725,
+    stop_loss=1.1695,
+    take_profits=[1.1755, 1.1785, 1.1815],
+    tiempo_barra=int(df.iloc[-1]["time"])
+)
+```
+
+### Detector de Inside Bar
+
+```python
+def detectar_inside_bars(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """Detectar patrones de inside bar y retornar puntos de senal."""
+    puntos = []
+
+    for i in range(1, len(df)):
+        prev = df.iloc[i - 1]
+        curr = df.iloc[i]
+
+        # Inside bar: high actual < high anterior Y low actual > low anterior
+        es_inside_bar = (curr["high"] < prev["high"]) and (curr["low"] > prev["low"])
+
+        if es_inside_bar:
+            puntos.append({
+                "time": int(curr["time"]),
+                "type": "high",
+                "price": float(curr["high"]),
+                "label": "IB",
+                "color": "#eab308",
+                "shape": "circle",
+                "size": 1
+            })
+
+    return puntos
+
+# Uso
+cliente = InnovaTradingClient("TU_API_KEY")
+df = cliente.obtener_barras("EURUSD", 60, limit=500)
+
+puntos_inside_bar = detectar_inside_bars(df)
+
+if puntos_inside_bar:
+    cliente.enviar_indicador(
+        indicator_id="inside_bars",
+        symbol="EURUSD",
+        timeframe=60,
+        indicator_name="Detector Inside Bar",
+        points=puntos_inside_bar
+    )
+    print(f"Encontrados {len(puntos_inside_bar)} inside bars")
+```
+
+### Loop de Actualizacion Continua
+
+```python
+import time
+import schedule
+
+def actualizar_senales():
+    """Obtener datos y actualizar senales."""
+    try:
+        cliente = InnovaTradingClient("TU_API_KEY")
+        df = cliente.obtener_barras("EURUSD", 60, limit=100)
+
+        # Tu logica de analisis aqui
+        puntos = analizar_y_generar_senales(df)
+
+        if puntos:
+            cliente.enviar_indicador(
+                indicator_id="mi_estrategia",
+                symbol="EURUSD",
+                timeframe=60,
+                indicator_name="Mi Estrategia",
+                points=puntos
+            )
+            print(f"Actualizado con {len(puntos)} senales")
+    except Exception as e:
+        print(f"Error: {e}")
+
+# Ejecutar cada 5 minutos
+schedule.every(5).minutes.do(actualizar_senales)
+
+# Ejecucion inicial
+actualizar_senales()
+
+# Mantener corriendo
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+```
+
+## Manejo de Errores
+
+```python
+import requests
+from requests.exceptions import HTTPError, ConnectionError, Timeout
+
+def solicitud_segura(func, *args, max_reintentos=3, **kwargs):
+    """Ejecutar solicitud con logica de reintento."""
+    for intento in range(max_reintentos):
+        try:
+            return func(*args, **kwargs)
+        except HTTPError as e:
+            if e.response.status_code == 429:
+                tiempo_espera = 60 * (intento + 1)
+                print(f"Limite de tasa. Esperando {tiempo_espera}s...")
+                time.sleep(tiempo_espera)
+            elif e.response.status_code >= 500:
+                time.sleep(5 * (intento + 1))
+            else:
+                raise
+        except (ConnectionError, Timeout):
+            time.sleep(5 * (intento + 1))
+
+    raise Exception("Maximo de reintentos excedido")
+
+# Uso
+resultado = solicitud_segura(cliente.obtener_barras, "EURUSD", 60)
+```
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="Guia Primer Indicador" icon="graduation-cap" href="/es/guides/first-indicator">
+    Tutorial paso a paso
+  </Card>
+  <Card title="Mejores Practicas" icon="check" href="/es/guides/signal-best-practices">
+    Tips para mejores senales
+  </Card>
+</CardGroup>

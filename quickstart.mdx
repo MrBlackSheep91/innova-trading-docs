@@ -1,80 +1,313 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: 'Quick Start'
+description: 'Send your first trading signal in 5 minutes'
 ---
 
-## Get started in three steps
+## Prerequisites
 
-Get your documentation site running locally and make your first customization.
+Before you begin, make sure you have:
 
-### Step 1: Set up your local environment
+<Check>An InnovaTrading account</Check>
+<Check>An API key from [Dashboard Settings](https://innova-trading.com/settings/api)</Check>
+<Check>Python 3.8+ or Node.js 18+ installed</Check>
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+## Step 1: Install the SDK
 
-### Step 2: Deploy your changes
+<CodeGroup>
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+```bash Python
+pip install requests
+```
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+```bash JavaScript
+npm install node-fetch
+# Or use native fetch in Node 18+
+```
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+</CodeGroup>
 
-### Step 3: Go live
+## Step 2: Get Market Data
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+First, fetch OHLC bars to analyze:
 
-## Next steps
+<CodeGroup>
 
-Now that you have your docs running, explore these key features:
+```python Python
+import requests
+
+API_KEY = "your_api_key_here"
+BASE_URL = "https://api.innova-trading.com"
+
+# Fetch 500 bars of EURUSD H1
+response = requests.get(
+    f"{BASE_URL}/api/external/bars",
+    params={
+        "symbol": "EURUSD",
+        "timeframe": 60,
+        "limit": 500
+    },
+    headers={"Authorization": f"Bearer {API_KEY}"}
+)
+
+bars = response.json()["bars"]
+print(f"Fetched {len(bars)} bars")
+print(f"Latest bar: {bars[-1]}")
+```
+
+```javascript JavaScript
+const API_KEY = "your_api_key_here";
+const BASE_URL = "https://api.innova-trading.com";
+
+const response = await fetch(
+  `${BASE_URL}/api/external/bars?symbol=EURUSD&timeframe=60&limit=500`,
+  {
+    headers: { Authorization: `Bearer ${API_KEY}` }
+  }
+);
+
+const { bars } = await response.json();
+console.log(`Fetched ${bars.length} bars`);
+console.log("Latest bar:", bars[bars.length - 1]);
+```
+
+</CodeGroup>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "count": 500,
+  "bars": [
+    {
+      "bar_number": 0,
+      "time": 1765540800,
+      "datetime_utc": "2025-12-12T04:00:00Z",
+      "open": 1.1732,
+      "high": 1.1740,
+      "low": 1.1725,
+      "close": 1.1738,
+      "volume": 2500
+    }
+  ]
+}
+```
+</ResponseExample>
+
+## Step 3: Create a Signal
+
+Now let's send a BUY signal with Stop Loss and Take Profits:
+
+<CodeGroup>
+
+```python Python
+# Get the latest bar
+latest_bar = bars[-1]
+bar_time = latest_bar["time"]  # IMPORTANT: Use this timestamp!
+entry_price = latest_bar["close"]
+
+# Calculate levels
+stop_loss = entry_price - 0.0030  # 30 pips
+tp1 = entry_price + 0.0030  # 1:1 RR
+tp2 = entry_price + 0.0060  # 1:2 RR
+tp3 = entry_price + 0.0090  # 1:3 RR
+
+# Create signal with multiple points
+signal = {
+    "symbol": "EURUSD",
+    "timeframe": 60,
+    "indicator_name": "My First Signal",
+    "points": [
+        {
+            "time": bar_time,
+            "type": "low",
+            "price": entry_price,
+            "label": "BUY",
+            "color": "#3b82f6",
+            "shape": "arrowUp",
+            "size": 2
+        },
+        {
+            "time": bar_time,
+            "type": "low",
+            "price": stop_loss,
+            "label": "SL",
+            "color": "#ef4444",
+            "shape": "square",
+            "size": 1
+        },
+        {
+            "time": bar_time,
+            "type": "high",
+            "price": tp1,
+            "label": "TP1",
+            "color": "#22c55e",
+            "shape": "circle",
+            "size": 1
+        },
+        {
+            "time": bar_time,
+            "type": "high",
+            "price": tp2,
+            "label": "TP2",
+            "color": "#22c55e",
+            "shape": "circle",
+            "size": 1
+        },
+        {
+            "time": bar_time,
+            "type": "high",
+            "price": tp3,
+            "label": "TP3",
+            "color": "#22c55e",
+            "shape": "circle",
+            "size": 1
+        }
+    ],
+    "metadata": {
+        "signal_type": "BUY",
+        "strategy": "Quick Start Example"
+    }
+}
+
+# Submit the signal
+response = requests.post(
+    f"{BASE_URL}/api/external/indicators/my_first_signal",
+    json=signal,
+    headers={
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+)
+
+result = response.json()
+print(f"Signal submitted! {result['points_received']} points")
+print(f"Expires at: {result['expires_at']}")
+```
+
+```javascript JavaScript
+// Get the latest bar
+const latestBar = bars[bars.length - 1];
+const barTime = latestBar.time; // IMPORTANT: Use this timestamp!
+const entryPrice = latestBar.close;
+
+// Calculate levels
+const stopLoss = entryPrice - 0.0030; // 30 pips
+const tp1 = entryPrice + 0.0030; // 1:1 RR
+const tp2 = entryPrice + 0.0060; // 1:2 RR
+const tp3 = entryPrice + 0.0090; // 1:3 RR
+
+// Create signal
+const signal = {
+  symbol: "EURUSD",
+  timeframe: 60,
+  indicator_name: "My First Signal",
+  points: [
+    {
+      time: barTime,
+      type: "low",
+      price: entryPrice,
+      label: "BUY",
+      color: "#3b82f6",
+      shape: "arrowUp",
+      size: 2
+    },
+    {
+      time: barTime,
+      type: "low",
+      price: stopLoss,
+      label: "SL",
+      color: "#ef4444",
+      shape: "square",
+      size: 1
+    },
+    {
+      time: barTime,
+      type: "high",
+      price: tp1,
+      label: "TP1",
+      color: "#22c55e",
+      shape: "circle",
+      size: 1
+    }
+  ]
+};
+
+// Submit
+const response = await fetch(
+  `${BASE_URL}/api/external/indicators/my_first_signal`,
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(signal)
+  }
+);
+
+const result = await response.json();
+console.log(`Signal submitted! ${result.points_received} points`);
+```
+
+</CodeGroup>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "indicator_id": "my_first_signal",
+  "points_received": 5,
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "expires_at": "2025-12-13T12:00:00Z",
+  "message": "Indicator data stored successfully"
+}
+```
+</ResponseExample>
+
+## Step 4: View Your Signal
+
+1. Go to [InnovaTrading Chart](https://innova-trading.com/trading)
+2. Select **EURUSD** and **H1** timeframe
+3. Open the **Indicators** panel
+4. Find **"My First Signal"** under External Indicators
+5. Enable it to see your signal on the chart!
+
+<Frame>
+  <img src="/images/signal-example.png" alt="Signal on chart" />
+</Frame>
+
+## Next Steps
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card
+    title="Signal Format"
+    icon="paintbrush"
+    href="/concepts/signals"
+  >
+    Learn about all signal options
+  </Card>
+  <Card
+    title="Build an Indicator"
+    icon="chart-line"
+    href="/guides/first-indicator"
+  >
+    Create a full indicator system
+  </Card>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/api-reference/introduction"
+  >
+    Explore all endpoints
+  </Card>
+  <Card
+    title="Best Practices"
+    icon="check"
+    href="/guides/signal-best-practices"
+  >
+    Production-ready patterns
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

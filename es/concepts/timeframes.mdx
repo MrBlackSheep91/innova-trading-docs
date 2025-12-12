@@ -1,0 +1,122 @@
+---
+title: 'Timeframes'
+description: 'Entendiendo los timeframes en la API de InnovaTrading'
+---
+
+## Timeframes Disponibles
+
+InnovaTrading usa **minutos** como unidad estandar para timeframes:
+
+| Nombre | Minutos | Codigo |
+|--------|---------|--------|
+| 1 Minuto | `1` | M1 |
+| 5 Minutos | `5` | M5 |
+| 15 Minutos | `15` | M15 |
+| 30 Minutos | `30` | M30 |
+| 1 Hora | `60` | H1 |
+| 4 Horas | `240` | H4 |
+| Diario | `1440` | D1 |
+| Semanal | `10080` | W1 |
+
+## Usando Timeframes en Solicitudes API
+
+### Obteniendo Barras
+
+```bash
+# Barras de 1 hora
+GET /api/external/bars/EURUSD/60?limit=500
+
+# Barras de 4 horas
+GET /api/external/bars/EURUSD/240?limit=500
+
+# Barras diarias
+GET /api/external/bars/EURUSD/1440?limit=500
+```
+
+### Enviando Indicadores
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,  // H1
+  "indicator_name": "Mis Senales",
+  "points": [...]
+}
+```
+
+## Seleccion de Timeframe
+
+<CardGroup cols={2}>
+  <Card title="Timeframes Bajos (M1-M15)" icon="bolt">
+    - Mas puntos de datos
+    - Mas ruido
+    - Bueno para estrategias de scalping
+    - Mayor uso de API
+  </Card>
+  <Card title="Timeframes Altos (H1-D1)" icon="mountain">
+    - Senales mas limpias
+    - Menos ruido
+    - Bueno para swing trading
+    - Menor uso de API
+  </Card>
+</CardGroup>
+
+## Analisis Multi-Timeframe
+
+Puedes crear indicadores que analicen multiples timeframes:
+
+```python
+# Obtener datos de multiples timeframes
+barras_h1 = get_bars("EURUSD", 60, limit=100)
+barras_h4 = get_bars("EURUSD", 240, limit=100)
+barras_d1 = get_bars("EURUSD", 1440, limit=100)
+
+# Encontrar confluencia
+tendencia_h1 = calcular_tendencia(barras_h1)
+tendencia_h4 = calcular_tendencia(barras_h4)
+tendencia_d1 = calcular_tendencia(barras_d1)
+
+# Generar senal solo cuando todas coinciden
+if tendencia_h1 == tendencia_h4 == tendencia_d1:
+    generar_senal(...)
+```
+
+<Tip>
+  Cuando uses analisis multi-timeframe, envia tu indicador al timeframe **mas bajo** que analizaste.
+  Esto asegura que las senales aparezcan en el chart mas detallado.
+</Tip>
+
+## Alineacion de Tiempo de Barras
+
+Las barras se alinean a su **tiempo de apertura** en UTC:
+
+| Timeframe | Ejemplo de Tiempo |
+|-----------|-------------------|
+| M1 | `2025-12-12 14:01:00` |
+| M5 | `2025-12-12 14:05:00` |
+| M15 | `2025-12-12 14:15:00` |
+| H1 | `2025-12-12 14:00:00` |
+| H4 | `2025-12-12 12:00:00` |
+| D1 | `2025-12-12 00:00:00` |
+
+<Warning>
+  Siempre usa el campo `time` de la respuesta de /bars al crear indicadores.
+  No calcules timestamps manualmente ya que pueden no alinearse con las barras reales.
+</Warning>
+
+## Limites de Tasa por Timeframe
+
+Timeframes mas altos consumen menos llamadas API:
+
+| Timeframe | Barras por Dia | Actualizacion Recomendada |
+|-----------|----------------|---------------------------|
+| M1 | 1440 | Cada 1 minuto |
+| M5 | 288 | Cada 5 minutos |
+| M15 | 96 | Cada 15 minutos |
+| H1 | 24 | Cada hora |
+| H4 | 6 | Cada 4 horas |
+| D1 | 1 | Una vez al dia |
+
+<Tip>
+  Para optimizar el uso de API, usa timeframes mas altos cuando sea posible y agrupa tus envios de indicadores.
+</Tip>

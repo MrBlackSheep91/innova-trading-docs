@@ -1,0 +1,223 @@
+---
+title: 'Resumen de SDKs'
+description: 'SDKs oficiales y librerias para la API de InnovaTrading'
+---
+
+## SDKs Disponibles
+
+Proporcionamos ejemplos oficiales y librerias auxiliares para lenguajes populares:
+
+<CardGroup cols={2}>
+  <Card title="Python" icon="python" href="/es/sdks/python">
+    SDK completo con soporte async. Perfecto para estrategias de ML/AI.
+  </Card>
+  <Card title="JavaScript" icon="js" href="/es/sdks/javascript">
+    Funciona en Node.js y navegadores. Ideal para herramientas web.
+  </Card>
+</CardGroup>
+
+## Comparacion Rapida
+
+| Caracteristica | Python | JavaScript |
+|----------------|--------|------------|
+| Soporte Async | asyncio | async/await |
+| Type Hints | Soportado | TypeScript |
+| Analisis de Datos | pandas, numpy | Limitado |
+| Librerias ML | sklearn, tensorflow | tensorflow.js |
+| Actualizaciones Tiempo Real | Soportado | Soportado |
+
+## Instalacion
+
+<CodeGroup>
+
+```bash Python
+pip install requests pandas
+```
+
+```bash JavaScript (Node.js)
+npm install axios
+```
+
+```bash JavaScript (Navegador)
+# No requiere instalacion - usa fetch API
+```
+
+</CodeGroup>
+
+## Uso Basico
+
+Todos los SDKs siguen el mismo patron:
+
+### 1. Inicializar con API Key
+
+<CodeGroup>
+
+```python Python
+API_KEY = "tu_api_key"
+BASE_URL = "https://api.innova-trading.com"
+headers = {"Authorization": f"Bearer {API_KEY}"}
+```
+
+```javascript JavaScript
+const API_KEY = "tu_api_key";
+const BASE_URL = "https://api.innova-trading.com";
+const headers = { Authorization: `Bearer ${API_KEY}` };
+```
+
+</CodeGroup>
+
+### 2. Obtener Datos de Mercado
+
+<CodeGroup>
+
+```python Python
+import requests
+
+response = requests.get(
+    f"{BASE_URL}/api/external/bars/EURUSD/60",
+    params={"limit": 100},
+    headers=headers
+)
+barras = response.json()["bars"]
+```
+
+```javascript JavaScript
+const response = await fetch(
+  `${BASE_URL}/api/external/bars/EURUSD/60?limit=100`,
+  { headers }
+);
+const { bars: barras } = await response.json();
+```
+
+</CodeGroup>
+
+### 3. Enviar Indicador
+
+<CodeGroup>
+
+```python Python
+senal = {
+    "symbol": "EURUSD",
+    "timeframe": 60,
+    "indicator_name": "Mis Senales",
+    "points": [
+        {
+            "time": barras[-1]["time"],
+            "type": "low",
+            "price": 1.1725,
+            "label": "COMPRA",
+            "color": "#3b82f6",
+            "shape": "arrowUp",
+            "size": 2
+        }
+    ]
+}
+
+response = requests.post(
+    f"{BASE_URL}/api/external/indicators/mis_senales",
+    json=senal,
+    headers=headers
+)
+print(response.json())
+```
+
+```javascript JavaScript
+const senal = {
+  symbol: "EURUSD",
+  timeframe: 60,
+  indicator_name: "Mis Senales",
+  points: [
+    {
+      time: barras[barras.length - 1].time,
+      type: "low",
+      price: 1.1725,
+      label: "COMPRA",
+      color: "#3b82f6",
+      shape: "arrowUp",
+      size: 2
+    }
+  ]
+};
+
+const response = await fetch(
+  `${BASE_URL}/api/external/indicators/mis_senales`,
+  {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(senal)
+  }
+);
+console.log(await response.json());
+```
+
+</CodeGroup>
+
+## Manejo de Errores
+
+Todos los SDKs deben manejar errores comunes:
+
+| Codigo | Significado | Accion |
+|--------|-------------|--------|
+| 401 | API key invalida | Verifica tus credenciales |
+| 403 | Simbolo no permitido | Solicita acceso al simbolo |
+| 404 | Recurso no encontrado | Verifica la URL del endpoint |
+| 429 | Limite de tasa | Espera y reintenta |
+| 500 | Error del servidor | Reintenta con backoff |
+
+<CodeGroup>
+
+```python Python
+try:
+    response = requests.post(url, json=data, headers=headers)
+    response.raise_for_status()
+    return response.json()
+except requests.exceptions.HTTPError as e:
+    if e.response.status_code == 429:
+        time.sleep(60)  # Esperar 1 minuto
+        return reintentar_solicitud()
+    raise
+```
+
+```javascript JavaScript
+try {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    if (response.status === 429) {
+      await new Promise(r => setTimeout(r, 60000)); // Esperar 1 minuto
+      return reintentarSolicitud();
+    }
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return await response.json();
+} catch (error) {
+  console.error('Solicitud fallida:', error);
+  throw error;
+}
+```
+
+</CodeGroup>
+
+## SDKs de la Comunidad
+
+SDKs mantenidos por la comunidad (no soportados oficialmente):
+
+| Lenguaje | Repositorio | Mantenedor |
+|----------|-------------|------------|
+| Go | Proximamente | - |
+| Rust | Proximamente | - |
+| C# | Proximamente | - |
+
+<Note>
+  Quieres crear un SDK para otro lenguaje? Contactanos para listarlo aqui!
+</Note>
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="SDK Python" icon="python" href="/es/sdks/python">
+    Referencia completa de Python
+  </Card>
+  <Card title="SDK JavaScript" icon="js" href="/es/sdks/javascript">
+    Referencia completa de JavaScript
+  </Card>
+</CardGroup>

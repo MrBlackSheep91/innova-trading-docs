@@ -1,0 +1,517 @@
+---
+title: 'Your First Indicator'
+description: 'Step-by-step guide to creating your first external indicator'
+---
+
+In this tutorial, you'll build a simple **Moving Average Crossover** indicator that generates BUY/SELL signals on the InnovaTrading chart.
+
+## Prerequisites
+
+- An API key (contact us to get one)
+- Python 3.8+ or Node.js 16+
+- Basic understanding of trading concepts
+
+## What We'll Build
+
+A Moving Average Crossover indicator that:
+1. Calculates 20-period and 50-period Simple Moving Averages
+2. Generates a **BUY** signal when the fast MA crosses above the slow MA
+3. Generates a **SELL** signal when the fast MA crosses below the slow MA
+
+## Step 1: Set Up Your Project
+
+<CodeGroup>
+
+```bash Python
+mkdir ma_crossover
+cd ma_crossover
+pip install requests pandas
+```
+
+```bash JavaScript
+mkdir ma_crossover
+cd ma_crossover
+npm init -y
+npm install axios
+```
+
+</CodeGroup>
+
+## Step 2: Create the Configuration
+
+Create a `config.py` or `config.js` file:
+
+<CodeGroup>
+
+```python config.py
+API_KEY = "your_api_key_here"
+BASE_URL = "https://api.innova-trading.com"
+
+# Indicator settings
+SYMBOL = "EURUSD"
+TIMEFRAME = 60  # 1 hour
+FAST_MA = 20
+SLOW_MA = 50
+```
+
+```javascript config.js
+module.exports = {
+  API_KEY: "your_api_key_here",
+  BASE_URL: "https://api.innova-trading.com",
+  SYMBOL: "EURUSD",
+  TIMEFRAME: 60,
+  FAST_MA: 20,
+  SLOW_MA: 50,
+};
+```
+
+</CodeGroup>
+
+## Step 3: Fetch Market Data
+
+<CodeGroup>
+
+```python main.py
+import requests
+import pandas as pd
+from config import API_KEY, BASE_URL, SYMBOL, TIMEFRAME
+
+def get_bars(limit=100):
+    """Fetch OHLC bars from the API."""
+    url = f"{BASE_URL}/api/external/bars/{SYMBOL}/{TIMEFRAME}"
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+
+    response = requests.get(url, params={"limit": limit}, headers=headers)
+    response.raise_for_status()
+
+    data = response.json()
+    df = pd.DataFrame(data["bars"])
+    return df
+
+# Test it
+if __name__ == "__main__":
+    bars = get_bars(100)
+    print(f"Fetched {len(bars)} bars")
+    print(bars.tail())
+```
+
+```javascript main.js
+const axios = require("axios");
+const config = require("./config");
+
+async function getBars(limit = 100) {
+  const url = `${config.BASE_URL}/api/external/bars/${config.SYMBOL}/${config.TIMEFRAME}`;
+
+  const response = await axios.get(url, {
+    params: { limit },
+    headers: { Authorization: `Bearer ${config.API_KEY}` },
+  });
+
+  return response.data.bars;
+}
+
+// Test it
+(async () => {
+  const bars = await getBars(100);
+  console.log(`Fetched ${bars.length} bars`);
+  console.log(bars.slice(-5));
+})();
+```
+
+</CodeGroup>
+
+Run it to verify:
+
+```bash
+python main.py
+# or
+node main.js
+```
+
+## Step 4: Calculate Moving Averages
+
+<CodeGroup>
+
+```python main.py
+from config import FAST_MA, SLOW_MA
+
+def calculate_sma(df, period, column="close"):
+    """Calculate Simple Moving Average."""
+    return df[column].rolling(window=period).mean()
+
+def add_moving_averages(df):
+    """Add fast and slow MAs to dataframe."""
+    df["fast_ma"] = calculate_sma(df, FAST_MA)
+    df["slow_ma"] = calculate_sma(df, SLOW_MA)
+    return df
+
+# Test it
+if __name__ == "__main__":
+    bars = get_bars(100)
+    bars = add_moving_averages(bars)
+    print(bars[["time", "close", "fast_ma", "slow_ma"]].tail())
+```
+
+```javascript main.js
+const config = require("./config");
+
+function calculateSMA(bars, period, field = "close") {
+  const result = [];
+  for (let i = 0; i < bars.length; i++) {
+    if (i < period - 1) {
+      result.push(null);
+    } else {
+      const slice = bars.slice(i - period + 1, i + 1);
+      const sum = slice.reduce((acc, bar) => acc + bar[field], 0);
+      result.push(sum / period);
+    }
+  }
+  return result;
+}
+
+function addMovingAverages(bars) {
+  const fastMA = calculateSMA(bars, config.FAST_MA);
+  const slowMA = calculateSMA(bars, config.SLOW_MA);
+
+  return bars.map((bar, i) => ({
+    ...bar,
+    fast_ma: fastMA[i],
+    slow_ma: slowMA[i],
+  }));
+}
+```
+
+</CodeGroup>
+
+## Step 5: Detect Crossovers
+
+<CodeGroup>
+
+```python main.py
+def detect_crossovers(df):
+    """
+    Detect MA crossovers and generate signal points.
+
+    Returns list of signal points in API format.
+    """
+    points = []
+
+    for i in range(1, len(df)):
+        prev = df.iloc[i - 1]
+        curr = df.iloc[i]
+
+        # Skip if MAs are not yet calculated
+        if pd.isna(prev["fast_ma"]) or pd.isna(curr["slow_ma"]):
+            continue
+
+        # Bullish crossover: fast MA crosses above slow MA
+        prev_diff = prev["fast_ma"] - prev["slow_ma"]
+        curr_diff = curr["fast_ma"] - curr["slow_ma"]
+
+        if prev_diff <= 0 and curr_diff > 0:
+            # BUY signal
+            points.append({
+                "time": int(curr["time"]),
+                "type": "low",
+                "price": float(curr["low"]) - 0.0005,  # Slightly below candle
+                "label": "BUY",
+                "color": "#3b82f6",
+                "shape": "arrowUp",
+                "size": 2
+            })
+
+        elif prev_diff >= 0 and curr_diff < 0:
+            # SELL signal
+            points.append({
+                "time": int(curr["time"]),
+                "type": "high",
+                "price": float(curr["high"]) + 0.0005,  # Slightly above candle
+                "label": "SELL",
+                "color": "#f97316",
+                "shape": "arrowDown",
+                "size": 2
+            })
+
+    return points
+```
+
+```javascript main.js
+function detectCrossovers(bars) {
+  const points = [];
+
+  for (let i = 1; i < bars.length; i++) {
+    const prev = bars[i - 1];
+    const curr = bars[i];
+
+    // Skip if MAs are not yet calculated
+    if (prev.fast_ma === null || curr.slow_ma === null) {
+      continue;
+    }
+
+    // Bullish crossover: fast MA crosses above slow MA
+    const prevDiff = prev.fast_ma - prev.slow_ma;
+    const currDiff = curr.fast_ma - curr.slow_ma;
+
+    if (prevDiff <= 0 && currDiff > 0) {
+      // BUY signal
+      points.push({
+        time: curr.time,
+        type: "low",
+        price: curr.low - 0.0005,
+        label: "BUY",
+        color: "#3b82f6",
+        shape: "arrowUp",
+        size: 2,
+      });
+    } else if (prevDiff >= 0 && currDiff < 0) {
+      // SELL signal
+      points.push({
+        time: curr.time,
+        type: "high",
+        price: curr.high + 0.0005,
+        label: "SELL",
+        color: "#f97316",
+        shape: "arrowDown",
+        size: 2,
+      });
+    }
+  }
+
+  return points;
+}
+```
+
+</CodeGroup>
+
+## Step 6: Submit to InnovaTrading
+
+<CodeGroup>
+
+```python main.py
+def submit_indicator(points):
+    """Submit indicator points to the API."""
+    if not points:
+        print("No signals to submit")
+        return None
+
+    url = f"{BASE_URL}/api/external/indicators/ma_crossover"
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "symbol": SYMBOL,
+        "timeframe": TIMEFRAME,
+        "indicator_name": f"MA Crossover ({FAST_MA}/{SLOW_MA})",
+        "version": "1.0",
+        "points": points,
+        "metadata": {
+            "fast_period": FAST_MA,
+            "slow_period": SLOW_MA,
+            "total_signals": len(points)
+        }
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()
+```
+
+```javascript main.js
+async function submitIndicator(points) {
+  if (points.length === 0) {
+    console.log("No signals to submit");
+    return null;
+  }
+
+  const url = `${config.BASE_URL}/api/external/indicators/ma_crossover`;
+
+  const payload = {
+    symbol: config.SYMBOL,
+    timeframe: config.TIMEFRAME,
+    indicator_name: `MA Crossover (${config.FAST_MA}/${config.SLOW_MA})`,
+    version: "1.0",
+    points,
+    metadata: {
+      fast_period: config.FAST_MA,
+      slow_period: config.SLOW_MA,
+      total_signals: points.length,
+    },
+  };
+
+  const response = await axios.post(url, payload, {
+    headers: {
+      Authorization: `Bearer ${config.API_KEY}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data;
+}
+```
+
+</CodeGroup>
+
+## Step 7: Put It All Together
+
+<CodeGroup>
+
+```python main.py
+def main():
+    print("=" * 50)
+    print("MA Crossover Indicator")
+    print("=" * 50)
+
+    # 1. Fetch data
+    print("\n1. Fetching market data...")
+    bars = get_bars(500)
+    print(f"   Fetched {len(bars)} bars")
+
+    # 2. Calculate MAs
+    print("\n2. Calculating moving averages...")
+    bars = add_moving_averages(bars)
+
+    # 3. Detect crossovers
+    print("\n3. Detecting crossovers...")
+    signals = detect_crossovers(bars)
+    print(f"   Found {len(signals)} signals")
+
+    if signals:
+        print("\n   Recent signals:")
+        for s in signals[-5:]:
+            print(f"   - {s['label']} at {s['price']:.5f}")
+
+    # 4. Submit to API
+    print("\n4. Submitting to InnovaTrading...")
+    result = submit_indicator(signals)
+
+    if result:
+        print(f"   Success! {result['points_received']} points submitted")
+        print(f"   Expires at: {result['expires_at']}")
+    else:
+        print("   No signals to submit")
+
+    print("\n" + "=" * 50)
+    print("Done! Check your chart to see the signals.")
+    print("=" * 50)
+
+if __name__ == "__main__":
+    main()
+```
+
+```javascript main.js
+async function main() {
+  console.log("=".repeat(50));
+  console.log("MA Crossover Indicator");
+  console.log("=".repeat(50));
+
+  try {
+    // 1. Fetch data
+    console.log("\n1. Fetching market data...");
+    let bars = await getBars(500);
+    console.log(`   Fetched ${bars.length} bars`);
+
+    // 2. Calculate MAs
+    console.log("\n2. Calculating moving averages...");
+    bars = addMovingAverages(bars);
+
+    // 3. Detect crossovers
+    console.log("\n3. Detecting crossovers...");
+    const signals = detectCrossovers(bars);
+    console.log(`   Found ${signals.length} signals`);
+
+    if (signals.length > 0) {
+      console.log("\n   Recent signals:");
+      signals.slice(-5).forEach((s) => {
+        console.log(`   - ${s.label} at ${s.price.toFixed(5)}`);
+      });
+    }
+
+    // 4. Submit to API
+    console.log("\n4. Submitting to InnovaTrading...");
+    const result = await submitIndicator(signals);
+
+    if (result) {
+      console.log(`   Success! ${result.points_received} points submitted`);
+      console.log(`   Expires at: ${result.expires_at}`);
+    }
+
+    console.log("\n" + "=".repeat(50));
+    console.log("Done! Check your chart to see the signals.");
+    console.log("=".repeat(50));
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
+
+main();
+```
+
+</CodeGroup>
+
+## Step 8: Run It!
+
+```bash
+python main.py
+# or
+node main.js
+```
+
+Expected output:
+
+```
+==================================================
+MA Crossover Indicator
+==================================================
+
+1. Fetching market data...
+   Fetched 500 bars
+
+2. Calculating moving averages...
+
+3. Detecting crossovers...
+   Found 8 signals
+
+   Recent signals:
+   - BUY at 1.10250
+   - SELL at 1.10450
+   - BUY at 1.10300
+
+4. Submitting to InnovaTrading...
+   Success! 8 points submitted
+   Expires at: 2025-12-13T14:00:00Z
+
+==================================================
+Done! Check your chart to see the signals.
+==================================================
+```
+
+## Step 9: View on Chart
+
+1. Open InnovaTrading
+2. Navigate to EURUSD H1 chart
+3. Open the **External Indicators** panel
+4. Your "MA Crossover" indicator should appear
+5. Toggle it ON to see the signals
+
+<Frame>
+  <img src="/images/ma-crossover-chart.png" alt="MA Crossover on chart" />
+</Frame>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Add Stop Loss & Take Profit" icon="shield" href="/guides/signal-best-practices">
+    Make your signals actionable with risk management levels
+  </Card>
+  <Card title="Continuous Updates" icon="rotate" href="/guides/continuous-integration">
+    Set up automatic signal updates
+  </Card>
+</CardGroup>
+
+## Full Source Code
+
+Download the complete example:
+- [Python version](https://github.com/innovatrading/examples/tree/main/ma-crossover-python)
+- [JavaScript version](https://github.com/innovatrading/examples/tree/main/ma-crossover-js)

@@ -1,0 +1,231 @@
+---
+title: 'Senales de Trading'
+description: 'Entendiendo el formato de senales y mejores practicas'
+---
+
+## Que es una Senal?
+
+Una **senal de trading** es un indicador visual en el chart que muestra:
+
+- **Punto de Entrada** - Donde entrar al trade
+- **Stop Loss (SL)** - Donde salir si el trade va mal
+- **Take Profit (TP)** - Niveles objetivo para salir con ganancia
+
+## Estructura de una Senal
+
+Cada senal consiste en uno o mas **puntos**. Una senal de trading completa tipicamente tiene:
+
+```
+┌─────────────────────────────────────┐
+│         TP3  ───○                   │
+│         TP2  ───○                   │
+│         TP1  ───○                   │
+│                                     │
+│     ┌───┐                           │
+│     │   │  ◄── Vela                 │
+│     └───┘                           │
+│                                     │
+│   ENTRADA  ───▲                     │
+│        SL  ───■                     │
+└─────────────────────────────────────┘
+```
+
+## Tipos de Punto
+
+### `type: "high"` - Arriba de la vela
+
+Usar para:
+- Take Profits en senales de COMPRA
+- Entrada/SL en senales de VENTA
+- Niveles de resistencia
+
+### `type: "low"` - Debajo de la vela
+
+Usar para:
+- Entrada en senales de COMPRA
+- Stop Loss en senales de COMPRA
+- Take Profits en senales de VENTA
+- Niveles de soporte
+
+## Ejemplo de Senal COMPRA Completa
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "indicator_name": "Mis Senales",
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1725,
+      "label": "COMPRA",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1695,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1755,
+      "label": "TP1",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1785,
+      "label": "TP2",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1815,
+      "label": "TP3",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    }
+  ]
+}
+```
+
+## Ejemplo de Senal VENTA Completa
+
+```json
+{
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "indicator_name": "Mis Senales",
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1780,
+      "label": "VENTA",
+      "color": "#f97316",
+      "shape": "arrowDown",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1810,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1750,
+      "label": "TP1",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1720,
+      "label": "TP2",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    }
+  ]
+}
+```
+
+## Referencia Visual
+
+### Formas
+
+| Forma | Icono | Mejor Uso |
+|-------|-------|-----------|
+| `arrowUp` | ▲ | Entrada COMPRA |
+| `arrowDown` | ▼ | Entrada VENTA |
+| `circle` | ● | Niveles de Take Profit |
+| `square` | ■ | Stop Loss |
+
+### Colores
+
+| Elemento | Hex | Vista Previa |
+|----------|-----|--------------|
+| Entrada COMPRA | `#3b82f6` | <span style={{color: '#3b82f6'}}>●</span> Azul |
+| Entrada VENTA | `#f97316` | <span style={{color: '#f97316'}}>●</span> Naranja |
+| Stop Loss | `#ef4444` | <span style={{color: '#ef4444'}}>●</span> Rojo |
+| Take Profit | `#22c55e` | <span style={{color: '#22c55e'}}>●</span> Verde |
+| Neutral | `#eab308` | <span style={{color: '#eab308'}}>●</span> Amarillo |
+
+### Tamanos
+
+| Tamano | Valor | Caso de Uso |
+|--------|-------|-------------|
+| Pequeno | `1` | Niveles TP, info secundaria |
+| Mediano | `2` | Senales de entrada |
+| Grande | `3` | Alertas de alta prioridad |
+
+## Metadata
+
+Usa el campo `metadata` para incluir informacion adicional:
+
+```json
+{
+  "metadata": {
+    "signal_type": "COMPRA",
+    "entry_price": 1.1725,
+    "stop_loss": 1.1695,
+    "take_profit_1": 1.1755,
+    "take_profit_2": 1.1785,
+    "take_profit_3": 1.1815,
+    "risk_pips": 30,
+    "reward_pips": 90,
+    "risk_reward": "1:3",
+    "strategy": "ICT Order Block",
+    "confidence": "alta",
+    "notes": "Estructura alcista fuerte"
+  }
+}
+```
+
+<Tip>
+  El metadata se guarda pero no se muestra en el chart.
+  Usalo para analytics y seguimiento de rendimiento de senales.
+</Tip>
+
+## Mejores Practicas
+
+<CardGroup cols={2}>
+  <Card title="Usa el campo time" icon="clock">
+    Siempre usa el campo `time` del endpoint /bars.
+    Esto asegura que las senales aparezcan en la vela correcta.
+  </Card>
+  <Card title="Labels claros" icon="tag">
+    Usa labels cortos y claros como "COMPRA", "TP1", "SL".
+    Evita texto largo que sature el chart.
+  </Card>
+  <Card title="Colores consistentes" icon="palette">
+    Manten un esquema de colores consistente.
+    Verde para ganancia, rojo para perdida, azul/naranja para entradas.
+  </Card>
+  <Card title="Jerarquia de tamano" icon="arrow-up-1-9">
+    Usa tamanos mas grandes para elementos importantes (entradas)
+    y mas pequenos para elementos secundarios (TPs).
+  </Card>
+</CardGroup>

@@ -1,0 +1,274 @@
+---
+title: 'Mejores Practicas de Senales'
+description: 'Tips para crear senales de trading profesionales'
+---
+
+## Creando Senales Accionables
+
+Una buena senal de trading es **accionable**. Le dice al trader:
+- Donde entrar
+- Donde colocar el stop loss
+- Donde tomar ganancias
+
+<Tip>
+  Siempre incluye Entrada, Stop Loss y al menos un Take Profit en tus senales.
+</Tip>
+
+## Estructura de Senal
+
+### Senal de COMPRA Completa
+
+```json
+{
+  "points": [
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1725,
+      "label": "COMPRA",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "type": "low",
+      "price": 1.1695,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1755,
+      "label": "TP1",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1785,
+      "label": "TP2",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    },
+    {
+      "time": 1765540800,
+      "type": "high",
+      "price": 1.1815,
+      "label": "TP3",
+      "color": "#22c55e",
+      "shape": "circle",
+      "size": 1
+    }
+  ],
+  "metadata": {
+    "tipo_senal": "COMPRA",
+    "entrada": 1.1725,
+    "sl": 1.1695,
+    "tp1": 1.1755,
+    "tp2": 1.1785,
+    "tp3": 1.1815,
+    "riesgo_pips": 30,
+    "riesgo_beneficio": "1:3"
+  }
+}
+```
+
+## Gestion de Riesgo
+
+### Calcular Riesgo/Beneficio
+
+```python
+def calcular_riesgo_beneficio(entrada, stop_loss, take_profit):
+    """Calcular ratio riesgo/beneficio."""
+    riesgo = abs(entrada - stop_loss)
+    beneficio = abs(take_profit - entrada)
+    return beneficio / riesgo if riesgo > 0 else 0
+
+# Ejemplo
+entrada = 1.1725
+sl = 1.1695
+tp = 1.1815
+
+rb = calcular_riesgo_beneficio(entrada, sl, tp)
+print(f"Riesgo/Beneficio: 1:{rb:.1f}")  # Salida: Riesgo/Beneficio: 1:3.0
+```
+
+### Requisitos Minimos de R:B
+
+| Calidad de Senal | R:B Minimo |
+|------------------|------------|
+| Estandar | 1:1 |
+| Buena | 1:2 |
+| Excelente | 1:3+ |
+
+<Warning>
+  Senales con R:B menor a 1:1 generalmente no valen la pena. Considera filtrarlas.
+</Warning>
+
+## Jerarquia Visual
+
+### Recomendaciones de Tamano
+
+| Elemento | Tamano | Por Que |
+|----------|--------|---------|
+| Entrada | 2 | Mas importante - llama la atencion |
+| Stop Loss | 1 | Secundario - siempre visible |
+| Take Profits | 1 | Secundario - muestra objetivos |
+
+### Consistencia de Colores
+
+Siempre usa colores consistentes:
+
+| Elemento | Color | Hex |
+|----------|-------|-----|
+| Entrada COMPRA | Azul | `#3b82f6` |
+| Entrada VENTA | Naranja | `#f97316` |
+| Stop Loss | Rojo | `#ef4444` |
+| Take Profit | Verde | `#22c55e` |
+| Neutral/Info | Amarillo | `#eab308` |
+
+## Mejores Practicas de Labels
+
+### HACER
+
+- Usa labels cortos: `COMPRA`, `VENTA`, `TP1`, `SL`
+- Se consistente entre senales
+- Incluye numeros de nivel para TPs: `TP1`, `TP2`, `TP3`
+
+### NO HACER
+
+- Evita labels largos: `Entrada de Compra Aqui en Soporte`
+- No uses caracteres especiales que puedan no renderizar
+- No mezcles convenciones de nombres
+
+## Alineacion de Tiempo
+
+<Warning>
+  Siempre usa el valor `time` del endpoint /bars. Nunca calcules timestamps manualmente.
+</Warning>
+
+```python
+# CORRECTO
+barras = obtener_barras("EURUSD", 60)
+tiempo_senal = barras.iloc[-1]["time"]  # Usar time de la API
+
+# INCORRECTO
+tiempo_senal = int(datetime.now().timestamp())  # Puede no alinearse con barras
+```
+
+## Multiples Senales en la Misma Barra
+
+Puedes colocar multiples puntos en la misma barra usando el mismo valor de `time`:
+
+```python
+puntos = [
+    {"time": tiempo_barra, "type": "low", "price": entrada, "label": "COMPRA", ...},
+    {"time": tiempo_barra, "type": "low", "price": sl, "label": "SL", ...},
+    {"time": tiempo_barra, "type": "high", "price": tp1, "label": "TP1", ...},
+]
+```
+
+## Metadata para Analytics
+
+Incluye metadata para trackear rendimiento de senales:
+
+```python
+metadata = {
+    # Detalles de senal
+    "tipo_senal": "COMPRA",
+    "precio_entrada": 1.1725,
+    "stop_loss": 1.1695,
+    "take_profits": [1.1755, 1.1785, 1.1815],
+
+    # Metricas de riesgo
+    "riesgo_pips": 30,
+    "ganancia_pips": 90,
+    "riesgo_beneficio": "1:3",
+
+    # Info de estrategia
+    "estrategia": "ICT Order Block",
+    "timeframe": "H1",
+    "factores_confluencia": ["OB", "FVG", "Tendencia HTF"],
+
+    # Confianza
+    "confianza": "alta",  # baja, media, alta
+
+    # Timestamp
+    "generado_en": datetime.utcnow().isoformat()
+}
+```
+
+## Filtrar Senales de Baja Calidad
+
+Antes de enviar, filtra senales debiles:
+
+```python
+def es_senal_calidad(entrada, sl, tp, rb_minimo=1.5):
+    """Verificar si la senal cumple criterios de calidad."""
+    rb = calcular_riesgo_beneficio(entrada, sl, tp)
+    return rb >= rb_minimo
+
+# Filtrar senales
+senales_calidad = [
+    s for s in todas_senales
+    if es_senal_calidad(s["entrada"], s["sl"], s["tp"])
+]
+```
+
+## Frecuencia de Actualizacion
+
+| Timeframe | Actualizacion Recomendada |
+|-----------|---------------------------|
+| M1 | Cada 1 minuto |
+| M5 | Cada 5 minutos |
+| M15 | Cada 15 minutos |
+| H1 | Cada hora |
+| H4 | Cada 4 horas |
+| D1 | Una vez al dia |
+
+<Tip>
+  No actualices demasiado frecuentemente - desperdicia llamadas API y puede causar parpadeo visual.
+</Tip>
+
+## Checklist
+
+Antes de desplegar tu indicador:
+
+<Steps>
+  <Step title="Verificar alineacion de tiempo">
+    Las senales aparecen en las velas correctas
+  </Step>
+  <Step title="Verificar jerarquia visual">
+    La entrada es prominente, TPs/SL son secundarios
+  </Step>
+  <Step title="Validar ratios R:B">
+    Todas las senales cumplen requisitos minimos de R:B
+  </Step>
+  <Step title="Probar en multiples timeframes">
+    El indicador funciona en H1, H4, D1
+  </Step>
+  <Step title="Agregar manejo de errores">
+    Maneja errores de API graciosamente
+  </Step>
+  <Step title="Incluir metadata">
+    Trackea rendimiento de senales
+  </Step>
+</Steps>
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="Integracion Continua" icon="rotate" href="/es/guides/continuous-integration">
+    Configura actualizaciones automaticas de senales
+  </Card>
+  <Card title="SDK Python" icon="python" href="/es/sdks/python">
+    Referencia completa de Python
+  </Card>
+</CardGroup>

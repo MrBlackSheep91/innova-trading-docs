@@ -1,0 +1,596 @@
+---
+title: 'JavaScript SDK'
+description: 'Complete JavaScript/TypeScript reference for InnovaTrading API'
+---
+
+## Installation
+
+<CodeGroup>
+
+```bash Node.js
+npm install axios
+```
+
+```bash Browser
+# No installation needed - use native fetch
+```
+
+</CodeGroup>
+
+## Complete Signal Generator Class
+
+### TypeScript Version
+
+```typescript
+interface Bar {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+interface SignalPoint {
+  time: number;
+  type: "high" | "low";
+  price: number;
+  label?: string;
+  color?: string;
+  shape?: "circle" | "arrowUp" | "arrowDown" | "square";
+  size?: 1 | 2 | 3;
+}
+
+interface IndicatorPayload {
+  symbol: string;
+  timeframe: number;
+  indicator_name: string;
+  version?: string;
+  points: SignalPoint[];
+  metadata?: Record<string, any>;
+}
+
+interface IndicatorResponse {
+  success: boolean;
+  indicator_id: string;
+  points_received: number;
+  symbol: string;
+  timeframe: number;
+  expires_at: string;
+}
+
+class InnovaTradingClient {
+  private apiKey: string;
+  private baseUrl: string;
+
+  constructor(apiKey: string, baseUrl = "https://api.innova-trading.com") {
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
+  }
+
+  private get headers() {
+    return {
+      Authorization: `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+  }
+
+  async getBars(
+    symbol: string,
+    timeframe: number,
+    limit = 500
+  ): Promise<Bar[]> {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/bars/${symbol}/${timeframe}?limit=${limit}`,
+      { headers: this.headers }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    }
+
+    const data = await response.json();
+    return data.bars;
+  }
+
+  async getSymbols(): Promise<string[]> {
+    const response = await fetch(`${this.baseUrl}/api/external/symbols`, {
+      headers: this.headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.symbols;
+  }
+
+  async submitIndicator(
+    indicatorId: string,
+    payload: IndicatorPayload
+  ): Promise<IndicatorResponse> {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/indicators/${indicatorId}`,
+      {
+        method: "POST",
+        headers: this.headers,
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    }
+
+    return response.json();
+  }
+
+  async getIndicator(
+    indicatorId: string,
+    symbol: string,
+    timeframe: number
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/indicators/${indicatorId}?symbol=${symbol}&timeframe=${timeframe}`,
+      { headers: this.headers }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async deleteIndicator(
+    indicatorId: string,
+    symbol: string,
+    timeframe: number
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/indicators/${indicatorId}?symbol=${symbol}&timeframe=${timeframe}`,
+      {
+        method: "DELETE",
+        headers: this.headers,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async listIndicators(): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/external/indicators`, {
+      headers: this.headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+}
+
+export { InnovaTradingClient, Bar, SignalPoint, IndicatorPayload };
+```
+
+### JavaScript Version
+
+```javascript
+class InnovaTradingClient {
+  constructor(apiKey, baseUrl = "https://api.innova-trading.com") {
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
+  }
+
+  get headers() {
+    return {
+      Authorization: `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+  }
+
+  async getBars(symbol, timeframe, limit = 500) {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/bars/${symbol}/${timeframe}?limit=${limit}`,
+      { headers: this.headers }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.bars;
+  }
+
+  async submitIndicator(indicatorId, payload) {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/indicators/${indicatorId}`,
+      {
+        method: "POST",
+        headers: this.headers,
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+}
+
+module.exports = { InnovaTradingClient };
+```
+
+## Usage Examples
+
+### Basic Signal Submission
+
+```javascript
+const client = new InnovaTradingClient("YOUR_API_KEY");
+
+// Fetch bars
+const bars = await client.getBars("EURUSD", 60, 100);
+
+// Create a BUY signal on the last bar
+const points = [
+  {
+    time: bars[bars.length - 1].time,
+    type: "low",
+    price: bars[bars.length - 1].close,
+    label: "BUY",
+    color: "#3b82f6",
+    shape: "arrowUp",
+    size: 2,
+  },
+];
+
+// Submit
+const result = await client.submitIndicator("my_signals", {
+  symbol: "EURUSD",
+  timeframe: 60,
+  indicator_name: "My Trading Signals",
+  points,
+});
+
+console.log(`Submitted ${result.points_received} points`);
+```
+
+### Complete Trade Signal (Entry + SL + TPs)
+
+```javascript
+async function createTradeSignal(
+  client,
+  symbol,
+  timeframe,
+  signalType, // "BUY" or "SELL"
+  entryPrice,
+  stopLoss,
+  takeProfits,
+  barTime
+) {
+  const points = [];
+
+  // Entry point
+  points.push({
+    time: barTime,
+    type: signalType === "BUY" ? "low" : "high",
+    price: entryPrice,
+    label: signalType,
+    color: signalType === "BUY" ? "#3b82f6" : "#f97316",
+    shape: signalType === "BUY" ? "arrowUp" : "arrowDown",
+    size: 2,
+  });
+
+  // Stop Loss
+  points.push({
+    time: barTime,
+    type: signalType === "BUY" ? "low" : "high",
+    price: stopLoss,
+    label: "SL",
+    color: "#ef4444",
+    shape: "square",
+    size: 1,
+  });
+
+  // Take Profits
+  takeProfits.forEach((tpPrice, index) => {
+    points.push({
+      time: barTime,
+      type: signalType === "BUY" ? "high" : "low",
+      price: tpPrice,
+      label: `TP${index + 1}`,
+      color: "#22c55e",
+      shape: "circle",
+      size: 1,
+    });
+  });
+
+  // Calculate metadata
+  const riskPips = Math.abs(entryPrice - stopLoss) * 10000;
+  const rewardPips =
+    Math.abs(takeProfits[takeProfits.length - 1] - entryPrice) * 10000;
+
+  return client.submitIndicator("trade_signals", {
+    symbol,
+    timeframe,
+    indicator_name: "Trade Signals",
+    points,
+    metadata: {
+      signal_type: signalType,
+      entry_price: entryPrice,
+      stop_loss: stopLoss,
+      take_profits: takeProfits,
+      risk_pips: riskPips.toFixed(1),
+      reward_pips: rewardPips.toFixed(1),
+      risk_reward: `1:${(rewardPips / riskPips).toFixed(1)}`,
+    },
+  });
+}
+
+// Usage
+const client = new InnovaTradingClient("YOUR_API_KEY");
+const bars = await client.getBars("EURUSD", 60, 1);
+
+const result = await createTradeSignal(
+  client,
+  "EURUSD",
+  60,
+  "BUY",
+  1.1725,
+  1.1695,
+  [1.1755, 1.1785, 1.1815],
+  bars[0].time
+);
+```
+
+### Inside Bar Detector
+
+```javascript
+function detectInsideBars(bars) {
+  const points = [];
+
+  for (let i = 1; i < bars.length; i++) {
+    const prev = bars[i - 1];
+    const curr = bars[i];
+
+    // Inside bar: current high < previous high AND current low > previous low
+    const isInsideBar = curr.high < prev.high && curr.low > prev.low;
+
+    if (isInsideBar) {
+      points.push({
+        time: curr.time,
+        type: "high",
+        price: curr.high,
+        label: "IB",
+        color: "#eab308",
+        shape: "circle",
+        size: 1,
+      });
+    }
+  }
+
+  return points;
+}
+
+// Usage
+const client = new InnovaTradingClient("YOUR_API_KEY");
+const bars = await client.getBars("EURUSD", 60, 500);
+
+const insideBarPoints = detectInsideBars(bars);
+
+if (insideBarPoints.length > 0) {
+  await client.submitIndicator("inside_bars", {
+    symbol: "EURUSD",
+    timeframe: 60,
+    indicator_name: "Inside Bar Detector",
+    points: insideBarPoints,
+  });
+  console.log(`Found ${insideBarPoints.length} inside bars`);
+}
+```
+
+### Continuous Update (Node.js)
+
+```javascript
+const cron = require("node-cron");
+
+async function updateSignals() {
+  try {
+    const client = new InnovaTradingClient("YOUR_API_KEY");
+    const bars = await client.getBars("EURUSD", 60, 100);
+
+    // Your analysis logic here
+    const points = analyzeAndGenerateSignals(bars);
+
+    if (points.length > 0) {
+      await client.submitIndicator("my_strategy", {
+        symbol: "EURUSD",
+        timeframe: 60,
+        indicator_name: "My Strategy",
+        points,
+      });
+      console.log(`Updated with ${points.length} signals`);
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
+
+// Run every 5 minutes
+cron.schedule("*/5 * * * *", updateSignals);
+
+// Initial run
+updateSignals();
+```
+
+### Browser Usage
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Signal Generator</title>
+  </head>
+  <body>
+    <button id="submit">Submit Signal</button>
+
+    <script>
+      const API_KEY = "YOUR_API_KEY";
+      const BASE_URL = "https://api.innova-trading.com";
+
+      async function submitSignal() {
+        const response = await fetch(
+          `${BASE_URL}/api/external/indicators/web_signals`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              symbol: "EURUSD",
+              timeframe: 60,
+              indicator_name: "Web Signals",
+              points: [
+                {
+                  time: Math.floor(Date.now() / 1000),
+                  type: "low",
+                  price: 1.1725,
+                  label: "BUY",
+                  color: "#3b82f6",
+                  shape: "arrowUp",
+                  size: 2,
+                },
+              ],
+            }),
+          }
+        );
+
+        const result = await response.json();
+        console.log(result);
+      }
+
+      document.getElementById("submit").addEventListener("click", submitSignal);
+    </script>
+  </body>
+</html>
+```
+
+## Error Handling
+
+```javascript
+async function safeRequest(fn, maxRetries = 3) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error.message.includes("429")) {
+        // Rate limited
+        const waitTime = 60000 * (attempt + 1);
+        console.log(`Rate limited. Waiting ${waitTime / 1000}s...`);
+        await new Promise((r) => setTimeout(r, waitTime));
+      } else if (error.message.includes("5")) {
+        // Server error (5xx)
+        await new Promise((r) => setTimeout(r, 5000 * (attempt + 1)));
+      } else {
+        throw error;
+      }
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
+// Usage
+const bars = await safeRequest(() => client.getBars("EURUSD", 60));
+```
+
+## React Hook Example
+
+```jsx
+import { useState, useEffect, useCallback } from "react";
+
+function useInnovaTrading(apiKey) {
+  const [client] = useState(() => new InnovaTradingClient(apiKey));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const getBars = useCallback(
+    async (symbol, timeframe, limit) => {
+      setLoading(true);
+      setError(null);
+      try {
+        return await client.getBars(symbol, timeframe, limit);
+      } catch (e) {
+        setError(e.message);
+        throw e;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [client]
+  );
+
+  const submitIndicator = useCallback(
+    async (indicatorId, payload) => {
+      setLoading(true);
+      setError(null);
+      try {
+        return await client.submitIndicator(indicatorId, payload);
+      } catch (e) {
+        setError(e.message);
+        throw e;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [client]
+  );
+
+  return { getBars, submitIndicator, loading, error };
+}
+
+// Usage in component
+function SignalForm() {
+  const { submitIndicator, loading, error } = useInnovaTrading("YOUR_API_KEY");
+
+  const handleSubmit = async () => {
+    await submitIndicator("my_signals", {
+      symbol: "EURUSD",
+      timeframe: 60,
+      indicator_name: "My Signals",
+      points: [
+        /* ... */
+      ],
+    });
+  };
+
+  return (
+    <div>
+      <button onClick={handleSubmit} disabled={loading}>
+        {loading ? "Submitting..." : "Submit Signal"}
+      </button>
+      {error && <p className="error">{error}</p>}
+    </div>
+  );
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="First Indicator Guide" icon="graduation-cap" href="/guides/first-indicator">
+    Step-by-step tutorial
+  </Card>
+  <Card title="Signal Best Practices" icon="check" href="/guides/signal-best-practices">
+    Tips for better signals
+  </Card>
+</CardGroup>

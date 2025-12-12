@@ -1,0 +1,457 @@
+---
+title: 'Continuous Integration'
+description: 'Keep your indicators updated automatically'
+---
+
+External indicators expire after **24 hours**. To keep your signals visible, you need to continuously update them.
+
+## Update Strategies
+
+<CardGroup cols={2}>
+  <Card title="Cron Job" icon="clock">
+    Simple scheduled task that runs at intervals
+  </Card>
+  <Card title="Webhook" icon="webhook">
+    Trigger updates based on events
+  </Card>
+  <Card title="Always-On Service" icon="server">
+    Long-running process with internal scheduler
+  </Card>
+  <Card title="Serverless" icon="cloud">
+    AWS Lambda, Google Cloud Functions, etc.
+  </Card>
+</CardGroup>
+
+## Option 1: Cron Job (Linux/Mac)
+
+The simplest approach for servers with cron support.
+
+### Setup
+
+1. Create your indicator script:
+
+```python
+#!/usr/bin/env python3
+# /home/user/indicators/update_signals.py
+
+import requests
+import pandas as pd
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+API_KEY = "your_api_key"
+BASE_URL = "https://api.innova-trading.com"
+
+def main():
+    try:
+        logger.info("Starting signal update...")
+
+        # Your indicator logic here
+        bars = fetch_bars()
+        signals = calculate_signals(bars)
+        result = submit_signals(signals)
+
+        logger.info(f"Updated {result['points_received']} signals")
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise
+
+if __name__ == "__main__":
+    main()
+```
+
+2. Add to crontab:
+
+```bash
+# Edit crontab
+crontab -e
+
+# Add this line to run every hour
+0 * * * * /usr/bin/python3 /home/user/indicators/update_signals.py >> /var/log/indicators.log 2>&1
+
+# Or every 15 minutes
+*/15 * * * * /usr/bin/python3 /home/user/indicators/update_signals.py >> /var/log/indicators.log 2>&1
+```
+
+## Option 2: Python Scheduler
+
+For more control, use Python's `schedule` library:
+
+```python
+import schedule
+import time
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+def update_eurusd_h1():
+    """Update EURUSD H1 signals."""
+    logger.info("Updating EURUSD H1...")
+    try:
+        # Your logic here
+        pass
+    except Exception as e:
+        logger.error(f"Error: {e}")
+
+def update_gbpusd_h4():
+    """Update GBPUSD H4 signals."""
+    logger.info("Updating GBPUSD H4...")
+    try:
+        # Your logic here
+        pass
+    except Exception as e:
+        logger.error(f"Error: {e}")
+
+# Schedule jobs
+schedule.every(1).hours.do(update_eurusd_h1)
+schedule.every(4).hours.do(update_gbpusd_h4)
+
+# Also run at specific times
+schedule.every().day.at("00:00").do(update_eurusd_h1)
+schedule.every().day.at("08:00").do(update_eurusd_h1)
+schedule.every().day.at("16:00").do(update_eurusd_h1)
+
+logger.info("Scheduler started. Press Ctrl+C to exit.")
+
+# Initial run
+update_eurusd_h1()
+update_gbpusd_h4()
+
+# Keep running
+while True:
+    schedule.run_pending()
+    time.sleep(60)
+```
+
+Run with:
+
+```bash
+# Run in background
+nohup python scheduler.py > scheduler.log 2>&1 &
+
+# Or with screen
+screen -S indicators
+python scheduler.py
+# Press Ctrl+A, D to detach
+```
+
+## Option 3: Node.js with node-cron
+
+```javascript
+const cron = require("node-cron");
+const axios = require("axios");
+
+const API_KEY = "your_api_key";
+const BASE_URL = "https://api.innova-trading.com";
+
+async function updateSignals(symbol, timeframe) {
+  console.log(`[${new Date().toISOString()}] Updating ${symbol} ${timeframe}m`);
+
+  try {
+    // Your logic here
+    const bars = await fetchBars(symbol, timeframe);
+    const signals = calculateSignals(bars);
+    const result = await submitSignals(signals);
+
+    console.log(`Updated ${result.points_received} signals`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+}
+
+// Run every hour
+cron.schedule("0 * * * *", () => {
+  updateSignals("EURUSD", 60);
+});
+
+// Run every 4 hours
+cron.schedule("0 */4 * * *", () => {
+  updateSignals("GBPUSD", 240);
+});
+
+// Run at market open (5 PM EST = 22:00 UTC on Sunday)
+cron.schedule("0 22 * * 0", () => {
+  console.log("Market opening - full update");
+  updateSignals("EURUSD", 60);
+  updateSignals("GBPUSD", 60);
+});
+
+console.log("Scheduler started");
+
+// Initial run
+updateSignals("EURUSD", 60);
+```
+
+## Option 4: Docker Container
+
+Create a containerized indicator service:
+
+```dockerfile
+# Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "scheduler.py"]
+```
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  indicator-service:
+    build: .
+    restart: always
+    environment:
+      - API_KEY=${API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./logs:/app/logs
+```
+
+Deploy:
+
+```bash
+docker-compose up -d
+```
+
+## Option 5: AWS Lambda (Serverless)
+
+### handler.py
+
+```python
+import json
+import requests
+
+def lambda_handler(event, context):
+    """AWS Lambda handler for indicator updates."""
+    API_KEY = event.get("api_key") or os.environ.get("API_KEY")
+    symbol = event.get("symbol", "EURUSD")
+    timeframe = event.get("timeframe", 60)
+
+    try:
+        # Fetch and calculate
+        bars = fetch_bars(symbol, timeframe, API_KEY)
+        signals = calculate_signals(bars)
+        result = submit_signals(signals, API_KEY)
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "success": True,
+                "points": result["points_received"]
+            })
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
+```
+
+### CloudWatch Event Rule
+
+```json
+{
+  "schedule": "rate(1 hour)",
+  "input": {
+    "symbol": "EURUSD",
+    "timeframe": 60
+  }
+}
+```
+
+## Option 6: GitHub Actions
+
+Free CI/CD with GitHub:
+
+```yaml
+# .github/workflows/update-indicators.yml
+name: Update Indicators
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Every hour
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Update signals
+        env:
+          API_KEY: ${{ secrets.INNOVA_API_KEY }}
+        run: python update_signals.py
+```
+
+<Warning>
+  GitHub Actions has a 5-minute minimum interval for scheduled workflows, and jobs may be delayed during high load periods.
+</Warning>
+
+## Monitoring & Alerts
+
+### Logging Best Practices
+
+```python
+import logging
+from datetime import datetime
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[
+        logging.FileHandler('indicator.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+def update_with_logging():
+    start = datetime.now()
+    logger.info(f"Starting update for EURUSD H1")
+
+    try:
+        bars = fetch_bars()
+        logger.info(f"Fetched {len(bars)} bars")
+
+        signals = calculate_signals(bars)
+        logger.info(f"Generated {len(signals)} signals")
+
+        result = submit_signals(signals)
+        logger.info(f"Submitted {result['points_received']} points")
+
+        elapsed = (datetime.now() - start).total_seconds()
+        logger.info(f"Update completed in {elapsed:.2f}s")
+
+    except Exception as e:
+        logger.error(f"Update failed: {e}", exc_info=True)
+        raise
+```
+
+### Health Check Endpoint
+
+If running as a service, add a health check:
+
+```python
+from flask import Flask, jsonify
+import threading
+
+app = Flask(__name__)
+last_update = None
+last_status = "unknown"
+
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "ok",
+        "last_update": last_update,
+        "last_status": last_status
+    })
+
+def run_health_server():
+    app.run(host="0.0.0.0", port=8080)
+
+# Start health server in background
+threading.Thread(target=run_health_server, daemon=True).start()
+```
+
+### Slack/Discord Alerts
+
+```python
+import requests
+
+SLACK_WEBHOOK = "https://hooks.slack.com/services/..."
+
+def send_alert(message, level="info"):
+    """Send alert to Slack."""
+    color = {
+        "info": "#3b82f6",
+        "warning": "#eab308",
+        "error": "#ef4444"
+    }.get(level, "#3b82f6")
+
+    payload = {
+        "attachments": [{
+            "color": color,
+            "text": message,
+            "footer": "Indicator Service",
+            "ts": int(datetime.now().timestamp())
+        }]
+    }
+
+    requests.post(SLACK_WEBHOOK, json=payload)
+
+# Usage
+try:
+    result = update_signals()
+    send_alert(f"Updated {result['points_received']} signals", "info")
+except Exception as e:
+    send_alert(f"Update failed: {e}", "error")
+```
+
+## Recommended Setup
+
+<Steps>
+  <Step title="Development">
+    Manual runs with `python update_signals.py`
+  </Step>
+  <Step title="Testing">
+    Local scheduler with `schedule` library
+  </Step>
+  <Step title="Production">
+    Docker container or cloud service (Lambda/Cloud Functions)
+  </Step>
+  <Step title="Monitoring">
+    Add logging, health checks, and alerts
+  </Step>
+</Steps>
+
+## Frequency Guidelines
+
+| Timeframe | Update Interval | Why |
+|-----------|-----------------|-----|
+| M1 | 1 minute | Real-time signals |
+| M5 | 5 minutes | Near real-time |
+| M15 | 15 minutes | Balanced |
+| H1 | 1 hour | Match bar close |
+| H4 | 4 hours | Match bar close |
+| D1 | Daily at market open | Once per day |
+
+<Tip>
+  For most strategies, updating at bar close is sufficient. This reduces API calls and ensures signals are based on complete bars.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Signal Best Practices" icon="check" href="/guides/signal-best-practices">
+    Improve signal quality
+  </Card>
+  <Card title="API Reference" icon="book" href="/api-reference/introduction">
+    Complete API documentation
+  </Card>
+</CardGroup>

@@ -1,0 +1,454 @@
+---
+title: 'SDK JavaScript'
+description: 'Referencia completa de JavaScript/TypeScript para la API de InnovaTrading'
+---
+
+## Instalacion
+
+<CodeGroup>
+
+```bash Node.js
+npm install axios
+```
+
+```bash Navegador
+# No requiere instalacion - usa fetch nativo
+```
+
+</CodeGroup>
+
+## Clase Generadora de Senales Completa
+
+### Version TypeScript
+
+```typescript
+interface Barra {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+interface PuntoSenal {
+  time: number;
+  type: "high" | "low";
+  price: number;
+  label?: string;
+  color?: string;
+  shape?: "circle" | "arrowUp" | "arrowDown" | "square";
+  size?: 1 | 2 | 3;
+}
+
+interface PayloadIndicador {
+  symbol: string;
+  timeframe: number;
+  indicator_name: string;
+  version?: string;
+  points: PuntoSenal[];
+  metadata?: Record<string, any>;
+}
+
+class InnovaTradingClient {
+  private apiKey: string;
+  private baseUrl: string;
+
+  constructor(apiKey: string, baseUrl = "https://api.innova-trading.com") {
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
+  }
+
+  private get headers() {
+    return {
+      Authorization: `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+  }
+
+  async obtenerBarras(
+    symbol: string,
+    timeframe: number,
+    limit = 500
+  ): Promise<Barra[]> {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/bars/${symbol}/${timeframe}?limit=${limit}`,
+      { headers: this.headers }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    }
+
+    const data = await response.json();
+    return data.bars;
+  }
+
+  async enviarIndicador(
+    indicatorId: string,
+    payload: PayloadIndicador
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/indicators/${indicatorId}`,
+      {
+        method: "POST",
+        headers: this.headers,
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    }
+
+    return response.json();
+  }
+}
+
+export { InnovaTradingClient, Barra, PuntoSenal, PayloadIndicador };
+```
+
+### Version JavaScript
+
+```javascript
+class InnovaTradingClient {
+  constructor(apiKey, baseUrl = "https://api.innova-trading.com") {
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
+  }
+
+  get headers() {
+    return {
+      Authorization: `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+  }
+
+  async obtenerBarras(symbol, timeframe, limit = 500) {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/bars/${symbol}/${timeframe}?limit=${limit}`,
+      { headers: this.headers }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.bars;
+  }
+
+  async enviarIndicador(indicatorId, payload) {
+    const response = await fetch(
+      `${this.baseUrl}/api/external/indicators/${indicatorId}`,
+      {
+        method: "POST",
+        headers: this.headers,
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+}
+
+module.exports = { InnovaTradingClient };
+```
+
+## Ejemplos de Uso
+
+### Envio Basico de Senal
+
+```javascript
+const cliente = new InnovaTradingClient("TU_API_KEY");
+
+// Obtener barras
+const barras = await cliente.obtenerBarras("EURUSD", 60, 100);
+
+// Crear una senal de COMPRA en la ultima barra
+const puntos = [
+  {
+    time: barras[barras.length - 1].time,
+    type: "low",
+    price: barras[barras.length - 1].close,
+    label: "COMPRA",
+    color: "#3b82f6",
+    shape: "arrowUp",
+    size: 2,
+  },
+];
+
+// Enviar
+const resultado = await cliente.enviarIndicador("mis_senales", {
+  symbol: "EURUSD",
+  timeframe: 60,
+  indicator_name: "Mis Senales de Trading",
+  points: puntos,
+});
+
+console.log(`Enviados ${resultado.points_received} puntos`);
+```
+
+### Senal de Trade Completa (Entrada + SL + TPs)
+
+```javascript
+async function crearSenalTrade(
+  cliente,
+  symbol,
+  timeframe,
+  tipoSenal, // "COMPRA" o "VENTA"
+  precioEntrada,
+  stopLoss,
+  takeProfits,
+  tiempoBarra
+) {
+  const puntos = [];
+
+  // Punto de entrada
+  puntos.push({
+    time: tiempoBarra,
+    type: tipoSenal === "COMPRA" ? "low" : "high",
+    price: precioEntrada,
+    label: tipoSenal,
+    color: tipoSenal === "COMPRA" ? "#3b82f6" : "#f97316",
+    shape: tipoSenal === "COMPRA" ? "arrowUp" : "arrowDown",
+    size: 2,
+  });
+
+  // Stop Loss
+  puntos.push({
+    time: tiempoBarra,
+    type: tipoSenal === "COMPRA" ? "low" : "high",
+    price: stopLoss,
+    label: "SL",
+    color: "#ef4444",
+    shape: "square",
+    size: 1,
+  });
+
+  // Take Profits
+  takeProfits.forEach((tpPrecio, index) => {
+    puntos.push({
+      time: tiempoBarra,
+      type: tipoSenal === "COMPRA" ? "high" : "low",
+      price: tpPrecio,
+      label: `TP${index + 1}`,
+      color: "#22c55e",
+      shape: "circle",
+      size: 1,
+    });
+  });
+
+  // Calcular metadata
+  const riesgoPips = Math.abs(precioEntrada - stopLoss) * 10000;
+  const gananciaPips =
+    Math.abs(takeProfits[takeProfits.length - 1] - precioEntrada) * 10000;
+
+  return cliente.enviarIndicador("senales_trade", {
+    symbol,
+    timeframe,
+    indicator_name: "Senales de Trade",
+    points: puntos,
+    metadata: {
+      tipo_senal: tipoSenal,
+      precio_entrada: precioEntrada,
+      stop_loss: stopLoss,
+      take_profits: takeProfits,
+      riesgo_pips: riesgoPips.toFixed(1),
+      ganancia_pips: gananciaPips.toFixed(1),
+      riesgo_beneficio: `1:${(gananciaPips / riesgoPips).toFixed(1)}`,
+    },
+  });
+}
+
+// Uso
+const cliente = new InnovaTradingClient("TU_API_KEY");
+const barras = await cliente.obtenerBarras("EURUSD", 60, 1);
+
+const resultado = await crearSenalTrade(
+  cliente,
+  "EURUSD",
+  60,
+  "COMPRA",
+  1.1725,
+  1.1695,
+  [1.1755, 1.1785, 1.1815],
+  barras[0].time
+);
+```
+
+### Detector de Inside Bar
+
+```javascript
+function detectarInsideBars(barras) {
+  const puntos = [];
+
+  for (let i = 1; i < barras.length; i++) {
+    const prev = barras[i - 1];
+    const curr = barras[i];
+
+    // Inside bar: high actual < high anterior Y low actual > low anterior
+    const esInsideBar = curr.high < prev.high && curr.low > prev.low;
+
+    if (esInsideBar) {
+      puntos.push({
+        time: curr.time,
+        type: "high",
+        price: curr.high,
+        label: "IB",
+        color: "#eab308",
+        shape: "circle",
+        size: 1,
+      });
+    }
+  }
+
+  return puntos;
+}
+
+// Uso
+const cliente = new InnovaTradingClient("TU_API_KEY");
+const barras = await cliente.obtenerBarras("EURUSD", 60, 500);
+
+const puntosInsideBar = detectarInsideBars(barras);
+
+if (puntosInsideBar.length > 0) {
+  await cliente.enviarIndicador("inside_bars", {
+    symbol: "EURUSD",
+    timeframe: 60,
+    indicator_name: "Detector Inside Bar",
+    points: puntosInsideBar,
+  });
+  console.log(`Encontrados ${puntosInsideBar.length} inside bars`);
+}
+```
+
+### Actualizacion Continua (Node.js)
+
+```javascript
+const cron = require("node-cron");
+
+async function actualizarSenales() {
+  try {
+    const cliente = new InnovaTradingClient("TU_API_KEY");
+    const barras = await cliente.obtenerBarras("EURUSD", 60, 100);
+
+    // Tu logica de analisis aqui
+    const puntos = analizarYGenerarSenales(barras);
+
+    if (puntos.length > 0) {
+      await cliente.enviarIndicador("mi_estrategia", {
+        symbol: "EURUSD",
+        timeframe: 60,
+        indicator_name: "Mi Estrategia",
+        points: puntos,
+      });
+      console.log(`Actualizado con ${puntos.length} senales`);
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
+
+// Ejecutar cada 5 minutos
+cron.schedule("*/5 * * * *", actualizarSenales);
+
+// Ejecucion inicial
+actualizarSenales();
+```
+
+### Uso en Navegador
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Generador de Senales</title>
+  </head>
+  <body>
+    <button id="enviar">Enviar Senal</button>
+
+    <script>
+      const API_KEY = "TU_API_KEY";
+      const BASE_URL = "https://api.innova-trading.com";
+
+      async function enviarSenal() {
+        const response = await fetch(
+          `${BASE_URL}/api/external/indicators/web_senales`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              symbol: "EURUSD",
+              timeframe: 60,
+              indicator_name: "Senales Web",
+              points: [
+                {
+                  time: Math.floor(Date.now() / 1000),
+                  type: "low",
+                  price: 1.1725,
+                  label: "COMPRA",
+                  color: "#3b82f6",
+                  shape: "arrowUp",
+                  size: 2,
+                },
+              ],
+            }),
+          }
+        );
+
+        const resultado = await response.json();
+        console.log(resultado);
+      }
+
+      document.getElementById("enviar").addEventListener("click", enviarSenal);
+    </script>
+  </body>
+</html>
+```
+
+## Manejo de Errores
+
+```javascript
+async function solicitudSegura(fn, maxReintentos = 3) {
+  for (let intento = 0; intento < maxReintentos; intento++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error.message.includes("429")) {
+        // Limite de tasa
+        const tiempoEspera = 60000 * (intento + 1);
+        console.log(`Limite de tasa. Esperando ${tiempoEspera / 1000}s...`);
+        await new Promise((r) => setTimeout(r, tiempoEspera));
+      } else if (error.message.includes("5")) {
+        // Error del servidor (5xx)
+        await new Promise((r) => setTimeout(r, 5000 * (intento + 1)));
+      } else {
+        throw error;
+      }
+    }
+  }
+  throw new Error("Maximo de reintentos excedido");
+}
+
+// Uso
+const barras = await solicitudSegura(() => cliente.obtenerBarras("EURUSD", 60));
+```
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="Guia Primer Indicador" icon="graduation-cap" href="/es/guides/first-indicator">
+    Tutorial paso a paso
+  </Card>
+  <Card title="Mejores Practicas" icon="check" href="/es/guides/signal-best-practices">
+    Tips para mejores senales
+  </Card>
+</CardGroup>

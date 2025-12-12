@@ -1,0 +1,155 @@
+---
+title: 'Obtener Indicador'
+api: 'GET /api/external/indicators/{indicator_id}'
+description: 'Obtener datos de indicador previamente enviados'
+---
+
+## Solicitud
+
+<ParamField path="indicator_id" type="string" required>
+  El identificador unico del indicador
+</ParamField>
+
+<ParamField query="symbol" type="string" required>
+  Simbolo de trading (ej: `EURUSD`)
+</ParamField>
+
+<ParamField query="timeframe" type="integer" required>
+  Timeframe en minutos
+</ParamField>
+
+## Respuesta
+
+<ResponseField name="success" type="boolean">
+  Indica si la solicitud fue exitosa
+</ResponseField>
+
+<ResponseField name="indicator_id" type="string">
+  El ID del indicador
+</ResponseField>
+
+<ResponseField name="indicator_name" type="string">
+  Nombre legible
+</ResponseField>
+
+<ResponseField name="version" type="string">
+  Version del indicador
+</ResponseField>
+
+<ResponseField name="symbol" type="string">
+  Simbolo de trading
+</ResponseField>
+
+<ResponseField name="timeframe" type="integer">
+  Timeframe en minutos
+</ResponseField>
+
+<ResponseField name="points" type="array">
+  Array de puntos de senal
+</ResponseField>
+
+<ResponseField name="metadata" type="object">
+  Metadata opcional
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  Fecha ISO 8601 de creacion
+</ResponseField>
+
+<ResponseField name="expires_at" type="string">
+  Fecha ISO 8601 de expiracion
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET "https://api.innova-trading.com/api/external/indicators/mis_senales?symbol=EURUSD&timeframe=60" \
+  -H "Authorization: Bearer TU_API_KEY"
+```
+
+```python Python
+response = requests.get(
+    "https://api.innova-trading.com/api/external/indicators/mis_senales",
+    params={"symbol": "EURUSD", "timeframe": 60},
+    headers={"Authorization": "Bearer TU_API_KEY"}
+)
+
+data = response.json()
+print(f"Puntos: {len(data['points'])}")
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "https://api.innova-trading.com/api/external/indicators/mis_senales?symbol=EURUSD&timeframe=60",
+  {
+    headers: { Authorization: "Bearer TU_API_KEY" }
+  }
+);
+
+const data = await response.json();
+console.log(`Puntos: ${data.points.length}`);
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Respuesta Exitosa
+{
+  "success": true,
+  "indicator_id": "mis_senales",
+  "indicator_name": "Mis Senales de Trading",
+  "version": "1.0",
+  "symbol": "EURUSD",
+  "timeframe": 60,
+  "points": [
+    {
+      "time": 1765540800,
+      "bar_number": 0,
+      "type": "low",
+      "price": 1.1725,
+      "label": "COMPRA",
+      "color": "#3b82f6",
+      "shape": "arrowUp",
+      "size": 2
+    },
+    {
+      "time": 1765540800,
+      "bar_number": 0,
+      "type": "low",
+      "price": 1.1700,
+      "label": "SL",
+      "color": "#ef4444",
+      "shape": "square",
+      "size": 1
+    }
+  ],
+  "metadata": {
+    "signal_type": "COMPRA",
+    "strategy": "ICT"
+  },
+  "created_at": "2025-12-12T12:00:00Z",
+  "expires_at": "2025-12-13T12:00:00Z"
+}
+```
+
+```json No Encontrado
+{
+  "error": "not_found",
+  "message": "No se encontraron datos para el indicador 'mis_senales' en EURUSD 60m"
+}
+```
+
+```json Expirado
+{
+  "error": "expired",
+  "message": "Los datos del indicador han expirado. Por favor envia datos nuevos."
+}
+```
+
+</ResponseExample>
+
+<Note>
+  Los datos del indicador expiran automaticamente despues de 24 horas.
+  Asegurate de re-enviar tus senales periodicamente.
+</Note>

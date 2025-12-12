@@ -1,0 +1,309 @@
+---
+title: 'Inicio Rapido'
+description: 'Crea tu primer indicador externo en 5 minutos'
+---
+
+## Requisitos Previos
+
+Antes de empezar, necesitas:
+
+<Steps>
+  <Step title="API Key">
+    Obtener tu API key desde el [panel de configuracion](https://innova-trading.com/settings/api)
+  </Step>
+  <Step title="Entorno de Desarrollo">
+    Python 3.8+ o Node.js 16+ instalado
+  </Step>
+</Steps>
+
+## Paso 1: Instalar Dependencias
+
+<CodeGroup>
+
+```bash Python
+pip install requests
+```
+
+```bash JavaScript
+npm install axios
+```
+
+</CodeGroup>
+
+## Paso 2: Obtener Datos de Mercado
+
+Primero, obtengamos las barras OHLC del par que quieres analizar:
+
+<CodeGroup>
+
+```python Python
+import requests
+
+API_KEY = "tu_api_key_aqui"
+BASE_URL = "https://api.innova-trading.com"
+
+# Obtener ultimas 100 barras de EURUSD en H1
+response = requests.get(
+    f"{BASE_URL}/api/external/bars/EURUSD/60",
+    params={"limit": 100},
+    headers={"Authorization": f"Bearer {API_KEY}"}
+)
+
+barras = response.json()["bars"]
+print(f"Obtenidas {len(barras)} barras")
+print(f"Ultima barra: {barras[-1]}")
+```
+
+```javascript JavaScript
+const axios = require('axios');
+
+const API_KEY = "tu_api_key_aqui";
+const BASE_URL = "https://api.innova-trading.com";
+
+async function obtenerBarras() {
+  const response = await axios.get(
+    `${BASE_URL}/api/external/bars/EURUSD/60`,
+    {
+      params: { limit: 100 },
+      headers: { Authorization: `Bearer ${API_KEY}` }
+    }
+  );
+
+  const barras = response.data.bars;
+  console.log(`Obtenidas ${barras.length} barras`);
+  console.log("Ultima barra:", barras[barras.length - 1]);
+  return barras;
+}
+
+obtenerBarras();
+```
+
+</CodeGroup>
+
+La respuesta incluye:
+
+```json
+{
+  "bars": [
+    {
+      "time": 1765540800,
+      "open": 1.0920,
+      "high": 1.0950,
+      "low": 1.0900,
+      "close": 1.0935,
+      "volume": 15000
+    }
+  ]
+}
+```
+
+## Paso 3: Crear una Senal
+
+Ahora creemos una senal de COMPRA simple:
+
+<CodeGroup>
+
+```python Python
+# Obtener la ultima barra
+ultima_barra = barras[-1]
+
+# Crear senal de COMPRA
+senal = {
+    "symbol": "EURUSD",
+    "timeframe": 60,
+    "indicator_name": "Mi Primera Senal",
+    "points": [
+        {
+            "time": ultima_barra["time"],  # IMPORTANTE: usar el time de la barra
+            "type": "low",                  # Debajo de la vela
+            "price": ultima_barra["low"] - 0.0005,  # Un poco debajo del minimo
+            "label": "COMPRA",
+            "color": "#3b82f6",            # Azul
+            "shape": "arrowUp",
+            "size": 2
+        }
+    ]
+}
+```
+
+```javascript JavaScript
+// Obtener la ultima barra
+const ultimaBarra = barras[barras.length - 1];
+
+// Crear senal de COMPRA
+const senal = {
+  symbol: "EURUSD",
+  timeframe: 60,
+  indicator_name: "Mi Primera Senal",
+  points: [
+    {
+      time: ultimaBarra.time,              // IMPORTANTE: usar el time de la barra
+      type: "low",                          // Debajo de la vela
+      price: ultimaBarra.low - 0.0005,     // Un poco debajo del minimo
+      label: "COMPRA",
+      color: "#3b82f6",                    // Azul
+      shape: "arrowUp",
+      size: 2
+    }
+  ]
+};
+```
+
+</CodeGroup>
+
+## Paso 4: Enviar a InnovaTrading
+
+<CodeGroup>
+
+```python Python
+response = requests.post(
+    f"{BASE_URL}/api/external/indicators/mi_primera_senal",
+    json=senal,
+    headers={
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+)
+
+resultado = response.json()
+print(f"Exito! Puntos enviados: {resultado['points_received']}")
+print(f"Expira en: {resultado['expires_at']}")
+```
+
+```javascript JavaScript
+const response = await axios.post(
+  `${BASE_URL}/api/external/indicators/mi_primera_senal`,
+  senal,
+  {
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json"
+    }
+  }
+);
+
+console.log(`Exito! Puntos enviados: ${response.data.points_received}`);
+console.log(`Expira en: ${response.data.expires_at}`);
+```
+
+</CodeGroup>
+
+## Paso 5: Ver en el Chart
+
+1. Abre InnovaTrading en tu navegador
+2. Ve al chart de EURUSD en timeframe H1
+3. Abre el panel de **Indicadores Externos**
+4. Tu indicador "Mi Primera Senal" deberia aparecer
+5. Activa el toggle para verlo en el chart
+
+<Check>
+  Felicidades! Has creado tu primer indicador externo.
+</Check>
+
+## Codigo Completo
+
+<CodeGroup>
+
+```python Python
+import requests
+
+API_KEY = "tu_api_key_aqui"
+BASE_URL = "https://api.innova-trading.com"
+headers = {"Authorization": f"Bearer {API_KEY}"}
+
+# 1. Obtener barras
+response = requests.get(
+    f"{BASE_URL}/api/external/bars/EURUSD/60",
+    params={"limit": 100},
+    headers=headers
+)
+barras = response.json()["bars"]
+
+# 2. Crear senal
+ultima_barra = barras[-1]
+senal = {
+    "symbol": "EURUSD",
+    "timeframe": 60,
+    "indicator_name": "Mi Primera Senal",
+    "points": [
+        {
+            "time": ultima_barra["time"],
+            "type": "low",
+            "price": ultima_barra["low"] - 0.0005,
+            "label": "COMPRA",
+            "color": "#3b82f6",
+            "shape": "arrowUp",
+            "size": 2
+        }
+    ]
+}
+
+# 3. Enviar
+response = requests.post(
+    f"{BASE_URL}/api/external/indicators/mi_primera_senal",
+    json=senal,
+    headers={**headers, "Content-Type": "application/json"}
+)
+
+print(response.json())
+```
+
+```javascript JavaScript
+const axios = require('axios');
+
+const API_KEY = "tu_api_key_aqui";
+const BASE_URL = "https://api.innova-trading.com";
+const headers = { Authorization: `Bearer ${API_KEY}` };
+
+async function main() {
+  // 1. Obtener barras
+  const barsResponse = await axios.get(
+    `${BASE_URL}/api/external/bars/EURUSD/60`,
+    { params: { limit: 100 }, headers }
+  );
+  const barras = barsResponse.data.bars;
+
+  // 2. Crear senal
+  const ultimaBarra = barras[barras.length - 1];
+  const senal = {
+    symbol: "EURUSD",
+    timeframe: 60,
+    indicator_name: "Mi Primera Senal",
+    points: [
+      {
+        time: ultimaBarra.time,
+        type: "low",
+        price: ultimaBarra.low - 0.0005,
+        label: "COMPRA",
+        color: "#3b82f6",
+        shape: "arrowUp",
+        size: 2
+      }
+    ]
+  };
+
+  // 3. Enviar
+  const response = await axios.post(
+    `${BASE_URL}/api/external/indicators/mi_primera_senal`,
+    senal,
+    { headers: { ...headers, "Content-Type": "application/json" } }
+  );
+
+  console.log(response.data);
+}
+
+main();
+```
+
+</CodeGroup>
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="Formato de Senales" icon="circle-dot" href="/es/concepts/signals">
+    Aprende a crear senales con Entry, SL y TPs
+  </Card>
+  <Card title="Tu Primer Indicador" icon="graduation-cap" href="/es/guides/first-indicator">
+    Tutorial completo: MA Crossover
+  </Card>
+</CardGroup>

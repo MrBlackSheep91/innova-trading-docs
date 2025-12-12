@@ -1,0 +1,195 @@
+---
+title: 'Autenticacion'
+description: 'Como autenticarte con la API de InnovaTrading'
+---
+
+## Obteniendo tu API Key
+
+Para usar la API de Indicadores Externos, necesitas una API key.
+
+<Steps>
+  <Step title="Iniciar Sesion">
+    Ve a [innova-trading.com](https://innova-trading.com) e inicia sesion
+  </Step>
+  <Step title="Ir a Configuracion">
+    Navega a **Configuracion** > **API Keys**
+  </Step>
+  <Step title="Generar Key">
+    Click en "Generar Nueva API Key"
+  </Step>
+  <Step title="Copiar y Guardar">
+    Copia tu API key - solo se mostrara una vez
+  </Step>
+</Steps>
+
+<Warning>
+  Tu API key es secreta. Nunca la compartas ni la incluyas en codigo publico.
+</Warning>
+
+## Usando tu API Key
+
+Todas las solicitudes a la API deben incluir tu API key en el header `Authorization`:
+
+```bash
+Authorization: Bearer tu_api_key_aqui
+```
+
+### Ejemplo con cURL
+
+```bash
+curl -X GET "https://api.innova-trading.com/api/external/bars/EURUSD/60" \
+  -H "Authorization: Bearer tu_api_key_aqui"
+```
+
+### Ejemplo con Python
+
+```python
+import requests
+
+API_KEY = "tu_api_key_aqui"
+
+response = requests.get(
+    "https://api.innova-trading.com/api/external/bars/EURUSD/60",
+    headers={"Authorization": f"Bearer {API_KEY}"}
+)
+```
+
+### Ejemplo con JavaScript
+
+```javascript
+const response = await fetch(
+  "https://api.innova-trading.com/api/external/bars/EURUSD/60",
+  {
+    headers: { Authorization: `Bearer ${API_KEY}` }
+  }
+);
+```
+
+## Permisos de la API Key
+
+Cada API key tiene permisos especificos:
+
+| Permiso | Descripcion |
+|---------|-------------|
+| `symbols` | Simbolos a los que puedes acceder (ej: EURUSD, GBPUSD) |
+| `timeframes` | Timeframes permitidos (ej: 60, 240, 1440) |
+| `rate_limit` | Limite de solicitudes por hora |
+
+<Note>
+  Por defecto, las nuevas API keys tienen acceso a pares mayores de forex en timeframes H1 y superiores.
+  Contactanos para solicitar acceso adicional.
+</Note>
+
+## Respuestas de Error
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "unauthorized",
+  "message": "API key invalida o no proporcionada"
+}
+```
+
+**Solucion**: Verifica que tu API key sea correcta y este en el header `Authorization`.
+
+### 403 Forbidden
+
+```json
+{
+  "error": "forbidden",
+  "message": "No tienes acceso al simbolo XAUUSD"
+}
+```
+
+**Solucion**: Tu API key no tiene permisos para este recurso. Contactanos para solicitar acceso.
+
+### 429 Too Many Requests
+
+```json
+{
+  "error": "rate_limited",
+  "message": "Has excedido el limite de solicitudes. Intenta de nuevo en 60 segundos.",
+  "retry_after": 60
+}
+```
+
+**Solucion**: Espera el tiempo indicado antes de hacer mas solicitudes.
+
+## Mejores Practicas de Seguridad
+
+<CardGroup cols={2}>
+  <Card title="Variables de Entorno" icon="lock">
+    Guarda tu API key en variables de entorno, nunca en el codigo.
+
+    ```bash
+    export INNOVA_API_KEY="tu_key"
+    ```
+  </Card>
+  <Card title="No Compartir" icon="eye-slash">
+    Nunca compartas tu API key en repositorios publicos, chats o foros.
+  </Card>
+  <Card title="Rotar Periodicamente" icon="rotate">
+    Genera una nueva API key cada 90 dias por seguridad.
+  </Card>
+  <Card title="Un Key por Aplicacion" icon="code-branch">
+    Usa diferentes API keys para diferentes aplicaciones o entornos.
+  </Card>
+</CardGroup>
+
+## Ejemplo: Configuracion Segura
+
+```python
+import os
+import requests
+
+# Leer API key de variable de entorno
+API_KEY = os.environ.get("INNOVA_API_KEY")
+
+if not API_KEY:
+    raise ValueError("INNOVA_API_KEY no esta configurada")
+
+# Usar en solicitudes
+response = requests.get(
+    "https://api.innova-trading.com/api/external/bars/EURUSD/60",
+    headers={"Authorization": f"Bearer {API_KEY}"}
+)
+```
+
+```javascript
+// Leer API key de variable de entorno
+const API_KEY = process.env.INNOVA_API_KEY;
+
+if (!API_KEY) {
+  throw new Error("INNOVA_API_KEY no esta configurada");
+}
+
+// Usar en solicitudes
+const response = await fetch(
+  "https://api.innova-trading.com/api/external/bars/EURUSD/60",
+  { headers: { Authorization: `Bearer ${API_KEY}` } }
+);
+```
+
+## Archivo .env
+
+Crea un archivo `.env` en tu proyecto:
+
+```env
+INNOVA_API_KEY=tu_api_key_aqui
+```
+
+<Warning>
+  Asegurate de agregar `.env` a tu `.gitignore` para no subirlo accidentalmente a Git.
+</Warning>
+
+## Siguientes Pasos
+
+<CardGroup cols={2}>
+  <Card title="Inicio Rapido" icon="rocket" href="/es/quickstart">
+    Crea tu primer indicador
+  </Card>
+  <Card title="Referencia API" icon="code" href="/es/api-reference/introduction">
+    Documentacion completa de endpoints
+  </Card>
+</CardGroup>
