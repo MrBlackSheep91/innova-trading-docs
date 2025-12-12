@@ -16,13 +16,6 @@
       "to": "#8B5CF6"
     }
   },
-  "i18n": {
-    "defaultLocale": "en",
-    "locales": {
-      "en": "English",
-      "es": "Español"
-    }
-  },
   "topbarLinks": [
     {
       "name": "Dashboard",
