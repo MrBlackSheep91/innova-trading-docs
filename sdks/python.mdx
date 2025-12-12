@@ -68,18 +68,20 @@ class InnovaTradingClient:
         timeframe: int,
         indicator_name: str,
         points: List[Dict[str, Any]],
+        lines: Optional[List[Dict[str, Any]]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         version: str = "1.0"
     ) -> Dict[str, Any]:
         """
-        Submit indicator points to be displayed on chart.
+        Submit indicator points and lines to be displayed on chart.
 
         Args:
             indicator_id: Unique identifier for your indicator
             symbol: Trading pair
             timeframe: Timeframe in minutes
             indicator_name: Display name in UI
-            points: List of signal points
+            points: List of signal points (markers/arrows)
+            lines: List of horizontal lines (SL/TP levels)
             metadata: Optional analytics data
             version: Indicator version
 
@@ -93,7 +95,8 @@ class InnovaTradingClient:
             "timeframe": timeframe,
             "indicator_name": indicator_name,
             "version": version,
-            "points": points
+            "points": points,
+            "lines": lines or []
         }
 
         if metadata:
@@ -403,6 +406,112 @@ class IndicatorPayload(TypedDict):
     points: List[SignalPoint]
     metadata: Optional[dict]
 ```
+
+## Using Lines for SL/TP Levels
+
+Lines are horizontal levels that extend across multiple bars - perfect for Stop Loss and Take Profit zones:
+
+```python
+def create_signal_with_lines(
+    client: InnovaTradingClient,
+    symbol: str,
+    timeframe: int,
+    signal_type: str,
+    entry_price: float,
+    stop_loss: float,
+    take_profits: List[float],
+    bar_time: int
+) -> Dict[str, Any]:
+    """Create a signal with Entry arrow + SL/TP horizontal lines."""
+
+    signal_id = f"signal_{bar_time}"
+
+    # Entry point (arrow marker)
+    points = [{
+        "time": bar_time,
+        "type": "low" if signal_type == "BUY" else "high",
+        "price": entry_price,
+        "label": signal_type,
+        "color": "#3b82f6" if signal_type == "BUY" else "#f97316",
+        "shape": "arrowUp" if signal_type == "BUY" else "arrowDown",
+        "size": 2
+    }]
+
+    # Horizontal lines (extend 15 bars)
+    lines = [
+        {
+            "id": f"{signal_id}_entry",
+            "price": entry_price,
+            "start_time": bar_time,
+            "bars": 15,
+            "label": f"Entry: {entry_price:.5f}",
+            "color": "#3b82f6",
+            "style": "dashed",
+            "width": 1
+        },
+        {
+            "id": f"{signal_id}_sl",
+            "price": stop_loss,
+            "start_time": bar_time,
+            "bars": 15,
+            "label": f"SL: {stop_loss:.5f}",
+            "color": "#ef4444",
+            "style": "solid",
+            "width": 2
+        }
+    ]
+
+    # Add TP lines
+    tp_colors = ["#22c55e", "#10b981", "#059669"]
+    for i, tp_price in enumerate(take_profits):
+        lines.append({
+            "id": f"{signal_id}_tp{i+1}",
+            "price": tp_price,
+            "start_time": bar_time,
+            "bars": 15,
+            "label": f"TP{i+1}: {tp_price:.5f}",
+            "color": tp_colors[i % len(tp_colors)],
+            "style": "dotted",
+            "width": 1
+        })
+
+    return client.submit_indicator(
+        indicator_id="trading_signals",
+        symbol=symbol,
+        timeframe=timeframe,
+        indicator_name="Trading Signals with Lines",
+        points=points,
+        lines=lines
+    )
+
+# Usage
+client = InnovaTradingClient("YOUR_API_KEY")
+df = client.get_bars("EURUSD", 60, limit=1)
+
+result = create_signal_with_lines(
+    client=client,
+    symbol="EURUSD",
+    timeframe=60,
+    signal_type="BUY",
+    entry_price=1.1725,
+    stop_loss=1.1695,
+    take_profits=[1.1755, 1.1785, 1.1815],
+    bar_time=int(df.iloc[-1]["time"])
+)
+
+print(f"Points: {result['points_received']}, Lines: {result['lines_received']}")
+```
+
+## Download Complete Examples
+
+<CardGroup cols={2}>
+  <Card title="Python Example" icon="python" href="/examples/signal_generator.py">
+    Complete signal generator with Lines support
+  </Card>
+  <Card title="JavaScript Example" icon="js" href="/examples/signal_generator.js">
+    Node.js version with async/await
+  </Card>
+</CardGroup>
 
 ## Next Steps
 
