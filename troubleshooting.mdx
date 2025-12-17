@@ -1,9 +1,127 @@
 ---
 title: 'Troubleshooting'
 description: 'Common errors and how to fix them'
+icon: 'wrench'
 ---
 
-## Common Errors
+## EA Connection Errors {#ea-errors}
+
+These errors appear in your MetaTrader **Experts** tab when the InnovaTrading EA has issues.
+
+### Error 401 - Unauthorized
+
+```
+InnovaTrading EA: HTTP Error 401 - Unauthorized
+```
+
+**Causes:**
+- Invalid API token
+- Token has been revoked
+- Token has expired (after 1 year)
+
+**Solution:**
+1. Go to [Connections](https://innova-trading.com/dashboard/connect)
+2. Generate a new token
+3. Update the `API_TOKEN` in your EA settings
+
+---
+
+### Error 4014 / Error 4060 - WebRequest Failed
+
+```
+InnovaTrading EA: Error 4014 - WebRequest to URL failed
+```
+or
+```
+InnovaTrading EA: Error 4060 - Function is not allowed for call
+```
+
+**Cause:** MetaTrader doesn't allow WebRequest to our server URL.
+
+**Solution:**
+1. Go to **Tools** → **Options** → **Expert Advisors**
+2. Check ✅ **Allow WebRequest for listed URL**
+3. Click **Add** and enter: `https://cloud.innova-trading.com`
+4. Click **OK** and restart the EA
+
+<Frame caption="WebRequest configuration">
+  <img src="/images/mt5-webrequest.png" alt="MT5 WebRequest settings" />
+</Frame>
+
+---
+
+### EA Shows "Waiting..." Forever
+
+```
+InnovaTrading EA: Waiting for connection...
+```
+
+**Causes:**
+1. Token field is empty
+2. Token is invalid
+3. Network connectivity issue
+
+**Solution:**
+1. Double-click the EA on your chart to open settings
+2. Verify `API_TOKEN` field has your token (not empty)
+3. Check your internet connection
+4. Try disabling firewall temporarily
+
+---
+
+### Smiley Face Shows X (Auto-Trading Disabled)
+
+**Cause:** MetaTrader's global auto-trading is disabled.
+
+**Solution:**
+1. Click the **AutoTrading** button in MT4/MT5 toolbar (should turn green)
+2. Or: Right-click the EA → **Allow Algorithmic Trading**
+
+---
+
+### No Data Appears on Dashboard
+
+**Possible causes:**
+1. EA just started - wait 10-15 seconds
+2. Token not linked to your account yet
+3. Backend temporarily unavailable
+
+**Solution:**
+1. Wait 15 seconds and refresh your dashboard
+2. Check the Experts tab for any error messages
+3. Verify token status on [Connections page](https://innova-trading.com/dashboard/connect)
+
+---
+
+### "Account Already Linked" Error
+
+```
+InnovaTrading EA: Error - Token already linked to different account
+```
+
+**Cause:** You're trying to use a token that was already used with a different MT4/MT5 account.
+
+**Solution:**
+1. Generate a new token for this account, OR
+2. Disconnect the original account to free up the token
+
+---
+
+### Connection Drops Frequently
+
+**Causes:**
+1. Unstable internet connection
+2. MetaTrader going to sleep/low priority
+3. VPS resource constraints
+
+**Solutions:**
+1. Use a wired internet connection instead of WiFi
+2. Disable MetaTrader power saving features
+3. On VPS: Increase RAM allocation and disable Windows sleep
+
+---
+
+## API Errors
 
 ### 401 Unauthorized
 

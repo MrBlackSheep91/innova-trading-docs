@@ -1,0 +1,209 @@
+---
+title: 'Configuración Multi-Cuenta'
+description: 'Conecta y gestiona múltiples cuentas MT4/MT5'
+icon: 'users'
+---
+
+## Resumen
+
+InnovaTrading soporta conectar **múltiples cuentas de trading** simultáneamente. Esto es perfecto para:
+
+- Gestionar cuentas **demo y live** lado a lado
+- Seguir cuentas en **diferentes brokers**
+- Ejecutar **múltiples estrategias** en cuentas separadas
+- Traders profesionales con **cuentas de prop firms**
+
+---
+
+## Cómo Funciona
+
+Cada cuenta necesita su propio token API:
+
+```
+Dashboard InnovaTrading
+├── Token A → ICMarkets Live #12345
+├── Token B → Pepperstone Demo #67890
+└── Token C → FTMO Challenge #11111
+```
+
+Todas las cuentas aparecen en tu dashboard unificado, pero los datos se mantienen separados.
+
+---
+
+## Configurar Múltiples Cuentas
+
+<Steps>
+  <Step title="Genera Token para Primera Cuenta">
+    Ve a [Conexiones](https://innova-trading.com/dashboard/connect) y crea un token.
+
+    Nómbralo descriptivamente: "ICMarkets Live"
+  </Step>
+
+  <Step title="Instala EA en Primer Terminal">
+    Sigue la [guía de instalación](/es/guides/install-ea) con este token.
+
+    Espera hasta que la cuenta muestre **Conectado**.
+  </Step>
+
+  <Step title="Genera Token para Segunda Cuenta">
+    Haz clic en **+ Nueva Conexión** nuevamente para generar otro token.
+
+    Nómbralo: "Pepperstone Demo"
+  </Step>
+
+  <Step title="Instala EA en Segundo Terminal">
+    En tu segunda instalación de MT4/MT5, adjunta el EA con el segundo token.
+  </Step>
+
+  <Step title="Repite para Cuentas Adicionales">
+    Genera un nuevo token para cada cuenta que quieras conectar.
+  </Step>
+</Steps>
+
+<Info>
+  Cada token se bloquea automáticamente a su cuenta en el primer uso. No puedes reusar un token para una cuenta diferente.
+</Info>
+
+---
+
+## Vista del Dashboard
+
+Una vez conectadas, todas las cuentas aparecen en tu dashboard:
+
+```
+┌────────────────────────────────────────────────────────────┐
+│ Conexiones                                                  │
+├────────────────────────────────────────────────────────────┤
+│ ▶ #12345 • ICMarkets-Live          [Conectado]    hace 2m  │
+│ ▶ #67890 • Pepperstone-Demo        [Conectado]    hace 5m  │
+│ ▶ #11111 • FTMO-Challenge          [Offline]      hace 2h  │
+│ 🔑 Token "Nueva Cuenta"             [Pendiente]            │
+└────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Cambiar Entre Cuentas
+
+En la plataforma InnovaTrading, puedes cambiar entre cuentas para ver:
+
+- **InnovaCharts**: Usa datos de cualquier cuenta conectada
+- **Dashboard**: Muestra estadísticas por cuenta
+- **Auditoría**: Historial de trades por cuenta
+- **Analytics**: Métricas de rendimiento por cuenta
+
+<Tip>
+  Usa el selector de cuenta en la navegación superior para cambiar entre cuentas conectadas.
+</Tip>
+
+---
+
+## Mismo Broker, Múltiples Cuentas
+
+Puedes conectar múltiples cuentas del **mismo broker**:
+
+| Cuenta | Token | Estado |
+|--------|-------|--------|
+| ICMarkets #12345 (Live) | Token A | Conectado |
+| ICMarkets #67890 (Demo) | Token B | Conectado |
+| ICMarkets #11111 (Contest) | Token C | Pendiente |
+
+Solo asegúrate de que cada cuenta tenga su propio token único.
+
+---
+
+## Mismo Terminal, Múltiples EAs
+
+<Warning>
+  Solo puedes adjuntar **un EA por gráfico** en MetaTrader. Sin embargo, puedes:
+</Warning>
+
+**Opción 1: Múltiples Gráficos**
+- Abre múltiples gráficos en el mismo terminal
+- Adjunta una instancia diferente del EA a cada gráfico
+- Cada uno con un token diferente
+
+**Opción 2: Múltiples Instalaciones de Terminal**
+- Instala MT4/MT5 múltiples veces en diferentes carpetas
+- Ejecuta cada instalación simultáneamente
+- Más confiable para uso en producción
+
+**Recomendación:** Para gestión seria de multi-cuenta, usa múltiples instalaciones de terminal o un VPS para cada cuenta.
+
+---
+
+## Multi-Cuenta en VPS
+
+Para monitoreo 24/7 de múltiples cuentas:
+
+<Steps>
+  <Step title="Configura VPS">
+    Obtén un VPS (Windows Server recomendado) con recursos suficientes:
+    - 1 GB RAM por instancia MT4/MT5
+    - 20 GB almacenamiento mínimo
+  </Step>
+
+  <Step title="Instala Múltiples Terminales">
+    Instala MT4/MT5 en carpetas separadas:
+    ```
+    C:\MT5_ICMarkets\
+    C:\MT5_Pepperstone\
+    C:\MT4_FTMO\
+    ```
+  </Step>
+
+  <Step title="Genera Tokens">
+    Crea un token único para cada cuenta
+  </Step>
+
+  <Step title="Configura Cada Terminal">
+    Sigue la [guía de instalación del EA](/es/guides/install-ea) para cada uno
+  </Step>
+
+  <Step title="Configura Auto-Inicio">
+    Configura el Programador de Tareas de Windows para iniciar cada terminal al arrancar el sistema
+  </Step>
+</Steps>
+
+---
+
+## Analíticas Agregadas
+
+Con múltiples cuentas conectadas, obtienes:
+
+- **Curva de equity combinada** de todas las cuentas
+- **Desglose por cuenta** del rendimiento
+- **Comparación de trades** entre cuentas
+- **Búsqueda unificada** de historial de trades
+
+---
+
+## Límites
+
+| Característica | Límite |
+|----------------|--------|
+| Tokens por usuario | Ilimitado |
+| Cuentas conectadas | Ilimitado |
+| Cuentas online simultáneas | Ilimitado |
+| Retención de datos | Según tu plan |
+
+---
+
+## Próximos Pasos
+
+<CardGroup cols={2}>
+  <Card
+    title="Gestión de Tokens"
+    icon="key"
+    href="/es/guides/create-token"
+  >
+    Aprende características avanzadas de tokens
+  </Card>
+  <Card
+    title="Solución de Problemas"
+    icon="wrench"
+    href="/es/troubleshooting#errores-ea"
+  >
+    Soluciona problemas de conexión
+  </Card>
+</CardGroup>

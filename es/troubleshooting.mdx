@@ -114,6 +114,124 @@ GET /api/external/indicators/mi_indicador?symbol=EURUSD&timeframe=60
 
 ---
 
+## Errores de Conexión EA {#errores-ea}
+
+Estos errores ocurren cuando usas el Expert Advisor de InnovaTrading en MetaTrader.
+
+### Error 401 - No Autorizado
+
+```
+InnovaTrading EA: Error 401 - Unauthorized
+```
+
+**Causas:**
+- Token API inválido o expirado
+- Token ya fue revocado
+- Token pertenece a otra cuenta de usuario
+
+**Solución:**
+1. Ve a [Conexiones](https://innova-trading.com/dashboard/connect)
+2. Genera un nuevo token
+3. Actualiza el campo `API_TOKEN` en la configuración del EA
+
+---
+
+### Error 4014/4060 - WebRequest Falló
+
+```
+InnovaTrading EA: Error 4014 - WebRequest failed
+InnovaTrading EA: Error 4060 - Function is not allowed
+```
+
+**Causa:** MetaTrader no tiene permiso para conectar a nuestros servidores.
+
+**Solución:**
+1. Ve a **Herramientas** → **Opciones** → pestaña **Expert Advisors**
+2. Marca ✅ **Permitir WebRequest para las URLs listadas**
+3. Agrega `https://cloud.innova-trading.com`
+4. Haz clic en **OK** y reinicia el EA
+
+---
+
+### EA Muestra "Waiting..." Infinitamente
+
+**Causas:**
+- Token no configurado
+- URL del backend incorrecta
+- Firewall bloqueando conexiones
+
+**Solución:**
+1. Verifica que `API_TOKEN` tenga un valor válido
+2. Verifica que `BackendURL` sea `https://cloud.innova-trading.com`
+3. Revisa configuración de firewall/antivirus
+4. Intenta reiniciar MetaTrader
+
+---
+
+### Auto-Trading Deshabilitado
+
+El icono del EA muestra **X** en vez de carita feliz.
+
+**Solución:**
+1. Haz clic en el botón **AutoTrading** en la barra de herramientas de MT4/MT5
+2. O haz doble clic en el EA y marca **Permitir trading en vivo**
+
+<Warning>
+  El EA NO ejecuta operaciones - solo lee datos. Pero MetaTrader requiere este permiso para que el EA funcione.
+</Warning>
+
+---
+
+### Sin Datos en Dashboard
+
+El EA está conectado pero no aparecen datos en el dashboard.
+
+**Causas:**
+- El terminal MT4/MT5 no tiene mercado abierto
+- No hay símbolos cargados en el terminal
+- Error de sincronización
+
+**Solución:**
+1. Asegúrate de que el mercado esté abierto
+2. Abre al menos un gráfico de cualquier símbolo
+3. Espera 60 segundos para sincronización inicial
+4. Revisa la pestaña **Experts** por mensajes de error
+
+---
+
+### Error - Cuenta Ya Vinculada
+
+```
+InnovaTrading EA: Error - Account already linked to another token
+```
+
+**Causa:** Esta cuenta MT4/MT5 ya está conectada con otro token.
+
+**Solución:**
+1. Ve a [Conexiones](https://innova-trading.com/dashboard/connect)
+2. Encuentra la cuenta existente
+3. Haz clic en **Desconectar** si quieres usar un token diferente
+4. Usa el token original o genera uno nuevo
+
+---
+
+### Desconexiones Frecuentes
+
+El EA se conecta pero se desconecta cada pocos minutos.
+
+**Posibles causas:**
+- Conexión a internet inestable
+- VPS con recursos insuficientes
+- MetaTrader entrando en modo sleep
+
+**Soluciones:**
+1. Usa una conexión de internet más estable
+2. Asegúrate de que tu VPS tenga al menos 1GB RAM
+3. Desactiva el modo ahorro de energía en Windows
+4. Mantén el terminal MT4/MT5 en primer plano
+
+---
+
 ## Rate Limiting
 
 Si recibes un error `429 Too Many Requests`:
