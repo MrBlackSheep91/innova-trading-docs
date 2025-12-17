@@ -1,0 +1,103 @@
+---
+title: 'Conectar MT4/MT5'
+description: 'Conecta tu terminal MetaTrader a InnovaTrading en minutos'
+icon: 'link'
+---
+
+## Resumen
+
+InnovaTrading se conecta a tu terminal MetaTrader 4 o MetaTrader 5 mediante un **Expert Advisor (EA)**. Una vez conectado, obtienes:
+
+- **Datos de mercado en tiempo real** de tu broker
+- **Información de cuenta** (balance, equity, margen)
+- **Historial de trades** sincronizado automáticamente
+- **Seguimiento de posiciones** actualizado cada segundo
+- **Soporte multi-cuenta** - conecta tantas cuentas como quieras
+
+## Cómo Funciona
+
+1. **Instalas** el EA de InnovaTrading en tu terminal MetaTrader
+2. **El EA se conecta** a Innova Cloud usando tu token API personal
+3. **Los datos fluyen** de forma segura a tu dashboard de InnovaTrading
+4. **Analizas** con nuestras herramientas avanzadas de gráficos
+
+<Note>
+  Tus credenciales de trading nunca salen de tu terminal. El EA solo lee y envía datos de mercado - NO ejecuta operaciones.
+</Note>
+
+## Inicio Rápido
+
+<Steps>
+  <Step title="Genera un Token">
+    Ve a [Conexiones](/dashboard/connect) y haz clic en **+ Nueva Conexión** para generar un token API.
+  </Step>
+
+  <Step title="Descarga el EA">
+    Descarga el Expert Advisor para tu plataforma:
+
+    <CardGroup cols={2}>
+      <Card title="MetaTrader 5" icon="download" href="https://innova-trading.com/downloads/InnovaTrading_v5.ex5">
+        Descargar archivo .ex5
+      </Card>
+      <Card title="MetaTrader 4" icon="download" href="https://innova-trading.com/downloads/InnovaTrading_MT4_v1.ex4">
+        Descargar archivo .ex4
+      </Card>
+    </CardGroup>
+  </Step>
+
+  <Step title="Instala y Configura">
+    Copia el EA a tu carpeta de datos de MetaTrader y configura tu token.
+
+    [Guía de Instalación Completa](/es/guides/install-ea)
+  </Step>
+
+  <Step title="Verifica la Conexión">
+    Revisa tu [página de Conexiones](/dashboard/connect) - deberías ver tu cuenta aparecer en segundos.
+  </Step>
+</Steps>
+
+## Seguridad
+
+<Info>
+  **Tus datos están seguros.** Toda la comunicación usa encriptación HTTPS. Las credenciales de tu broker nunca se transmiten - solo datos de mercado.
+</Info>
+
+| Datos Enviados | Datos NO Enviados |
+|----------------|-------------------|
+| Precios de símbolos | Contraseña del broker |
+| Balance/equity de cuenta | Información personal |
+| Posiciones abiertas | Permisos de trading |
+| Historial de trades | Códigos 2FA |
+
+## Próximos Pasos
+
+<CardGroup cols={2}>
+  <Card
+    title="Instalar el EA"
+    icon="download"
+    href="/es/guides/install-ea"
+  >
+    Guía paso a paso de instalación
+  </Card>
+  <Card
+    title="Crear Tokens"
+    icon="key"
+    href="/es/guides/create-token"
+  >
+    Gestiona tus tokens API
+  </Card>
+  <Card
+    title="Multi-Cuenta"
+    icon="users"
+    href="/es/guides/multi-account"
+  >
+    Conecta múltiples cuentas
+  </Card>
+  <Card
+    title="Solución de Problemas"
+    icon="wrench"
+    href="/es/troubleshooting#errores-ea"
+  >
+    Soluciona problemas de conexión
+  </Card>
+</CardGroup>

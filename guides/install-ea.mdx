@@ -1,0 +1,285 @@
+---
+title: 'Install the Expert Advisor'
+description: 'Complete guide to installing the InnovaTrading EA on MetaTrader'
+icon: 'download'
+---
+
+## Download the EA
+
+First, download the correct file for your platform:
+
+<CardGroup cols={2}>
+  <Card title="MetaTrader 5" icon="chart-line" href="https://innova-trading.com/downloads/InnovaTrading_v5.ex5">
+    **InnovaTrading_v5.ex5**
+
+    For MT5 terminals
+  </Card>
+  <Card title="MetaTrader 4" icon="chart-bar" href="https://innova-trading.com/downloads/InnovaTrading_MT4_v1.ex4">
+    **InnovaTrading_MT4_v1.ex4**
+
+    For MT4 terminals
+  </Card>
+</CardGroup>
+
+---
+
+## Step 1: Find Your Data Folder
+
+<Tabs>
+  <Tab title="MetaTrader 5">
+    1. Open MetaTrader 5
+    2. Go to **File** → **Open Data Folder**
+    3. Navigate to `MQL5/Experts/`
+    4. Copy the `.ex5` file here
+
+    ```
+    [MT5 Data Folder]
+    └── MQL5
+        └── Experts
+            └── InnovaTrading_v5.ex5  ← Place here
+    ```
+  </Tab>
+  <Tab title="MetaTrader 4">
+    1. Open MetaTrader 4
+    2. Go to **File** → **Open Data Folder**
+    3. Navigate to `MQL4/Experts/`
+    4. Copy the `.ex4` file here
+
+    ```
+    [MT4 Data Folder]
+    └── MQL4
+        └── Experts
+            └── InnovaTrading_MT4_v1.ex4  ← Place here
+    ```
+  </Tab>
+</Tabs>
+
+<Tip>
+  After copying the file, you may need to **right-click** on "Expert Advisors" in the Navigator panel and select **Refresh** to see it.
+</Tip>
+
+---
+
+## Step 2: Allow WebRequest
+
+The EA needs permission to communicate with our servers.
+
+<Steps>
+  <Step title="Open Options">
+    Go to **Tools** → **Options** (or press `Ctrl+O`)
+  </Step>
+
+  <Step title="Expert Advisors Tab">
+    Click the **Expert Advisors** tab
+  </Step>
+
+  <Step title="Enable Required Options">
+    Check these boxes:
+    - ✅ **Allow algorithmic trading**
+    - ✅ **Allow WebRequest for listed URL**
+  </Step>
+
+  <Step title="Add Our URL">
+    Click **Add** and enter:
+    ```
+    https://cloud.innova-trading.com
+    ```
+  </Step>
+
+  <Step title="Save">
+    Click **OK** to save the settings
+  </Step>
+</Steps>
+
+<Frame caption="WebRequest configuration in MT5">
+  <img src="/images/mt5-webrequest.png" alt="MT5 WebRequest settings" />
+</Frame>
+
+<Warning>
+  If you skip this step, the EA will show **Error 4014** or **Error 4060** when trying to connect.
+</Warning>
+
+---
+
+## Step 3: Attach EA to Chart
+
+<Steps>
+  <Step title="Open a Chart">
+    Open any chart (symbol doesn't matter - the EA will report all available symbols)
+  </Step>
+
+  <Step title="Find the EA">
+    In the **Navigator** panel (Ctrl+N), expand **Expert Advisors** and find **InnovaTrading**
+  </Step>
+
+  <Step title="Drag to Chart">
+    Drag the EA onto your chart, or double-click it
+  </Step>
+
+  <Step title="Configure Settings">
+    A settings dialog will appear. Go to the **Inputs** tab.
+  </Step>
+</Steps>
+
+---
+
+## Step 4: Configure Your Token
+
+In the EA settings dialog, you'll see these inputs:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `API_TOKEN` | **Your personal token** (required) | *empty* |
+| `BackendURL` | Server URL | `https://cloud.innova-trading.com` |
+| `UpdateInterval` | Data sync frequency (seconds) | `1` |
+| `SendHistory` | Sync trade history | `true` |
+| `HistoryDays` | Days of history to send | `30` |
+
+<Steps>
+  <Step title="Get Your Token">
+    Go to [innova-trading.com/dashboard/connect](https://innova-trading.com/dashboard/connect) and generate a token if you haven't already.
+  </Step>
+
+  <Step title="Paste the Token">
+    In the EA settings, paste your token into the `API_TOKEN` field.
+
+    <Warning>
+      The token is only shown **once** when generated. If you lost it, generate a new one.
+    </Warning>
+  </Step>
+
+  <Step title="Enable Auto Trading">
+    Make sure these are checked:
+    - ✅ **Allow live trading** (in the "Common" tab)
+    - ✅ **Allow DLL imports** (only if prompted)
+  </Step>
+
+  <Step title="Click OK">
+    The EA will start connecting immediately.
+  </Step>
+</Steps>
+
+---
+
+## Step 5: Verify Connection
+
+### Check the EA Status
+
+Look at the top-right corner of your chart. You should see a "smiley face" icon, indicating the EA is running.
+
+<Frame caption="EA running successfully">
+  <img src="/images/ea-running.png" alt="EA running on chart" />
+</Frame>
+
+### Check the Experts Tab
+
+Go to **View** → **Toolbox** → **Experts** tab (or press `Ctrl+T`).
+
+You should see messages like:
+
+```
+InnovaTrading EA v5.0 initialized
+Connecting to cloud.innova-trading.com...
+Connected! Account: 12345678 (ICMarkets-Live)
+Symbols loaded: 45
+Sending account data...
+Ready.
+```
+
+### Check Your Dashboard
+
+Go to [innova-trading.com/dashboard/connect](https://innova-trading.com/dashboard/connect).
+
+Your account should appear as **Connected** within a few seconds.
+
+---
+
+## Common Issues
+
+<AccordionGroup>
+  <Accordion title="EA shows 'Waiting...' forever">
+    **Causes:**
+    - Missing or invalid API token
+    - WebRequest not enabled
+
+    **Fix:** Double-click the EA on your chart, verify the token is correct, and check that WebRequest is enabled for `https://cloud.innova-trading.com`
+  </Accordion>
+
+  <Accordion title="Error 4014 or Error 4060">
+    **Cause:** WebRequest URL not allowed
+
+    **Fix:** Go to Tools → Options → Expert Advisors and add:
+    ```
+    https://cloud.innova-trading.com
+    ```
+  </Accordion>
+
+  <Accordion title="Error 401 - Unauthorized">
+    **Cause:** Invalid or expired API token
+
+    **Fix:** Generate a new token from your [Connections page](https://innova-trading.com/dashboard/connect)
+  </Accordion>
+
+  <Accordion title="EA icon shows 'X' instead of smiley face">
+    **Cause:** Auto-trading is disabled
+
+    **Fix:**
+    1. Click the "AutoTrading" button in MT4/MT5 toolbar
+    2. Or check "Allow live trading" in EA settings
+  </Accordion>
+
+  <Accordion title="No data appears on dashboard">
+    **Cause:** Connection delay or token not linked
+
+    **Fix:** Wait 5-10 seconds after attaching the EA. Check the Experts tab for any error messages.
+  </Accordion>
+</AccordionGroup>
+
+For more issues, see the [Troubleshooting Guide](/troubleshooting#ea-errors).
+
+---
+
+## VPS Installation
+
+Running MT4/MT5 on a VPS? The installation is identical:
+
+1. Connect to your VPS via Remote Desktop
+2. Download the EA file directly on the VPS
+3. Follow the same steps above
+
+<Tip>
+  **VPS Recommendation:** For 24/7 connectivity, use a VPS close to your broker's servers. Popular options include ForexVPS, BeeksFX, and commercial VPS providers.
+</Tip>
+
+---
+
+## Multiple Terminals
+
+You can run the EA on multiple MT4/MT5 terminals simultaneously:
+
+- Each terminal needs its **own API token**
+- Tokens automatically lock to their first account
+- All accounts appear in your dashboard
+
+See [Multi-Account Setup](/guides/multi-account) for details.
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Create Tokens"
+    icon="key"
+    href="/guides/create-token"
+  >
+    Learn about token management
+  </Card>
+  <Card
+    title="Multi-Account"
+    icon="users"
+    href="/guides/multi-account"
+  >
+    Connect additional accounts
+  </Card>
+</CardGroup>

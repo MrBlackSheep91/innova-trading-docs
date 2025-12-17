@@ -47,7 +47,17 @@
                 "pages": [
                   "introduction",
                   "quickstart",
-                  "authentication"
+                  "authentication",
+                  "troubleshooting"
+                ]
+              },
+              {
+                "group": "MT4/MT5 Connection",
+                "pages": [
+                  "guides/connect-overview",
+                  "guides/install-ea",
+                  "guides/create-token",
+                  "guides/multi-account"
                 ]
               },
               {
@@ -59,7 +69,7 @@
                 ]
               },
               {
-                "group": "Guides",
+                "group": "Indicator Guides",
                 "pages": [
                   "guides/first-indicator",
                   "guides/complete-examples",
@@ -128,7 +138,17 @@
                 "pages": [
                   "es/introduction",
                   "es/quickstart",
-                  "es/authentication"
+                  "es/authentication",
+                  "es/troubleshooting"
+                ]
+              },
+              {
+                "group": "Conexión MT4/MT5",
+                "pages": [
+                  "es/guides/connect-overview",
+                  "es/guides/install-ea",
+                  "es/guides/create-token",
+                  "es/guides/multi-account"
                 ]
               },
               {
@@ -140,7 +160,7 @@
                 ]
               },
               {
-                "group": "Guías",
+                "group": "Guías de Indicadores",
                 "pages": [
                   "es/guides/first-indicator",
                   "es/guides/complete-examples",

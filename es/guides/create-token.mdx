@@ -1,0 +1,202 @@
+---
+title: 'Tokens API'
+description: 'Crea y gestiona tokens para conexiones MT4/MT5'
+icon: 'key'
+---
+
+## ¿Qué es un Token API?
+
+Un token API es una clave segura que autentica tu Expert Advisor de MT4/MT5 con InnovaTrading. Piensa en él como una contraseña específica para tu terminal de trading.
+
+**Características clave:**
+- Cada token es **único** y solo puede ser usado por una cuenta MT4/MT5
+- Los tokens se **auto-bloquean** a la primera cuenta que los usa
+- Puedes tener **múltiples tokens** para múltiples cuentas
+- Los tokens pueden ser **revocados** en cualquier momento
+
+---
+
+## Generar un Nuevo Token
+
+<Steps>
+  <Step title="Ve a Conexiones">
+    Navega a [innova-trading.com/dashboard/connect](https://innova-trading.com/dashboard/connect)
+  </Step>
+
+  <Step title="Haz Clic en Nueva Conexión">
+    Haz clic en el botón **+ Nueva Conexión** arriba a la derecha
+  </Step>
+
+  <Step title="Nombra tu Token (Opcional)">
+    Ingresa un nombre descriptivo como:
+    - "ICMarkets Demo"
+    - "Pepperstone Live"
+    - "Cuenta VPS"
+
+    Esto te ayuda a identificar qué token es cuál después.
+  </Step>
+
+  <Step title="Generar">
+    Haz clic en **Generar Token**
+  </Step>
+
+  <Step title="¡Copia Inmediatamente!">
+    <Warning>
+      El token solo se muestra **UNA VEZ**. Cópialo inmediatamente y guárdalo de forma segura.
+    </Warning>
+
+    Haz clic en el botón de copiar para copiar al portapapeles.
+  </Step>
+</Steps>
+
+---
+
+## Estados de Token
+
+Tus tokens pueden estar en diferentes estados:
+
+| Estado | Descripción | Icono |
+|--------|-------------|-------|
+| **Pendiente** | Token creado pero aún no usado por ningún EA | 🔑 Amarillo |
+| **Conectado** | Token vinculado a una cuenta y EA en línea | ▶️ Verde |
+| **Offline** | Token vinculado pero EA no está corriendo | ▶️ Gris |
+| **Revocado** | Token eliminado y ya no puede usarse | 🗑️ Rojo |
+
+---
+
+## Bloqueo de Token
+
+Cuando usas un token por primera vez en tu EA, se **bloquea automáticamente** a esa cuenta MT4/MT5 específica:
+
+**¿Por qué el bloqueo?**
+- Previene robo de tokens - si alguien roba tu token, no puede usarlo en una cuenta diferente
+- Asegura integridad de datos - los datos de cada cuenta se mantienen separados
+- Seguridad - tokens comprometidos tienen impacto limitado
+
+<Info>
+  Si necesitas usar un token con una cuenta diferente, debes **desconectar** la cuenta actual primero, o generar un nuevo token.
+</Info>
+
+---
+
+## Desconectar una Cuenta
+
+Si quieres reusar un token con una cuenta diferente:
+
+<Steps>
+  <Step title="Ve a Conexiones">
+    Navega a [innova-trading.com/dashboard/connect](https://innova-trading.com/dashboard/connect)
+  </Step>
+
+  <Step title="Encuentra tu Cuenta">
+    Localiza la cuenta conectada que quieres desconectar
+  </Step>
+
+  <Step title="Haz Clic en Desconectar">
+    Haz clic en el icono de desvinculación (🔗) junto a la cuenta
+  </Step>
+
+  <Step title="Elige Opción de Historial">
+    - **Mantener historial**: Tu historial de trades permanece en la sección Auditoría
+    - **Eliminar todo**: Elimina permanentemente todos los datos (¡no se puede deshacer!)
+  </Step>
+
+  <Step title="Confirmar">
+    Haz clic en **Desconectar** para confirmar
+  </Step>
+</Steps>
+
+Después de desconectar, el token vuelve a estar "Pendiente" y puede usarse con una nueva cuenta.
+
+---
+
+## Revocar un Token
+
+Si sospechas que un token ha sido comprometido, o simplemente ya no lo necesitas:
+
+<Steps>
+  <Step title="Ve a Conexiones">
+    Navega a [innova-trading.com/dashboard/connect](https://innova-trading.com/dashboard/connect)
+  </Step>
+
+  <Step title="Encuentra el Token">
+    Localiza el token que quieres revocar
+  </Step>
+
+  <Step title="Haz Clic en Eliminar">
+    Haz clic en el icono de papelera (🗑️)
+  </Step>
+
+  <Step title="Confirmar">
+    Confirma la eliminación
+  </Step>
+</Steps>
+
+<Warning>
+  Revocar un token es **inmediato y permanente**. El EA dejará de funcionar instantáneamente y mostrará Error 401.
+</Warning>
+
+---
+
+## Mejores Prácticas
+
+<AccordionGroup>
+  <Accordion title="Usa nombres descriptivos">
+    Nombra tus tokens claramente para saber a qué cuenta pertenecen:
+    - ✅ "ICMarkets Live #12345"
+    - ✅ "Cuenta Demo - Pruebas"
+    - ❌ "Token 1"
+    - ❌ "asdfgh"
+  </Accordion>
+
+  <Accordion title="Un token por cuenta">
+    No intentes usar el mismo token en múltiples terminales para la misma cuenta. Genera tokens separados si es necesario.
+  </Accordion>
+
+  <Accordion title="Revoca tokens no usados">
+    Si ya no usas una cuenta, revoca su token para mantener tu dashboard limpio y seguro.
+  </Accordion>
+
+  <Accordion title="Guarda tokens de forma segura">
+    Trata los tokens como contraseñas:
+    - No los compartas
+    - No los publiques en foros o capturas de pantalla
+    - No los guardes en repositorios git
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Expiración de Token
+
+Los tokens expiran **1 año** después de su creación. Antes de la expiración:
+
+1. Verás una advertencia en tu dashboard
+2. Genera un nuevo token
+3. Actualiza tu EA con el nuevo token
+4. El token viejo deja de funcionar al expirar
+
+<Tip>
+  Pon un recordatorio en tu calendario 11 meses después de crear tokens importantes para no perder conectividad.
+</Tip>
+
+---
+
+## Próximos Pasos
+
+<CardGroup cols={2}>
+  <Card
+    title="Instalar el EA"
+    icon="download"
+    href="/es/guides/install-ea"
+  >
+    Configura tu EA con el token
+  </Card>
+  <Card
+    title="Multi-Cuenta"
+    icon="users"
+    href="/es/guides/multi-account"
+  >
+    Conecta cuentas adicionales
+  </Card>
+</CardGroup>

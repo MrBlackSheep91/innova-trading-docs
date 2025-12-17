@@ -1,0 +1,244 @@
+---
+title: 'Instalar el Expert Advisor'
+description: 'Guía completa para instalar el EA de InnovaTrading en MetaTrader'
+icon: 'download'
+---
+
+## Descargar el EA
+
+Primero, descarga el archivo correcto para tu plataforma:
+
+<CardGroup cols={2}>
+  <Card title="MetaTrader 5" icon="chart-line" href="https://innova-trading.com/downloads/InnovaTrading_v5.ex5">
+    **InnovaTrading_v5.ex5**
+
+    Para terminales MT5
+  </Card>
+  <Card title="MetaTrader 4" icon="chart-bar" href="https://innova-trading.com/downloads/InnovaTrading_MT4_v1.ex4">
+    **InnovaTrading_MT4_v1.ex4**
+
+    Para terminales MT4
+  </Card>
+</CardGroup>
+
+---
+
+## Paso 1: Encuentra tu Carpeta de Datos
+
+<Tabs>
+  <Tab title="MetaTrader 5">
+    1. Abre MetaTrader 5
+    2. Ve a **Archivo** → **Abrir Carpeta de Datos**
+    3. Navega a `MQL5/Experts/`
+    4. Copia el archivo `.ex5` aquí
+
+    ```
+    [Carpeta de Datos MT5]
+    └── MQL5
+        └── Experts
+            └── InnovaTrading_v5.ex5  ← Coloca aquí
+    ```
+  </Tab>
+  <Tab title="MetaTrader 4">
+    1. Abre MetaTrader 4
+    2. Ve a **Archivo** → **Abrir Carpeta de Datos**
+    3. Navega a `MQL4/Experts/`
+    4. Copia el archivo `.ex4` aquí
+
+    ```
+    [Carpeta de Datos MT4]
+    └── MQL4
+        └── Experts
+            └── InnovaTrading_MT4_v1.ex4  ← Coloca aquí
+    ```
+  </Tab>
+</Tabs>
+
+<Tip>
+  Después de copiar el archivo, puede que necesites hacer **clic derecho** en "Expert Advisors" en el panel Navegador y seleccionar **Actualizar** para verlo.
+</Tip>
+
+---
+
+## Paso 2: Permitir WebRequest
+
+El EA necesita permiso para comunicarse con nuestros servidores.
+
+<Steps>
+  <Step title="Abrir Opciones">
+    Ve a **Herramientas** → **Opciones** (o presiona `Ctrl+O`)
+  </Step>
+
+  <Step title="Pestaña Expert Advisors">
+    Haz clic en la pestaña **Expert Advisors**
+  </Step>
+
+  <Step title="Habilitar Opciones">
+    Marca estas casillas:
+    - ✅ **Permitir trading algorítmico**
+    - ✅ **Permitir WebRequest para la URL listada**
+  </Step>
+
+  <Step title="Agregar Nuestra URL">
+    Haz clic en **Agregar** e ingresa:
+    ```
+    https://cloud.innova-trading.com
+    ```
+  </Step>
+
+  <Step title="Guardar">
+    Haz clic en **OK** para guardar
+  </Step>
+</Steps>
+
+<Warning>
+  Si omites este paso, el EA mostrará **Error 4014** o **Error 4060** al intentar conectar.
+</Warning>
+
+---
+
+## Paso 3: Adjuntar EA al Gráfico
+
+<Steps>
+  <Step title="Abrir un Gráfico">
+    Abre cualquier gráfico (el símbolo no importa - el EA reportará todos los símbolos disponibles)
+  </Step>
+
+  <Step title="Encontrar el EA">
+    En el panel **Navegador** (Ctrl+N), expande **Expert Advisors** y busca **InnovaTrading**
+  </Step>
+
+  <Step title="Arrastrar al Gráfico">
+    Arrastra el EA a tu gráfico, o haz doble clic en él
+  </Step>
+
+  <Step title="Configurar">
+    Aparecerá un diálogo de configuración. Ve a la pestaña **Inputs**.
+  </Step>
+</Steps>
+
+---
+
+## Paso 4: Configura tu Token
+
+En el diálogo de configuración del EA, verás estos inputs:
+
+| Parámetro | Descripción | Por Defecto |
+|-----------|-------------|-------------|
+| `API_TOKEN` | **Tu token personal** (requerido) | *vacío* |
+| `BackendURL` | URL del servidor | `https://cloud.innova-trading.com` |
+| `UpdateInterval` | Frecuencia de sincronización (segundos) | `1` |
+| `SendHistory` | Sincronizar historial de trades | `true` |
+| `HistoryDays` | Días de historial a enviar | `30` |
+
+<Steps>
+  <Step title="Obtén tu Token">
+    Ve a [innova-trading.com/dashboard/connect](https://innova-trading.com/dashboard/connect) y genera un token si aún no lo has hecho.
+  </Step>
+
+  <Step title="Pega el Token">
+    En la configuración del EA, pega tu token en el campo `API_TOKEN`.
+
+    <Warning>
+      El token solo se muestra **UNA VEZ** cuando se genera. Si lo perdiste, genera uno nuevo.
+    </Warning>
+  </Step>
+
+  <Step title="Habilitar Auto Trading">
+    Asegúrate de marcar:
+    - ✅ **Permitir trading en vivo** (en la pestaña "Common")
+  </Step>
+
+  <Step title="Haz Clic en OK">
+    El EA comenzará a conectarse inmediatamente.
+  </Step>
+</Steps>
+
+---
+
+## Paso 5: Verificar Conexión
+
+### Revisar el Estado del EA
+
+Mira la esquina superior derecha de tu gráfico. Deberías ver un icono de "carita feliz", indicando que el EA está corriendo.
+
+### Revisar la Pestaña Experts
+
+Ve a **Ver** → **Terminal** → pestaña **Experts** (o presiona `Ctrl+T`).
+
+Deberías ver mensajes como:
+
+```
+InnovaTrading EA v5.0 initialized
+Connecting to cloud.innova-trading.com...
+Connected! Account: 12345678 (ICMarkets-Live)
+Symbols loaded: 45
+Sending account data...
+Ready.
+```
+
+### Revisar tu Dashboard
+
+Ve a [innova-trading.com/dashboard/connect](https://innova-trading.com/dashboard/connect).
+
+Tu cuenta debería aparecer como **Conectado** en segundos.
+
+---
+
+## Problemas Comunes
+
+<AccordionGroup>
+  <Accordion title="El EA muestra 'Waiting...' eternamente">
+    **Causas:**
+    - Token API faltante o inválido
+    - WebRequest no habilitado
+
+    **Solución:** Haz doble clic en el EA, verifica que el token sea correcto y que WebRequest esté habilitado para `https://cloud.innova-trading.com`
+  </Accordion>
+
+  <Accordion title="Error 4014 o Error 4060">
+    **Causa:** URL de WebRequest no permitida
+
+    **Solución:** Ve a Herramientas → Opciones → Expert Advisors y agrega:
+    ```
+    https://cloud.innova-trading.com
+    ```
+  </Accordion>
+
+  <Accordion title="Error 401 - No Autorizado">
+    **Causa:** Token API inválido o expirado
+
+    **Solución:** Genera un nuevo token desde tu [página de Conexiones](https://innova-trading.com/dashboard/connect)
+  </Accordion>
+
+  <Accordion title="El icono del EA muestra 'X' en vez de carita feliz">
+    **Causa:** Auto-trading deshabilitado
+
+    **Solución:**
+    1. Haz clic en el botón "AutoTrading" en la barra de herramientas de MT4/MT5
+    2. O marca "Permitir trading en vivo" en la configuración del EA
+  </Accordion>
+</AccordionGroup>
+
+Para más problemas, consulta la [Guía de Solución de Problemas](/es/troubleshooting#errores-ea).
+
+---
+
+## Próximos Pasos
+
+<CardGroup cols={2}>
+  <Card
+    title="Crear Tokens"
+    icon="key"
+    href="/es/guides/create-token"
+  >
+    Aprende sobre gestión de tokens
+  </Card>
+  <Card
+    title="Multi-Cuenta"
+    icon="users"
+    href="/es/guides/multi-account"
+  >
+    Conecta cuentas adicionales
+  </Card>
+</CardGroup>
