@@ -43,16 +43,7 @@ El precio funciona igual. Cuando se mueve en una dirección, deja "zonas sin pin
 
 O dicho de otra forma:
 
-```
-  ┌────────────┐         ┌────────────┐         ┌────────────┐
-  │  LIQUIDEZ  │ ──────→ │ IMBALANCE  │ ──────→ │  LIQUIDEZ  │
-  │            │         │            │         │            │
-  │ Stops      │         │ FVGs       │         │ Stops      │
-  │ Highs/Lows │         │ Voids      │         │ Highs/Lows │
-  │ Pool de    │         │ Zonas sin  │         │ Pool de    │
-  │ órdenes    │         │ trading    │         │ órdenes    │
-  └────────────┘         └────────────┘         └────────────┘
-```
+**LIQUIDEZ** (stops, highs/lows, pool de ordenes) **-->** **IMBALANCE** (FVGs, voids, zonas sin trading) **-->** **LIQUIDEZ** (stops, highs/lows, pool de ordenes)
 
 1. El precio **va hacia la liquidez** (stops, highs/lows) para ejecutar órdenes grandes
 2. Al moverse hacia la liquidez, crea **imbalances** (FVGs, voids) en el camino
@@ -112,14 +103,12 @@ El IPDA opera en tres rangos de tiempo que se solapan:
 
 Cada 3 meses aproximadamente, el mercado tiende a hacer un **cambio de dirección trimestral**:
 
-```
-  Q1 (Ene-Mar)    Q2 (Abr-Jun)    Q3 (Jul-Sep)    Q4 (Oct-Dic)
-  ───────────     ───────────     ───────────     ───────────
-       ↗               ↘               ↗               ↘
-  Alcista →       Bajista →       Alcista →       Bajista →
-  toma liquidez   toma liquidez   toma liquidez   toma liquidez
-  sellside        buyside         sellside        buyside
-```
+| Trimestre | Periodo | Direccion tipica | Liquidez objetivo |
+|---|---|---|---|
+| **Q1** | Ene - Mar | Alcista | Toma liquidez sellside |
+| **Q2** | Abr - Jun | Bajista | Toma liquidez buyside |
+| **Q3** | Jul - Sep | Alcista | Toma liquidez sellside |
+| **Q4** | Oct - Dic | Bajista | Toma liquidez buyside |
 
 <Warning>
   Esto NO significa que cada trimestre es opuesto al anterior siempre. Es una **tendencia cíclica**, no una regla fija. A veces dos trimestres van en la misma dirección. Lo que sí es consistente es que en cada transición trimestral, el IPDA busca liquidez del rango de 60 días.
@@ -197,17 +186,12 @@ En futuros (no disponible en Forex spot), el **Open Interest** te da una pista d
 
 Un concepto clave del IPDA es el **lookback con proyección forward**:
 
-```
-  ← ← ← 20 días atrás → → → HOY → → → 20 días forward → → →
-
-  │ Lookback: ¿Qué liquidez    │  Cast Forward: ¿Hacia dónde    │
-  │ se creó en los últimos      │  es probable que el precio      │
-  │ 20/40/60 días?              │  vaya en los próximos           │
-  │                             │  20/40/60 días?                 │
-  │ • Highs/Lows formados       │  • Liquidez pendiente           │
-  │ • FVGs sin rellenar         │  • FVGs que necesitan relleno   │
-  │ • Liquidez sin capturar     │  • Pools de liquidez objetivo   │
-```
+| Lookback (20/40/60 dias atras) | HOY | Cast Forward (20/40/60 dias adelante) |
+|---|---|---|
+| Que liquidez se creo? | Punto de referencia | Hacia donde es probable que el precio vaya? |
+| Highs/Lows formados | | Liquidez pendiente |
+| FVGs sin rellenar | | FVGs que necesitan relleno |
+| Liquidez sin capturar | | Pools de liquidez objetivo |
 
 ### Cómo Usarlo en la Práctica
 
@@ -243,22 +227,13 @@ Chris Lori usa el concepto de **fractal** en su sentido geométrico (no el indic
 
 El mismo patrón de price run → retorno a base de liquidez que ves en el gráfico de 1 minuto, lo ves en el de 15 minutos, en el de 4 horas, en el diario.
 
-```
-  1 minuto:    ╱╲     ╱╲     ╱╲
-              ╱  ╲   ╱  ╲   ╱  ╲
+El mismo patron de price run --> retorno a base de liquidez se repite a multiples escalas:
 
-  15 minutos:      ╱╲           ╱╲
-                  ╱  ╲         ╱  ╲
-                 ╱    ╲       ╱    ╲
+- **1 minuto:** Multiples ciclos pequenos de spike y retorno, rapidos y frecuentes
+- **15 minutos:** Ciclos mas amplios que contienen varios ciclos de 1 minuto dentro
+- **4 horas:** Un solo ciclo grande que engloba todos los anteriores
 
-  4 horas:             ╱╲
-                      ╱  ╲
-                     ╱    ╲
-                    ╱      ╲
-
-  Mismo patrón. Diferente escala. Diferente duración.
-  Misma mecánica detrás: pricing engines + liquidez.
-```
+Mismo patron. Diferente escala. Diferente duracion. Misma mecanica detras: pricing engines + liquidez.
 
 ---
 

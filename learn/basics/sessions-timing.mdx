@@ -40,16 +40,9 @@ El mercado Forex está dividido en tres sesiones que corresponden a los principa
 
     **Lo que NO es activo:** EUR/USD, GBP/USD — consolidando, esperando a Londres
 
-    ```
-    Volatilidad durante Asia (EUR/USD típico):
-
-    Precio
-      │   ┌─┐ ┌─┐   ┌─┐ ┌─┐
-      │───┘ └─┘ └───┘ └─┘ └───  ← Rango estrecho
-      │                           (10-20 pips de rango)
-      └────────────────────────── Tiempo
-           20:00            00:00
-    ```
+    <Note>
+      **EUR/USD en Asia suele moverse solo 10-20 pips en un rango estrecho.** El precio oscila sin dirección clara entre las 20:00 y las 00:00, rebotando dentro de un canal lateral muy apretado. Esta compresion es la "goma elastica" que luego explota en Londres.
+    </Note>
 
     **Regla clave:** Si Asia tiene un rango apretado → esperá que Londres explote. Si Asia ya se movió mucho → Londres puede ser aburrido, saltalo y operá NY.
 
@@ -74,20 +67,15 @@ El mercado Forex está dividido en tres sesiones que corresponden a los principa
 
     **Pares activos:** EUR/USD, GBP/USD (los reyes de Londres)
 
-    ```
-    Típico día alcista en Londres:
+    <Note>
+      **Judas Swing - Tipico dia alcista en Londres:**
+      - **20:00 - 00:00 (Asia):** El precio consolida en un rango estrecho
+      - **00:00 - 03:00 (Pre-London):** El precio rompe **por debajo** del rango asiatico (falsa ruptura bajista)
+      - **03:00 (Judas Swing):** El precio barre los lows de Asia, capturando stop losses --> este es el punto minimo del dia
+      - **03:00 - 05:00 (Expansion real):** El precio se revierte con fuerza y sube 25-50 pips en la direccion real del dia
 
-    Precio
-      │                         ╱
-      │                        ╱  ← Expansión real (25-50 pips)
-      │                       ╱
-      │  ─── Asia ────╲     ╱
-      │                 ╲  ╱
-      │                  ╲╱  ← Judas Swing (manipulación)
-      │                       (barrió lows de Asia)
-      └────────────────────────── Tiempo
-        20:00   00:00  03:00  05:00
-    ```
+      La secuencia es: Asia consolida --> Londres manipula hacia abajo --> el precio explota hacia arriba. El Judas Swing es la "trampa" que parece una ruptura pero es manipulacion pura.
+    </Note>
 
     **Regla clave:** Si Londres ya movió el 80% del ADR (Average Daily Range), no operes NY — el movimiento del día ya se hizo.
 
@@ -114,18 +102,12 @@ El mercado Forex está dividido en tres sesiones que corresponden a los principa
 
     **Pares activos:** Todos los majors — EUR/USD, GBP/USD, USD/JPY, USD/CHF + Índices (ES, NQ, US30)
 
-    ```
-    NY como continuación:          NY como reversión:
+    **NY como continuacion vs. reversion:**
 
-    Precio                         Precio
-      │        ╱                     │   ╲
-      │       ╱  ← NY sigue         │    ╲  ← NY revierte
-      │      ╱                       │     ╲
-      │  ───╱  Londres               │  ───╱  Londres
-      │                              │
-      └──────────                    └──────────
-        07:00  10:00                   07:00  10:00
-    ```
+    | Escenario | Londres hizo... | NY hace... | Resultado |
+    |-----------|----------------|------------|-----------|
+    | **Continuacion** | Expansion alcista | Sigue subiendo --> NY extiende el movimiento de Londres | Dia tendencial fuerte |
+    | **Reversion** | Expansion alcista | Se revierte y baja --> Londres fue la manipulacion, NY es la distribucion real | Dia de reversion (menos comun) |
 
     **Estructura interna de NY:**
 
@@ -148,21 +130,12 @@ El mercado Forex está dividido en tres sesiones que corresponden a los principa
 
 Las sesiones se solapan parcialmente, y esos momentos de solapamiento tienen **el mayor volumen y volatilidad del día**:
 
-```
-  20:00  22:00  00:00  02:00  04:00  06:00  08:00  10:00  12:00  14:00  16:00
-    │      │      │      │      │      │      │      │      │      │      │
-    ├──────────────┤
-    │    ASIA      │
-    │              ├─────────────────────────────────────────────┤
-    │              │              LONDRES                         │
-    │              │                            ├─────────────────────────┤
-    │              │                            │       NUEVA YORK        │
-    │              │                            │                         │
-    │              │              ╔═════════════╪═════════════╗           │
-    │              │              ║ SOLAPAMIENTO║ LDN + NY    ║           │
-    │              │              ║  08:00-12:00║(MÁXIMO VOL) ║           │
-    │              │              ╚═════════════╪═════════════╝           │
-```
+| Sesion | Inicio (NY) | Fin (NY) | Solapamiento |
+|--------|-------------|----------|--------------|
+| **Asia** | 20:00 | 00:00 | - |
+| **Londres** | 00:00 | 12:00 | Se solapa con Asia (00:00) y con NY (07:00-12:00) |
+| **Nueva York** | 07:00 | 16:00 | Se solapa con Londres (07:00-12:00) |
+| **Solapamiento LDN + NY** | **08:00** | **12:00** | **MAXIMO VOLUMEN DEL DIA** |
 
 <Info>
   **El solapamiento Londres-Nueva York (08:00-12:00 NY)** es el momento de máxima liquidez del día. Más del 70% del volumen diario de EUR/USD se concentra aquí. Es donde la mayoría de los traders profesionales operan.
@@ -195,18 +168,16 @@ Pensalo así: si necesitás mover millones de dólares, ¿lo hacés a las 3 de l
 
 ### El Día Ideal del Day Trader
 
-```
-  20:00    00:00    02:00    05:00    07:00    10:00    12:00    14:00    16:00
-    │        │        │        │        │        │        │        │        │
-    │  ASIA  │        │  LDN   │        │   NY   │        │   PM   │        │
-    │  ░░░░  │  ····  │  ████  │  ····  │  ████  │  ····  │  ░░░░  │  ····  │
-    │        │        │        │        │        │        │        │        │
-    │ Marcar │ Esperar│OPERAR  │Almuerzo│OPERAR  │NYLunch │Backup  │  Done  │
-    │ rango  │        │(mejor  │Londres │(2da    │(zona   │(PM SB) │        │
-    │ H/L    │        │ventana)│        │ventana)│muerta) │        │        │
-
-  ████ = Alta probabilidad    ░░░░ = Media    ···· = Baja/Esperar
-```
+| Horario (NY) | Sesion | Accion | Probabilidad |
+|--------------|--------|--------|--------------|
+| 20:00 - 00:00 | Asia | Marcar rango H/L | Media |
+| 00:00 - 02:00 | Pre-London | Esperar | Baja |
+| 02:00 - 05:00 | London KZ | **OPERAR** (mejor ventana) | **Alta** |
+| 05:00 - 07:00 | Almuerzo Londres | Esperar | Baja |
+| 07:00 - 10:00 | NY KZ | **OPERAR** (2da ventana) | **Alta** |
+| 10:00 - 12:00 | NY Lunch | Zona muerta | Baja |
+| 12:00 - 15:00 | PM Session | Backup (PM Silver Bullet 14:00-15:00) | Media |
+| 15:00 - 16:00 | Cierre | Done - no operar | Baja |
 
 ---
 
@@ -415,20 +386,11 @@ Dos rangos que debés marcar **todos los días** en tu gráfico (timeframe de 15
 
 El precio no se mueve al azar. Se **entrega** de un punto de liquidez a otro, como un paquete que va de depósito en depósito. Las sesiones y killzones son los **horarios de entrega**.
 
-```
-  Liquidez A                    Liquidez B
-  (stops debajo)                (stops arriba)
-       │                             │
-       ▼                             ▼
-  ┌─────────┐    Entrega del    ┌─────────┐
-  │ Lows de │ ──────────────→   │ Highs de│
-  │  Asia   │    precio         │   NY    │
-  └─────────┘                   └─────────┘
-       ↑                             ↑
-   London KZ                      NY KZ
-   (manipulación:                 (distribución:
-    barre estos lows)              llega a estos highs)
-```
+**Liquidez A** (stops debajo de los Lows de Asia) --> **London KZ** barre estos lows (manipulacion) --> el precio se entrega hacia --> **Liquidez B** (stops arriba de los Highs de NY) --> **NY KZ** llega a estos highs (distribucion)
+
+<Note>
+  El precio viaja de un pool de liquidez al otro. London captura la liquidez en un extremo (barriendo stops), y NY entrega el precio al extremo opuesto (alcanzando los stops del otro lado). Es un ciclo de entrega completo en un solo dia.
+</Note>
 
 **El ciclo de entrega diario:**
 1. **Asia** crea el rango → define dónde están los stops (liquidez)
@@ -460,33 +422,47 @@ Lo que pasa en las sesiones del día es **exactamente lo mismo** que pasa dentro
 
 ## Quick Reference Card
 
-```
-SESIONES (hora de Nueva York):
-  Asia:     20:00 - 00:00  → Consolidación (marcar rango)
-  London:   00:00 - 12:00  → Manipulación + Expansión
-  New York: 07:00 - 16:00  → Confirmación o Reversión
-  PM:       13:30 - 16:00  → Segunda oportunidad
+<AccordionGroup>
+  <Accordion title="Sesiones (hora de Nueva York)">
+    | Sesion | Horario | Funcion |
+    |--------|---------|---------|
+    | Asia | 20:00 - 00:00 | Consolidacion (marcar rango) |
+    | London | 00:00 - 12:00 | Manipulacion + Expansion |
+    | New York | 07:00 - 16:00 | Confirmacion o Reversion |
+    | PM | 13:30 - 16:00 | Segunda oportunidad |
+  </Accordion>
 
-KILLZONES:
-  Asia KZ:      20:00 - 00:00
-  London KZ:    01:00 - 05:00 (core: 02:00-05:00)
-  NY KZ:        07:00 - 10:00
-  London Close: 10:00 - 12:00
+  <Accordion title="Killzones">
+    | Killzone | Horario |
+    |----------|---------|
+    | Asia KZ | 20:00 - 00:00 |
+    | London KZ | 01:00 - 05:00 (core: 02:00-05:00) |
+    | NY KZ | 07:00 - 10:00 |
+    | London Close | 10:00 - 12:00 |
+  </Accordion>
 
-SILVER BULLETS (1 hora, buscar FVG):
-  London SB:    03:00 - 04:00
-  AM SB:        10:00 - 11:00
-  PM SB:        14:00 - 15:00
+  <Accordion title="Silver Bullets (1 hora, buscar FVG)">
+    | Silver Bullet | Horario |
+    |---------------|---------|
+    | London SB | 03:00 - 04:00 |
+    | AM SB | 10:00 - 11:00 |
+    | PM SB | 14:00 - 15:00 |
+  </Accordion>
 
-PUNTOS CLAVE:
-  True Day Open:   00:00 (midnight NY)
-  CME Open:        08:20
-  Noticias:        08:30 (si hay)
-  RTH Open:        09:30
-  Bond Close:      16:00
+  <Accordion title="Puntos Clave">
+    | Punto | Hora |
+    |-------|------|
+    | True Day Open | 00:00 (midnight NY) |
+    | CME Open | 08:20 |
+    | Noticias | 08:30 (si hay) |
+    | RTH Open | 09:30 |
+    | Bond Close | 16:00 |
+  </Accordion>
+</AccordionGroup>
 
-REGLA: Si no estás en killzone, no operés.
-```
+<Warning>
+  **REGLA: Si no estas en killzone, no operes.**
+</Warning>
 
 ---
 

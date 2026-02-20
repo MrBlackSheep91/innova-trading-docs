@@ -30,10 +30,7 @@ El mercado alterna constantemente entre fases de rango comprimido y fases de mov
     - Parece "aburrido" — pero es acumulación/distribución silenciosa
     - **Es la calma antes de la tormenta**
 
-    ```
-    ┌──┐ ┌─┐ ┌┐ ┌┐ ← Barras cada vez más pequeñas
-    └──┘ └─┘ └┘ └┘
-    ```
+    Barras cada vez mas pequenas = el mercado se comprime. La volatilidad se contrae.
 
     **Qué está pasando:** Las instituciones están acumulando (o distribuyendo) posiciones silenciosamente. No quieren mover el precio todavía, así que operan dentro del rango.
   </Tab>
@@ -45,13 +42,7 @@ El mercado alterna constantemente entre fases de rango comprimido y fases de mov
     - Volumen incrementa
     - La dirección de la expansión es la tendencia probable
 
-    ```
-    ┌─────────┐ ← Barra MUCHO más grande que las anteriores
-    │         │
-    │         │
-    │         │
-    └─────────┘
-    ```
+    Una barra significativamente mas grande que las anteriores = expansion. La volatilidad exploto.
 
     **Qué está pasando:** Las instituciones revelan su mano. Empujan el precio agresivamente en la dirección de su posición acumulada. Los stops de los traders atrapados en el rango alimentan el movimiento.
   </Tab>
@@ -91,16 +82,13 @@ ICT interpreta la contracción/expansión como fases del **delivery algorítmico
 
 El precio se comprime para **construir liquidez** (stops de ambos lados se acumulan en los extremos del rango) y luego **expande para barrer** esa liquidez en una dirección.
 
-```
-  BSL ─── stops de shorts se acumulan arriba ───
-  │                                              │
-  │  ┌─┐ ┌─┐ ┌─┐ ┌─┐  ← Consolidación          │
-  │  └─┘ └─┘ └─┘ └─┘                            │
-  │                                              │
-  SSL ─── stops de longs se acumulan abajo ─────
-
-  Luego: EXPANSIÓN barre un lado y corre en la dirección opuesta
-```
+<Note>
+  **Consolidacion y liquidez:**
+  - **BSL (arriba):** Los stops de los shorts se acumulan por encima del rango de consolidacion.
+  - **SSL (abajo):** Los stops de los longs se acumulan por debajo del rango de consolidacion.
+  - En el medio, el precio consolida en barras pequenas de rango estrecho.
+  - **Luego:** La expansion barre los stops de un lado y corre en la direccion opuesta.
+</Note>
 
 <Info>
   **Ejemplo concreto:** El precio consolida entre 1.1000 y 1.1050 durante 3 días. Los shorts ponen stops arriba de 1.1050, los longs ponen stops debajo de 1.1000. Cuando explota, barre primero los stops de un lado (digamos baja a 1.0995 barriendo los longs) y luego revierte violentamente al alza pasando 1.1050 y más allá. Las instituciones llenaron sus órdenes de compra contra los stops de los longs.

@@ -22,14 +22,9 @@ icon: 'layer-group'
     - Se espera que el precio retorne a esta zona y **rebote al alza**
     - Se marca desde el **LOW** de la vela hasta su **OPEN**
 
-    ```
-    ┌─────────────────────────────┐
-    │  Rally posterior (displacement)  ↑
-    │  ┌─┐                             │
-    │  │█│ ← Bearish candle            │
-    │  └─┘ ← ESTA es el Bullish OB     │
-    └─────────────────────────────┘
-    ```
+    <Note>
+      **Bullish Order Block** = la ultima vela bajista (bearish candle) ANTES de un rally con displacement. Se marca desde el low hasta el open de esa vela. El precio sube agresivamente despues de ella.
+    </Note>
   </Tab>
   <Tab title="Bearish Order Block">
     La última vela **alcista** (up-close) antes de una caída.
@@ -38,14 +33,9 @@ icon: 'layer-group'
     - Se espera que el precio retorne a esta zona y **rebote a la baja**
     - Se marca desde el **HIGH** de la vela hasta su **OPEN**
 
-    ```
-    ┌─────────────────────────────┐
-    │  ┌─┐ ← ESTA es el Bearish OB │
-    │  │█│ ← Bullish candle          │
-    │  └─┘                           │
-    │  Caída posterior (displacement) ↓
-    └─────────────────────────────┘
-    ```
+    <Note>
+      **Bearish Order Block** = la ultima vela alcista (bullish candle) ANTES de una caida con displacement. Se marca desde el high hasta el open de esa vela. El precio cae agresivamente despues de ella.
+    </Note>
   </Tab>
 </Tabs>
 
@@ -81,19 +71,9 @@ icon: 'layer-group'
 
     Indica **compra agresiva** (imbalance al alza). Se espera que el precio retorne a llenar este gap.
 
-    ```
-    Vela 3:  ┌─┐
-             │ │
-             └─┘ ← Low de vela 3
-                  ← GAP (FVG)
-    Vela 2:  ┌─┐ (displacement)
-             │ │
-             └─┘
-                  ← GAP (FVG)
-             ┌─┐ ← High de vela 1
-    Vela 1:  │ │
-             └─┘
-    ```
+    <Note>
+      **Bullish FVG:** Secuencia de 3 velas alcistas donde el **low de la vela 3** queda por encima del **high de la vela 1**. El espacio entre ambos niveles (en la zona de la vela 2, que es el displacement) es el Fair Value Gap. El precio tiende a retornar a llenar ese vacio.
+    </Note>
   </Tab>
   <Tab title="Bearish FVG (SIBI)">
     **SIBI** = Sellside Imbalance Buyside Inefficiency
@@ -102,19 +82,9 @@ icon: 'layer-group'
 
     Indica **venta agresiva** (imbalance a la baja). Se espera que el precio retorne a llenar este gap.
 
-    ```
-    Vela 1:  ┌─┐
-             │ │
-             └─┘ ← Low de vela 1
-                  ← GAP (FVG)
-    Vela 2:  ┌─┐ (displacement)
-             │ │
-             └─┘
-                  ← GAP (FVG)
-             ┌─┐ ← High de vela 3
-    Vela 3:  │ │
-             └─┘
-    ```
+    <Note>
+      **Bearish FVG:** Secuencia de 3 velas bajistas donde el **high de la vela 3** queda por debajo del **low de la vela 1**. El espacio entre ambos niveles (en la zona de la vela 2, que es el displacement) es el Fair Value Gap. El precio tiende a retornar a llenar ese vacio.
+    </Note>
   </Tab>
 </Tabs>
 

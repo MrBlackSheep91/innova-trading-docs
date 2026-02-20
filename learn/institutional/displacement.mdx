@@ -34,16 +34,9 @@ Concepto avanzado de ICT:
 
 **IOFED** es un rápido "dip" (raid) dentro de un FVG que **NO pasa** el equilibrio (50%) del FVG. Es una confirmación de que el order flow institucional está activo en esa dirección.
 
-```
-        ┌── FVG High
-        │
-    ────│──── CE (50%)
-    ↑   │
-    │   │  ← IOFED: price dips INTO the FVG but doesn't pass CE
-    │   │
-    ↓   │
-        └── FVG Low
-```
+<Note>
+  **IOFED** = el precio entra al FVG pero **NO** pasa del 50% (Consequent Encroachment). Respeta la zona y continua en la direccion original. Si el precio penetra el FVG sin cruzar el CE, es senal de que el order flow institucional es fuerte en esa direccion.
+</Note>
 
 <Tip>
   Si el precio entra en un FVG pero **no pasa del 50% (CE)**, es señal de que el order flow institucional es fuerte en esa dirección. Podés usar el CE como tu nivel de invalidación.

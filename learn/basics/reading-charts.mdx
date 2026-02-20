@@ -23,15 +23,9 @@ Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué mom
 
     Cada "vela" muestra 4 datos: Open, High, Low, Close (OHLC) en un período de tiempo.
 
-    ```
-       │
-    ┌──┤ ← High
-    │  │
-    │██│ ← Cuerpo (Open a Close)
-    │  │
-    └──┤ ← Low
-       │
-    ```
+    <Note>
+      **Anatomia de una vela:** La mecha superior marca el **High**, la mecha inferior marca el **Low**, y el cuerpo (bloque grueso) va del **Open** al **Close**. Si el cierre es mayor que la apertura, la vela es verde (alcista). Si es menor, es roja (bajista).
+    </Note>
 
     **Ventajas:**
     - Muestra la mayor cantidad de información
@@ -45,29 +39,16 @@ Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué mom
 
     Muestra los mismos 4 datos pero con barras en vez de velas:
 
-    ```
-       │
-       ├── Close
-       │
-    ───┤
-       │
-    ── ├── Open
-       │
-    ```
+    <Note>
+      **Anatomia de una barra OHLC:** Una linea vertical del High al Low, con una marca horizontal a la izquierda para el **Open** y otra a la derecha para el **Close**.
+    </Note>
 
-    Línea izquierda = Open, línea derecha = Close. Algunos traders veteranos prefieren este formato.
+    Algunos traders veteranos prefieren este formato.
   </Tab>
   <Tab title="Gráfico de Línea">
     ### El más simple
 
     Solo muestra el **precio de cierre** conectado por una línea.
-
-    ```
-         ╱╲
-        ╱  ╲    ╱╲
-       ╱    ╲  ╱  ╲
-      ╱      ╲╱
-    ```
 
     **Ventajas:** Muy limpio, fácil de ver la tendencia general.
     **Desventajas:** Perdés toda la información de Open, High y Low.
@@ -99,13 +80,9 @@ Cada vela representa un **período de tiempo** específico. El timeframe que ele
 
 El mismo activo se ve diferente en cada timeframe:
 
-```
-DIARIO: Tendencia alcista clara (HH, HL, HH, HL)
-   ↓ zoom
-4 HORAS: Dentro de cada swing del diario, hay su propia estructura
-   ↓ zoom
-15 MIN: Dentro de cada swing del 4H, hay retrocesos y micro-tendencias
-```
+<Note>
+  **Diario** (tendencia alcista clara: HH, HL, HH, HL) → zoom → **4 Horas** (dentro de cada swing del diario, hay su propia estructura) → zoom → **15 Min** (dentro de cada swing del 4H, hay retrocesos y micro-tendencias).
+</Note>
 
 **El timeframe superior siempre manda.** Si el diario dice alcista, los retrocesos en 15 minutos son oportunidades de compra, no señales de venta.
 
