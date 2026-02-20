@@ -1,0 +1,149 @@
+---
+title: 'Proveedores de Datos'
+description: 'Feeds, agregadores, y por qué tu gráfico puede diferir del de otro trader'
+icon: 'database'
+---
+
+## Por Qué Tu Gráfico No es "La Verdad"
+
+Cuando abrís tu plataforma y ves el precio de EUR/USD, estás viendo **una versión del precio** — no "el" precio. El precio que ves depende de la cadena de proveedores de datos que alimenta tu broker y tu plataforma.
+
+<Warning>
+  **El precio exacto al pip no existe.** Diferentes brokers, diferentes plataformas, diferentes feeds — todos muestran precios ligeramente diferentes. Lo que importa es la **zona**, no el número exacto.
+</Warning>
+
+---
+
+## La Cadena de Datos
+
+| Capa | Quién | Qué hace |
+|------|-------|----------|
+| **Bancos** | JP Morgan, Citi, Deutsche, etc. | Generan el precio original (bids/offers) |
+| **Agregadores** | EBS, Reuters, Hotspot, Currenex | Combinan feeds de múltiples bancos → crean BBBO |
+| **Broker** | Tu broker (IC Markets, Pepperstone, etc.) | Recibe el feed del agregador, puede agregar markup |
+| **Plataforma** | MetaTrader, TradingView, cTrader | Renderiza el feed como velas en tu pantalla |
+
+Cada capa introduce una pequeña diferencia: latencia, markup de spread, redondeo de precios, horarios de apertura/cierre de velas.
+
+---
+
+## Los Feeds Principales
+
+<Tabs>
+  <Tab title="EBS (Electronic Broking Services)">
+    ### El Feed Institucional para FX
+
+    - Propiedad de CME Group
+    - Feed primario para EUR/USD, USD/JPY, EUR/JPY, USD/CHF
+    - Usado por bancos tier-1 y fondos institucionales
+    - Spreads ultra-ajustados (a veces 0.0 pips)
+    - No accesible directamente para retail
+
+    **Para vos:** Si tu broker usa EBS como fuente principal, tu pricing será más preciso para estos pares.
+  </Tab>
+  <Tab title="Reuters (Matching)">
+    ### El Feed para Commonwealth
+
+    - Feed primario para GBP/USD, AUD/USD, NZD/USD, USD/CAD
+    - Fuerte en pares de la Commonwealth británica
+    - Complementa a EBS — juntos cubren todos los majors
+    - También usado por instituciones
+
+    **Para vos:** Brokers que combinan EBS + Reuters tienen el pricing más completo.
+  </Tab>
+  <Tab title="Agregadores Retail">
+    ### Lo que Llega a Tu Pantalla
+
+    Los brokers retail suelen usar agregadores como:
+    - **LMAX Exchange** — exchange institucional abierto a retail selectivo
+    - **Integral** — conecta con múltiples bancos
+    - **PrimeXM** — bridge de liquidez popular
+    - **Currenex** — plataforma ECN institucional
+
+    Cada broker negocia su propio acuerdo con estos agregadores. Por eso dos brokers "ECN" pueden tener spreads diferentes.
+  </Tab>
+</Tabs>
+
+---
+
+## Por Qué los Precios Difieren
+
+### Caso 1: FVGs que no coinciden
+
+Un FVG (Fair Value Gap) que ves en Broker A puede **no existir** en Broker B:
+
+- Broker A muestra un gap de 5 pips entre vela 1 y vela 3
+- Broker B, con un feed diferente, muestra un gap de solo 2 pips
+- Broker C ni siquiera muestra gap — las mechas se solapan
+
+**Solución:** No operés niveles al pip exacto. Usá **zonas** (rango de 3-5 pips alrededor del nivel).
+
+### Caso 2: Horarios de cierre de velas
+
+La vela diaria "cierra" a diferentes horas según la configuración del broker:
+
+| Cierre del broker | Zona horaria | Impacto |
+|-------------------|-------------|---------|
+| **17:00 NY** (estándar) | UTC-5 | 5 velas diarias por semana (sin vela de domingo) |
+| **00:00 UTC** | UTC+0 | 5 velas + micro-vela de domingo (6 velas) |
+| **Otro** | Variable | Estructura diferente en Daily |
+
+<Tip>
+  **Siempre usá un broker con cierre a las 17:00 New York (UTC-5).** Es el estándar institucional. Si tu broker muestra 6 velas diarias por semana (incluyendo domingo), configurá el timezone o cambiá de broker.
+</Tip>
+
+### Caso 3: Spreads variables
+
+Los spreads cambian constantemente según la liquidez disponible:
+
+| Momento | Spread típico EUR/USD | Por qué |
+|---------|----------------------|---------|
+| London-NY overlap (08:00-12:00) | 0.1 - 0.5 pips | Máxima liquidez |
+| Asia session | 0.5 - 1.5 pips | Baja liquidez en EUR/USD |
+| Noticias (CPI, NFP) | 2 - 10+ pips | Bancos retiran liquidez |
+| Fin de semana (Sunday open) | 3 - 15+ pips | Sin liquidez |
+
+---
+
+## TradingView vs MetaTrader vs Broker
+
+| Aspecto | TradingView | MetaTrader (MT4/MT5) | Broker directo |
+|---------|-------------|---------------------|----------------|
+| **Feed** | Depende del broker conectado | Feed del broker donde tenés la cuenta | Su propio feed |
+| **Precisión** | Variable — puede usar feed diferente al de ejecución | Exacto al feed de ejecución | El más preciso para tu ejecución |
+| **Velas** | Puede diferir en highs/lows vs tu broker | Coincide con tu ejecución | Coincide exactamente |
+| **Uso** | Análisis y charting | Análisis + ejecución | Ejecución directa |
+
+<Warning>
+  Si usás TradingView para análisis pero ejecutás en MT4/MT5, **los niveles pueden diferir en 1-3 pips**. Siempre verificá tus niveles clave en la plataforma donde vas a ejecutar.
+</Warning>
+
+---
+
+## Recomendaciones Prácticas
+
+<Steps>
+  <Step title="Usá un broker con buen feed">
+    Brokers ECN/STP con múltiples proveedores de liquidez (EBS + Reuters) tienen el pricing más confiable.
+  </Step>
+  <Step title="Verificá el cierre de velas">
+    Asegurate de que tu broker cierre la vela diaria a las 17:00 New York. Esto es estándar.
+  </Step>
+  <Step title="Operá en zonas, no en pips exactos">
+    Nunca pongas tu entry o SL en un pip exacto. Usá zonas de 3-5 pips para absorber diferencias entre feeds.
+  </Step>
+  <Step title="Cuidado con las noticias">
+    Los spreads se amplían enormemente durante noticias. Si operás durante CPI/NFP, tené en cuenta que el precio que ves puede ser 5+ pips diferente al que ejecutás.
+  </Step>
+</Steps>
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Anterior: Entrega Algorítmica" icon="arrow-left" href="/learn/advanced/algorithmic-delivery">
+    Cómo el IPDA entrega precio en ciclos de 20, 40 y 60 días.
+  </Card>
+  <Card title="Glosario" icon="book" href="/learn/framework/glossary">
+    Referencia rápida de todos los términos del curso.
+  </Card>
+</CardGroup>

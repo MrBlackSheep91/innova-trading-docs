@@ -1,0 +1,522 @@
+---
+title: 'Sesiones, Horarios y Killzones'
+description: 'Cuándo se mueve el mercado, por qué importa la hora, y en qué ventanas operan los profesionales'
+icon: 'clock'
+---
+
+## El Mercado No Duerme (Pero Vos Sí)
+
+Forex opera 24 horas, 5 días a la semana. Pero eso **no significa que siempre sea buen momento para operar**. El mercado tiene un ritmo, como un corazón — hay momentos de calma y momentos de explosión.
+
+Entender **cuándo** se mueve el precio es tan importante como entender **por qué** se mueve. El mejor setup del mundo a las 3 de la tarde un viernes no vale nada.
+
+> **El tiempo es un filtro.** Si operás en el horario correcto, tus probabilidades suben automáticamente. Si operás en horarios muertos, hasta la mejor estrategia falla.
+
+---
+
+## Las Tres Sesiones Principales
+
+El mercado Forex está dividido en tres sesiones que corresponden a los principales centros financieros del mundo. Se solapan parcialmente, y esos solapamientos son donde pasa la acción real.
+
+<Info>
+  **Todos los horarios en este módulo están en hora de Nueva York (EST/EDT).** Es la referencia estándar en trading institucional. Si estás en otro huso horario, convertí desde NY.
+</Info>
+
+<Tabs>
+  <Tab title="Asia (20:00 - 00:00)">
+    ### La Sesión Silenciosa
+
+    **Horario:** 20:00 a 00:00 (hora de NY)
+
+    **Centros financieros:** Tokyo, Sydney, Singapur, Hong Kong
+
+    **Qué pasa:**
+    - Rango lateral en EUR/USD y GBP/USD — baja volatilidad
+    - Los pares con JPY, AUD y NZD son los más activos
+    - El precio oscila en un rango estrecho, sin dirección clara
+    - Es la fase de **acumulación** del día (la A de AMD)
+
+    **Pares activos:** AUD/JPY, GBP/AUD, GBP/CHF, NZD/USD, AUD/USD
+
+    **Lo que NO es activo:** EUR/USD, GBP/USD — consolidando, esperando a Londres
+
+    ```
+    Volatilidad durante Asia (EUR/USD típico):
+
+    Precio
+      │   ┌─┐ ┌─┐   ┌─┐ ┌─┐
+      │───┘ └─┘ └───┘ └─┘ └───  ← Rango estrecho
+      │                           (10-20 pips de rango)
+      └────────────────────────── Tiempo
+           20:00            00:00
+    ```
+
+    **Regla clave:** Si Asia tiene un rango apretado → esperá que Londres explote. Si Asia ya se movió mucho → Londres puede ser aburrido, saltalo y operá NY.
+
+    <Tip>
+      **El rango asiático es tu termómetro.** Cuanto más apretado sea, más probabilidad de un movimiento fuerte en Londres. Es como una goma elástica: mientras más la estirás (consolidación), más fuerte rebota (expansión).
+    </Tip>
+  </Tab>
+
+  <Tab title="Londres (00:00 - 12:00)">
+    ### La Sesión Que Mueve Todo
+
+    **Horario completo:** 00:00 a 12:00 (hora de NY)
+    **Apertura real de Londres:** 03:00
+
+    **Centros financieros:** Londres, Frankfurt, Zurich, París
+
+    **Qué pasa:**
+    - **La sesión más importante para Forex.** Londres mueve más del 40% del volumen global
+    - Aquí se forma el HIGH o el LOW del día con mayor probabilidad
+    - El movimiento típico: Judas Swing (falso) seguido de expansión real
+    - 25 a 50 pips de movimiento direccional es normal
+
+    **Pares activos:** EUR/USD, GBP/USD (los reyes de Londres)
+
+    ```
+    Típico día alcista en Londres:
+
+    Precio
+      │                         ╱
+      │                        ╱  ← Expansión real (25-50 pips)
+      │                       ╱
+      │  ─── Asia ────╲     ╱
+      │                 ╲  ╱
+      │                  ╲╱  ← Judas Swing (manipulación)
+      │                       (barrió lows de Asia)
+      └────────────────────────── Tiempo
+        20:00   00:00  03:00  05:00
+    ```
+
+    **Regla clave:** Si Londres ya movió el 80% del ADR (Average Daily Range), no operes NY — el movimiento del día ya se hizo.
+
+    <Warning>
+      **El Almuerzo de Londres (05:00 - 07:00 NY)** es una zona muerta. El volumen cae, el precio consolida o retrocede parcialmente. Si tenés una operación abierta de Londres, considerá tomar ganancias antes de las 05:00.
+    </Warning>
+  </Tab>
+
+  <Tab title="Nueva York (07:00 - 16:00)">
+    ### La Sesión de Confirmación (o Reversión)
+
+    **Horario:** 07:00 a 16:00 (hora de NY)
+    **Apertura del mercado de acciones (RTH):** 09:30
+    **Cierre del mercado de bonos:** 16:00
+
+    **Centros financieros:** Nueva York, Chicago, Toronto
+
+    **Qué pasa:**
+    - Dos escenarios posibles:
+      1. **Continuación de Londres** — el precio sigue en la misma dirección
+      2. **Reversión de Londres** — Londres fue la manipulación, NY es la distribución real
+    - Noticias económicas principales a las 08:30 (CPI, PPI, NFP, etc.)
+    - 20 a 30 pips de movimiento en la killzone
+
+    **Pares activos:** Todos los majors — EUR/USD, GBP/USD, USD/JPY, USD/CHF + Índices (ES, NQ, US30)
+
+    ```
+    NY como continuación:          NY como reversión:
+
+    Precio                         Precio
+      │        ╱                     │   ╲
+      │       ╱  ← NY sigue         │    ╲  ← NY revierte
+      │      ╱                       │     ╲
+      │  ───╱  Londres               │  ───╱  Londres
+      │                              │
+      └──────────                    └──────────
+        07:00  10:00                   07:00  10:00
+    ```
+
+    **Estructura interna de NY:**
+
+    | Bloque | Horario | Qué pasa |
+    |--------|---------|----------|
+    | Pre-market | 07:00 - 08:30 | Análisis, preparación, primeros movimientos |
+    | Noticias | 08:30 | Volatilidad por datos económicos |
+    | CME Open | 08:20 | Apertura de futuros — nivel clave |
+    | RTH Open | 09:30 | Apertura de acciones — Opening Range |
+    | AM Session | 09:30 - 12:00 | Máxima actividad |
+    | NY Lunch | 12:00 - 13:30 | Zona muerta — reversión o consolidación |
+    | PM Session | 13:30 - 16:00 | Segunda oportunidad del día |
+    | Bond Close | 16:00 | Fin del rango diario real |
+  </Tab>
+</Tabs>
+
+---
+
+## El Solapamiento: Donde Pasa la Magia
+
+Las sesiones se solapan parcialmente, y esos momentos de solapamiento tienen **el mayor volumen y volatilidad del día**:
+
+```
+  20:00  22:00  00:00  02:00  04:00  06:00  08:00  10:00  12:00  14:00  16:00
+    │      │      │      │      │      │      │      │      │      │      │
+    ├──────────────┤
+    │    ASIA      │
+    │              ├─────────────────────────────────────────────┤
+    │              │              LONDRES                         │
+    │              │                            ├─────────────────────────┤
+    │              │                            │       NUEVA YORK        │
+    │              │                            │                         │
+    │              │              ╔═════════════╪═════════════╗           │
+    │              │              ║ SOLAPAMIENTO║ LDN + NY    ║           │
+    │              │              ║  08:00-12:00║(MÁXIMO VOL) ║           │
+    │              │              ╚═════════════╪═════════════╝           │
+```
+
+<Info>
+  **El solapamiento Londres-Nueva York (08:00-12:00 NY)** es el momento de máxima liquidez del día. Más del 70% del volumen diario de EUR/USD se concentra aquí. Es donde la mayoría de los traders profesionales operan.
+</Info>
+
+---
+
+## Killzones — La M y D del Ciclo AMD en el Tiempo
+
+Las **killzones** no son simplemente "horarios donde pasan cosas". Son las **ventanas temporales donde ocurre la manipulación y la distribución** del ciclo AMD diario.
+
+¿Por qué en esos horarios y no en otros? Porque es cuando **hay más gente operando** — y más gente operando = más stop losses en el mercado = más liquidez disponible para que el smart money ejecute sus órdenes.
+
+> **Killzone = zona de alta liquidez = zona donde el algoritmo puede manipular y distribuir eficientemente.**
+
+Pensalo así: si necesitás mover millones de dólares, ¿lo hacés a las 3 de la tarde cuando no hay nadie, o a las 8 de la mañana cuando todo el mundo está operando? La respuesta es obvia. Las killzones existen porque **la manipulación necesita víctimas, y las víctimas están activas en esos horarios**.
+
+### Killzones = Fases AMD del Día
+
+| Killzone | Horario (NY) | Fase AMD | Por Qué Hay Liquidez Ahí |
+|----------|-------------|----------|--------------------------|
+| **Asia KZ** | 20:00 - 00:00 | **A** — Acumulación | Traders de Tokyo/Sydney activos. Volumen bajo en Forex pero crea el rango que Londres va a romper |
+| **London Open KZ** | 01:00 - 05:00 | **M** — Manipulación | Europa entera despierta. Bancos de Londres, Frankfurt, Zurich operando. Máxima liquidez en Forex — perfecto para el Judas Swing |
+| **New York KZ** | 07:00 - 10:00 | **D** — Distribución | Wall Street se suma a Europa. El solapamiento LDN+NY crea el pico de liquidez del día — ideal para la expansión real |
+| **London Close KZ** | 10:00 - 12:00 | **X** — Continuación/Cierre | Europa cierra posiciones. El precio completa el rango o se revierte para el día siguiente |
+
+<Warning>
+  **Fuera de las killzones, la probabilidad baja drásticamente.** Operar entre las 12:00 y las 20:00 (fuera de PM Silver Bullet) es operar en "horario basura". El spread sube, la liquidez baja, y los movimientos falsos aumentan.
+</Warning>
+
+### El Día Ideal del Day Trader
+
+```
+  20:00    00:00    02:00    05:00    07:00    10:00    12:00    14:00    16:00
+    │        │        │        │        │        │        │        │        │
+    │  ASIA  │        │  LDN   │        │   NY   │        │   PM   │        │
+    │  ░░░░  │  ····  │  ████  │  ····  │  ████  │  ····  │  ░░░░  │  ····  │
+    │        │        │        │        │        │        │        │        │
+    │ Marcar │ Esperar│OPERAR  │Almuerzo│OPERAR  │NYLunch │Backup  │  Done  │
+    │ rango  │        │(mejor  │Londres │(2da    │(zona   │(PM SB) │        │
+    │ H/L    │        │ventana)│        │ventana)│muerta) │        │        │
+
+  ████ = Alta probabilidad    ░░░░ = Media    ···· = Baja/Esperar
+```
+
+---
+
+## Silver Bullet — Ventanas de 1 Hora para Entradas Precisas
+
+Las **Silver Bullet** son ventanas de exactamente 1 hora donde el precio forma un **FVG (Fair Value Gap)** que podés usar como entrada. Es uno de los modelos más limpios y mecánicos.
+
+| Silver Bullet | Horario (NY) | Mejor Para |
+|--------------|-------------|------------|
+| **London SB** | 03:00 - 04:00 | Forex (EUR/USD, GBP/USD) |
+| **AM Silver Bullet** | 10:00 - 11:00 | Índices (ES, NQ, US30) + Forex |
+| **PM Silver Bullet** | 14:00 - 15:00 | Índices primariamente |
+
+**Cómo funciona:**
+1. **Antes** de que abra la ventana, identificá hacia dónde va el precio (tu Draw on Liquidity)
+2. **Durante** la ventana, esperá que se forme un FVG en la dirección correcta
+3. **Entrá** dentro del FVG cuando el precio lo retestee
+4. **Target:** La liquidez que identificaste en el paso 1
+
+<Tip>
+  **Si perdés la London Silver Bullet, esperá la AM. Si perdés la AM, esperá la PM.** Siempre hay otra oportunidad. El peor error es forzar una entrada fuera de ventana porque "te la perdiste".
+</Tip>
+
+---
+
+## Macros — Ventanas de 20 Minutos del Algoritmo
+
+Las **macros** son ventanas ultra-específicas de 20 minutos donde el algoritmo ejecuta "micro-órdenes" — busca liquidez, crea setups, o genera reversiones.
+
+| Macro | Horario (NY) | Sesión |
+|-------|-------------|--------|
+| London Macro 1 | 02:03 - 02:30 | London KZ |
+| London Macro 2 | 04:03 - 04:30 | London KZ |
+| NY Open Macro 1 | 08:50 - 09:10 | NY Pre-market |
+| NY Open Macro 2 | 09:50 - 10:10 | NY AM |
+| Mid-Morning | 10:50 - 11:10 | NY AM |
+| Lunch Macro | 11:50 - 12:10 | NY Lunch |
+| PM Macro 1 | 14:50 - 15:10 | PM Session |
+| Final Hour | 15:15 - 15:45 | PM Session |
+
+<Info>
+  **Las macros son para traders avanzados.** Si recién empezás, enfocate en las killzones y Silver Bullets. Las macros son para refinar entradas cuando ya entendés la estructura completa.
+</Info>
+
+---
+
+## Puntos de Referencia Temporales
+
+Estos son los "hitos" del día que el algoritmo respeta. Marcarlos en tu gráfico te da contexto:
+
+| Punto | Hora (NY) | Por Qué Importa |
+|-------|----------|-----------------|
+| **True Day Open** | 00:00 | El algoritmo empieza un nuevo "día" acá. Es tu línea base |
+| **CME Open** | 08:20 | Apertura de futuros — nivel de referencia para índices |
+| **Noticias** | 08:30 | CPI, PPI, NFP — volatilidad extrema (la "excusa" del algoritmo) |
+| **RTH Open** | 09:30 | Apertura de acciones — Opening Range (primeros 30 min) |
+| **IPDA True Day Close** | 15:00 | El algoritmo empieza a cerrar el rango diario |
+| **Bond Close** | 16:00 | Fin real del rango diario — después de esto, la vela diaria está definida |
+
+<Warning>
+  **El Open de las 00:00 (midnight NY) es el más importante.** Si el precio está **debajo** del midnight open y tu sesgo es alcista, esperá la manipulación debajo y entrá en la expansión alcista. Si está **encima** del midnight open y tu sesgo es bajista, lo mismo al revés.
+</Warning>
+
+---
+
+## AMD Aplicado a las Sesiones
+
+Las sesiones del día **son** el ciclo AMD:
+
+<iframe src="/charts/diagrams.html?d=amd-sessions" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+
+<iframe src="/charts/index.html?chart=sessions-amd&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+| Sesión | Fase AMD | Qué Hacés |
+|--------|----------|-----------|
+| **Asia** | A — Acumulación | Marcás el rango (high y low). No operás EUR/USD |
+| **London Open** | M — Manipulación | Esperás el Judas Swing. El "fake move" fuera del rango asiático |
+| **New York** | D — Distribución | Entrás en la expansión real. Target: liquidez del otro lado |
+| **PM Session** | X — Continuación/Reversión | Si queda recorrido, sigue. Si no, se revierte |
+
+---
+
+## El Ciclo Semanal
+
+No solo las sesiones del día siguen un ritmo — los días de la semana también:
+
+| Día | Comportamiento Típico | Regla |
+|-----|----------------------|-------|
+| **Lunes** | Puede crear el HIGH o LOW de la semana si tiene rango grande | Observar, marcar niveles |
+| **Martes** | **70% de probabilidad** de que se forme el LOW semanal (semana bajista) | Día clave para entradas |
+| **Miércoles** | Mid-week reversal — si la tendencia fue bajista, acá puede revertir | Confirmar dirección |
+| **Jueves** | El rango semanal suele completarse en la sesión de NY del jueves | Tomar ganancias |
+| **Viernes** | Si jueves completó objetivos → viernes es tranquilo. Si no → sorpresa posible | Cerrar todo antes del fin de semana |
+
+<Info>
+  **El domingo a las 18:00 (NY) abre el mercado.** El precio de apertura del domingo es una referencia clave: si durante la semana el precio está **debajo** del Sunday Open, buscá ventas. Si está **encima**, buscá compras.
+</Info>
+
+---
+
+## Rangos de Referencia (CBDR y Asian Range)
+
+Dos rangos que debés marcar **todos los días** en tu gráfico (timeframe de 15 minutos):
+
+| Rango | Horario (NY) | Para Qué Sirve |
+|-------|-------------|----------------|
+| **CBDR** (Central Bank Dealing Range) | 14:00 - 20:00 | Rango que los bancos centrales crean la tarde anterior |
+| **Asian Range** | 20:00 - 00:00 | Rango de la sesión asiática |
+| **FLOUT** (CBDR + Asian) | 14:00 - 00:00 | Cuando CBDR y Asian están al mismo nivel, usá este combinado |
+
+**Regla:** Usá el **más pequeño** entre CBDR y Asian Range como referencia de proyección. Si ambos están al mismo nivel (consolidación total), usá FLOUT y descartá los otros dos.
+
+---
+
+## Horario de Verano (DST) — La Trampa del Cambio de Hora
+
+<Warning>
+  **EE.UU. y Europa cambian de hora en fechas diferentes.** Esto crea una ventana de 1-2 semanas donde los horarios se desfasan. Si no lo tenés en cuenta, podés estar 1 hora adelantado o atrasado respecto a las killzones reales.
+
+  - **EE.UU.:** Cambia el segundo domingo de marzo y primer domingo de noviembre
+  - **Europa:** Cambia el último domingo de marzo y último domingo de octubre
+
+  **La semana entre el cambio europeo y el americano (finales de octubre) es confusa.** Verificá tus horarios esa semana.
+</Warning>
+
+**Solución práctica:** Siempre usá hora de Nueva York como referencia. En TradingView, configurá tu zona horaria a UTC-5 (New York). La apertura de Londres siempre es a las 03:00 hora de NY, sin importar el DST.
+
+---
+
+## Cuándo Operar Según Tu Estilo
+
+<Tabs>
+  <Tab title="Day Trader (Forex)">
+    **Ventana primaria:** London KZ (02:00 - 05:00 NY)
+    **Ventana secundaria:** NY KZ (07:00 - 10:00 NY)
+
+    - Usá gráficos de 15min para estructura, 5min/1min para entradas
+    - 1 a 3 operaciones por día
+    - Si Londres ya hizo más del 80% del ADR, saltá NY
+    - Cerrá todo antes de las 12:00
+
+    **Screen time necesario:** 3-4 horas
+  </Tab>
+
+  <Tab title="Day Trader (Índices)">
+    **Ventana primaria:** AM Silver Bullet (10:00 - 11:00 NY)
+    **Ventana secundaria:** PM Silver Bullet (14:00 - 15:00 NY)
+
+    - Esperá hasta las 10:00 — los algoritmos se activan después del Opening Range
+    - US30, ES (S&P), NQ (Nasdaq) son los principales
+    - Cierre del mercado de bonos (16:00) marca el fin del rango diario
+
+    **Screen time necesario:** 2-3 horas
+  </Tab>
+
+  <Tab title="Swing Trader">
+    **Mejores días de entrada:** Martes (London), Miércoles
+    **Análisis:** Diario y 4H para dirección, 1H para entradas
+
+    - No necesitás mirar gráficos todo el día
+    - Marcá niveles el domingo/lunes, entrá martes/miércoles
+    - Target: 100-500 pips, mantené varios días
+    - Cerrá antes del jueves NY si alcanzaste tu objetivo
+
+    **Screen time necesario:** 30-60 minutos por día
+  </Tab>
+
+  <Tab title="Scalper">
+    **Ventanas:** Dentro de macros (20 min) o Silver Bullets (1 hora)
+    **Gráficos:** 5min estructura, 1min/3min entradas
+
+    - 5-15 pips por operación
+    - Múltiples operaciones por sesión
+    - Requiere spreads ultra-bajos y ejecución rápida
+    - **No recomendado para principiantes**
+
+    **Screen time necesario:** 4-6 horas
+  </Tab>
+</Tabs>
+
+---
+
+## La Regla de Oro del Timing
+
+<Steps>
+  <Step title="Identificá la sesión actual">
+    ¿Estás en Asia, Londres, NY o PM? Si estás fuera de killzone, **no operés**.
+  </Step>
+  <Step title="Checkeá qué hicieron las sesiones anteriores">
+    Cada sesión se apoya en las 2 sesiones anteriores. Si operás NY, necesitás saber qué hizo Londres y Asia.
+  </Step>
+  <Step title="Marcá los rangos de referencia">
+    Asian Range, CBDR, midnight open (00:00), highs y lows de la sesión anterior.
+  </Step>
+  <Step title="Alineá con tu sesgo diario">
+    ¿El precio está encima o debajo del midnight open? ¿Tu sesgo es alcista o bajista? Si no tenés sesgo claro, **no operés**.
+  </Step>
+  <Step title="Esperá la killzone o Silver Bullet">
+    Entrá solo durante ventanas de alta probabilidad. Si no hay setup en la killzone, esperá la siguiente. Siempre hay otra oportunidad.
+  </Step>
+</Steps>
+
+---
+
+## La Entrega del Precio (Price Delivery)
+
+El precio no se mueve al azar. Se **entrega** de un punto de liquidez a otro, como un paquete que va de depósito en depósito. Las sesiones y killzones son los **horarios de entrega**.
+
+```
+  Liquidez A                    Liquidez B
+  (stops debajo)                (stops arriba)
+       │                             │
+       ▼                             ▼
+  ┌─────────┐    Entrega del    ┌─────────┐
+  │ Lows de │ ──────────────→   │ Highs de│
+  │  Asia   │    precio         │   NY    │
+  └─────────┘                   └─────────┘
+       ↑                             ↑
+   London KZ                      NY KZ
+   (manipulación:                 (distribución:
+    barre estos lows)              llega a estos highs)
+```
+
+**El ciclo de entrega diario:**
+1. **Asia** crea el rango → define dónde están los stops (liquidez)
+2. **London** barre un lado del rango (manipulación) → captura liquidez
+3. **NY** entrega el precio al otro lado → alcanza la liquidez opuesta
+4. **PM** completa la entrega o empieza el ciclo del día siguiente
+
+Cada killzone es un eslabón en esta cadena de entrega. Si entendés de dónde viene el precio y hacia dónde va, las killzones te dicen **cuándo va a llegar**.
+
+---
+
+## El Mercado es Fractal — Esto Se Repite en Todas las Escalas
+
+Lo que pasa en las sesiones del día es **exactamente lo mismo** que pasa dentro de una vela, dentro de una semana, dentro de un trimestre. El patrón AMD + las killzones se repiten en todas las escalas de tiempo:
+
+| Escala | Acumulación (A) | Manipulación (M) | Distribución (D) |
+|--------|-----------------|-------------------|-------------------|
+| **1 vela** | Open (primeros minutos) | Mecha opuesta al cierre | Cuerpo de la vela |
+| **Sesiones del día** | Asia (20:00-00:00) | London KZ (01:00-05:00) | NY KZ (07:00-10:00) |
+| **Semana** | Lunes-Martes | Miércoles (mid-week reversal) | Jueves-Viernes |
+| **Mes** | Semana 1 | Semana 2 (True Month Open) | Semana 3-4 |
+| **Trimestre** | Mes 1 | Mes 2 | Mes 3 |
+
+<Info>
+  **Esto es clave.** Cuando mirás un gráfico de 15 minutos y ves que Asia consolidó, Londres hizo el Judas Swing, y NY expandió — estás viendo exactamente lo mismo que pasa dentro de UNA vela diaria: el Open (Asia), la mecha (London), y el cuerpo (NY). Es el mismo patrón, diferente escala. **Fractal puro.**
+</Info>
+
+---
+
+## Quick Reference Card
+
+```
+SESIONES (hora de Nueva York):
+  Asia:     20:00 - 00:00  → Consolidación (marcar rango)
+  London:   00:00 - 12:00  → Manipulación + Expansión
+  New York: 07:00 - 16:00  → Confirmación o Reversión
+  PM:       13:30 - 16:00  → Segunda oportunidad
+
+KILLZONES:
+  Asia KZ:      20:00 - 00:00
+  London KZ:    01:00 - 05:00 (core: 02:00-05:00)
+  NY KZ:        07:00 - 10:00
+  London Close: 10:00 - 12:00
+
+SILVER BULLETS (1 hora, buscar FVG):
+  London SB:    03:00 - 04:00
+  AM SB:        10:00 - 11:00
+  PM SB:        14:00 - 15:00
+
+PUNTOS CLAVE:
+  True Day Open:   00:00 (midnight NY)
+  CME Open:        08:20
+  Noticias:        08:30 (si hay)
+  RTH Open:        09:30
+  Bond Close:      16:00
+
+REGLA: Si no estás en killzone, no operés.
+```
+
+---
+
+## Resumen
+
+<Steps>
+  <Step title="El mercado tiene un ritmo">
+    Asia consolida, Londres manipula y expande, NY confirma o revierte, PM cierra.
+  </Step>
+  <Step title="Las killzones son tu ventana">
+    London KZ (01:00-05:00) y NY KZ (07:00-10:00) son las ventanas de mayor probabilidad. Fuera de ellas, la probabilidad cae.
+  </Step>
+  <Step title="Silver Bullets para entradas limpias">
+    Tres ventanas de 1 hora al día (03:00, 10:00, 14:00) donde buscás un FVG como entrada mecánica.
+  </Step>
+  <Step title="Cada sesión se apoya en las anteriores">
+    No podés operar NY sin saber qué hizo Londres. No podés operar Londres sin ver el rango de Asia. Todo está conectado.
+  </Step>
+  <Step title="El timing es un filtro, no una predicción">
+    No te dice QUÉ va a pasar — te dice CUÁNDO es más probable que pase algo importante.
+  </Step>
+</Steps>
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Anterior: Leyendo un Gráfico" icon="arrow-left" href="/learn/basics/reading-charts">
+    Tipos de gráficos, velas, timeframes — cómo leer lo que te muestra la pantalla.
+  </Card>
+  <Card title="Siguiente: Gestión de Riesgo" icon="arrow-right" href="/learn/basics/risk-management">
+    La habilidad más importante: cómo proteger tu capital y sobrevivir.
+  </Card>
+</CardGroup>

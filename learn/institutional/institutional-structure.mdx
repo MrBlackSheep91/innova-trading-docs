@@ -1,0 +1,84 @@
+---
+title: 'Estructura de Mercado Institucional'
+description: 'Fractales, dealing ranges, premium/discount — cómo los institucionales ven el mercado'
+icon: 'sitemap'
+---
+
+## Fractales: La Estructura se Repite
+
+La estructura de mercado es **fractal** — se repite idénticamente en todos los timeframes:
+
+```
+Daily:     HH → HL → HH → HL  (tendencia alcista)
+  ↓ zoom
+4H:        Dentro de cada swing del Daily, hay su propia estructura HH/HL/LL/LH
+  ↓ zoom
+15min:     Dentro de cada swing del 4H, hay su propia estructura
+  ↓ zoom
+5min:      Y así sucesivamente...
+```
+
+<Warning>
+  **Regla fractal:** La estructura del timeframe superior **SIEMPRE** manda. Un CHOCH en 5min dentro de una tendencia alcista en Daily es solo un retroceso — no una reversión real.
+
+  *"The daily is the parent of the H1 price structure, so minor price swings are subordinate to it."*
+</Warning>
+
+## Dealing Range
+
+Un **Dealing Range** es el rango completo entre un swing high y swing low significativos en un timeframe dado:
+
+<iframe src="/charts/diagrams.html?d=dealing-range" style={{width: '100%', height: '340px', border: 'none', borderRadius: '8px'}} />
+
+| Zona | Ubicación | Acción |
+|------|-----------|--------|
+| **Premium** | Arriba del 50% | Favorable para **vender** |
+| **Discount** | Debajo del 50% | Favorable para **comprar** |
+| **Equilibrium (EQ)** | El 50% exacto | Zona de transición |
+
+<Tip>
+  **Regla ICT:** En tendencia alcista, buscá compras en **Discount**. En tendencia bajista, buscá ventas en **Premium**. Operar contra esta regla es operar contra las probabilidades.
+</Tip>
+
+## Daily Bias — Determinar la Dirección del Día
+
+<Tabs>
+  <Tab title="Bias Alcista">
+    <Steps>
+      <Step title="Confirmar fase alcista">
+        Esperá que un swing high en el Daily sea roto → confirma que estamos en fase alcista.
+      </Step>
+      <Step title="Esperar retroceso">
+        Cuando el precio retrace, buscá un swing low que se forme PERO que NO rompa un swing low reciente.
+      </Step>
+      <Step title="Anticipar expansión">
+        Cuando ese swing low se forma, anticipá que el high de la 3ra vela diaria sea barrido o tradeado al día siguiente.
+      </Step>
+      <Step title="Seguir el flujo">
+        Buscá que **previous day highs** sean raided cada día hasta que se forme un swing high en el Daily.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Bias Bajista">
+    <Steps>
+      <Step title="Confirmar fase bajista">
+        Esperá que un swing low en el Daily sea roto → confirma que estamos en fase bajista.
+      </Step>
+      <Step title="Esperar retroceso">
+        Cuando el precio retrace al alza, buscá un swing high que se forme PERO que NO rompa un swing high reciente.
+      </Step>
+      <Step title="Anticipar expansión">
+        Cuando ese swing high se forma, anticipá que el low de la 3ra vela diaria sea barrido al día siguiente.
+      </Step>
+      <Step title="Seguir el flujo">
+        Buscá que **previous day lows** sean raided cada día hasta que se forme un swing low en el Daily.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+---
+
+<Card title="Siguiente: Liquidez" icon="arrow-right" href="/learn/institutional/liquidity">
+  Entendé por qué el precio va donde va — la clave del trading institucional.
+</Card>

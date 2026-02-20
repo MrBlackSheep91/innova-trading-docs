@@ -1,0 +1,143 @@
+---
+title: 'Leyendo un Gráfico'
+description: 'Tu primera mirada a un gráfico de precios — tipos de gráficos, timeframes y cómo interpretarlos'
+icon: 'chart-mixed'
+---
+
+## Qué es un Gráfico de Precios
+
+Un gráfico de precios es una **representación visual** del movimiento del precio a lo largo del tiempo.
+
+<iframe src="/charts/index.html?chart=market-structure&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+
+- **Eje vertical (Y):** El precio del activo
+- **Eje horizontal (X):** El tiempo
+
+Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué momento**.
+
+## Tipos de Gráficos
+
+<Tabs>
+  <Tab title="Gráfico de Velas (Candlestick)">
+    ### El que usamos — el más popular
+
+    Cada "vela" muestra 4 datos: Open, High, Low, Close (OHLC) en un período de tiempo.
+
+    ```
+       │
+    ┌──┤ ← High
+    │  │
+    │██│ ← Cuerpo (Open a Close)
+    │  │
+    └──┤ ← Low
+       │
+    ```
+
+    **Ventajas:**
+    - Muestra la mayor cantidad de información
+    - Permite identificar patrones complejos
+    - El color del cuerpo te dice inmediatamente si subió o bajó
+
+    **Es el gráfico estándar en trading profesional.** Todo este curso usa gráficos de velas.
+  </Tab>
+  <Tab title="Gráfico de Barras (OHLC)">
+    ### Similar a velas pero con diferente estética
+
+    Muestra los mismos 4 datos pero con barras en vez de velas:
+
+    ```
+       │
+       ├── Close
+       │
+    ───┤
+       │
+    ── ├── Open
+       │
+    ```
+
+    Línea izquierda = Open, línea derecha = Close. Algunos traders veteranos prefieren este formato.
+  </Tab>
+  <Tab title="Gráfico de Línea">
+    ### El más simple
+
+    Solo muestra el **precio de cierre** conectado por una línea.
+
+    ```
+         ╱╲
+        ╱  ╲    ╱╲
+       ╱    ╲  ╱  ╲
+      ╱      ╲╱
+    ```
+
+    **Ventajas:** Muy limpio, fácil de ver la tendencia general.
+    **Desventajas:** Perdés toda la información de Open, High y Low.
+
+    Útil para tener una vista general, pero no para analizar ni operar.
+  </Tab>
+</Tabs>
+
+## Timeframes (Temporalidades)
+
+Cada vela representa un **período de tiempo** específico. El timeframe que elegís define cuánto tiempo representa cada vela:
+
+| Timeframe | Cada vela = | Uso principal |
+|-----------|-------------|--------------|
+| **1 min (M1)** | 1 minuto | Scalping (operaciones de segundos/minutos) |
+| **5 min (M5)** | 5 minutos | Scalping / Day trading |
+| **15 min (M15)** | 15 minutos | Day trading |
+| **1 hora (H1)** | 1 hora | Day / Swing trading |
+| **4 horas (H4)** | 4 horas | Swing trading |
+| **Diario (D1)** | 1 día | Swing / Position trading |
+| **Semanal (W1)** | 1 semana | Position trading / Análisis |
+| **Mensual (MN)** | 1 mes | Análisis de largo plazo |
+
+<Tip>
+  **Para empezar:** Usá el **gráfico diario (D1)** para analizar la tendencia general y el **gráfico de 1 hora (H1)** o **15 minutos (M15)** para buscar entradas. No te metas en timeframes de 1 o 5 minutos hasta que tengas experiencia.
+</Tip>
+
+### Concepto Clave: Multi-Timeframe
+
+El mismo activo se ve diferente en cada timeframe:
+
+```
+DIARIO: Tendencia alcista clara (HH, HL, HH, HL)
+   ↓ zoom
+4 HORAS: Dentro de cada swing del diario, hay su propia estructura
+   ↓ zoom
+15 MIN: Dentro de cada swing del 4H, hay retrocesos y micro-tendencias
+```
+
+**El timeframe superior siempre manda.** Si el diario dice alcista, los retrocesos en 15 minutos son oportunidades de compra, no señales de venta.
+
+## Qué Estás Mirando Realmente
+
+Cuando ves un gráfico, estás viendo **la batalla entre compradores y vendedores** en tiempo real:
+
+| Lo que ves | Lo que significa |
+|-----------|-----------------|
+| Precio subiendo | Los compradores están ganando |
+| Precio bajando | Los vendedores están ganando |
+| Vela con cuerpo grande verde | Los compradores dominaron este período |
+| Vela con cuerpo grande rojo | Los vendedores dominaron este período |
+| Vela pequeña / doji | Nadie ganó — indecisión |
+| Mecha larga arriba | Intentaron subir pero fueron rechazados |
+| Mecha larga abajo | Intentaron bajar pero fueron rechazados |
+
+## Tu Primera Práctica
+
+Abrí un gráfico de **EUR/USD en timeframe Diario** y hacé estas observaciones:
+
+1. **Dirección general:** El precio está subiendo, bajando, o lateral?
+2. **Velas grandes vs pequeñas:** Dónde hay velas con cuerpos grandes? Qué dirección tienen?
+3. **Mechas:** Dónde hay mechas largas? Qué lado fue rechazado?
+4. **Patrones:** Ves zonas donde el precio rebota repetidamente?
+
+<Info>
+  No necesitás entender todo ahora. Solo **observá**. Familiarizate con cómo se ve el precio moviéndose. Es como aprender a leer — primero reconocés las letras, después las palabras, después las oraciones.
+</Info>
+
+---
+
+<Card title="Siguiente: Gestión de Riesgo" icon="arrow-right" href="/learn/basics/risk-management">
+  Antes de aprender a operar, aprendé lo más importante: cómo NO perder tu capital.
+</Card>

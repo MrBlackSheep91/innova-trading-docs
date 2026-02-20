@@ -1,0 +1,113 @@
+---
+title: 'Ciclos de Volatilidad'
+description: 'Contracción y expansión — el principio más poderoso y universal del trading'
+icon: 'wave-pulse'
+---
+
+## El Principio de Larry Williams & Toby Crabel
+
+<Tip>
+  *"The market experiences a constant ebb and flow of range contraction / range expansion. After a period of rest or range contraction, a trend day will often follow."* — Street Smarts
+</Tip>
+
+Este es uno de los principios más poderosos del trading:
+
+**Contracción → Expansión → Contracción → Expansión...**
+
+<iframe src="/charts/index.html?chart=volatility-cycle&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+El mercado alterna constantemente entre fases de rango comprimido y fases de movimiento explosivo. Esto aplica a **todos los timeframes** y **todos los activos**.
+
+## Las Dos Fases
+
+<Tabs>
+  <Tab title="Contracción (NR)">
+    ### Fase de Contracción
+
+    - Barras cada vez más pequeñas
+    - Los rangos se comprimen
+    - Volumen decrece
+    - Parece "aburrido" — pero es acumulación/distribución silenciosa
+    - **Es la calma antes de la tormenta**
+
+    ```
+    ┌──┐ ┌─┐ ┌┐ ┌┐ ← Barras cada vez más pequeñas
+    └──┘ └─┘ └┘ └┘
+    ```
+
+    **Qué está pasando:** Las instituciones están acumulando (o distribuyendo) posiciones silenciosamente. No quieren mover el precio todavía, así que operan dentro del rango.
+  </Tab>
+  <Tab title="Expansión (WR)">
+    ### Fase de Expansión
+
+    - Barra(s) con rango significativamente mayor
+    - El precio "explota" desde la compresión
+    - Volumen incrementa
+    - La dirección de la expansión es la tendencia probable
+
+    ```
+    ┌─────────┐ ← Barra MUCHO más grande que las anteriores
+    │         │
+    │         │
+    │         │
+    └─────────┘
+    ```
+
+    **Qué está pasando:** Las instituciones revelan su mano. Empujan el precio agresivamente en la dirección de su posición acumulada. Los stops de los traders atrapados en el rango alimentan el movimiento.
+  </Tab>
+</Tabs>
+
+## Aplicación Práctica
+
+<Steps>
+  <Step title="Identifica contracción">
+    Buscá **3+ barras con rangos decrecientes**. Cada barra es más pequeña que la anterior. El mercado se está comprimiendo como un resorte.
+  </Step>
+  <Step title="Preparate para expansión">
+    **No intentes predecir la dirección.** Solo preparate. Tené tu plan listo para ambos escenarios (breakout alcista o bajista).
+  </Step>
+  <Step title="Actuá en la expansión">
+    La **primera barra** que rompe el rango comprimido indica la dirección. Esa es tu señal de entrada.
+  </Step>
+  <Step title="Cerrá en clímax">
+    Si la expansión se vuelve parabólica (barras enormes una tras otra), es probable el **final** del movimiento. Ajustá stops o tomá ganancias.
+  </Step>
+</Steps>
+
+<Warning>
+  **Regla Williams:** *"When I learned to tighten my stops on parabolic moves, I became a more profitable trader. At those times I want the market to take me out before I give back my profits."*
+
+  Las barras parabólicas (expansión extrema) suelen ser el CLÍMAX, no el inicio. Protegé tus ganancias.
+</Warning>
+
+## Desde la Perspectiva ICT
+
+ICT interpreta la contracción/expansión como fases del **delivery algorítmico**:
+
+| Fase Williams | Interpretación ICT |
+|---------------|-------------------|
+| **Contracción** | Consolidation, acumulación/distribución, "engineering" de liquidez |
+| **Expansión** | Displacement, instituciones actuando, delivery algorítmico |
+
+El precio se comprime para **construir liquidez** (stops de ambos lados se acumulan en los extremos del rango) y luego **expande para barrer** esa liquidez en una dirección.
+
+```
+  BSL ─── stops de shorts se acumulan arriba ───
+  │                                              │
+  │  ┌─┐ ┌─┐ ┌─┐ ┌─┐  ← Consolidación          │
+  │  └─┘ └─┘ └─┘ └─┘                            │
+  │                                              │
+  SSL ─── stops de longs se acumulan abajo ─────
+
+  Luego: EXPANSIÓN barre un lado y corre en la dirección opuesta
+```
+
+<Info>
+  **Ejemplo concreto:** El precio consolida entre 1.1000 y 1.1050 durante 3 días. Los shorts ponen stops arriba de 1.1050, los longs ponen stops debajo de 1.1000. Cuando explota, barre primero los stops de un lado (digamos baja a 1.0995 barriendo los longs) y luego revierte violentamente al alza pasando 1.1050 y más allá. Las instituciones llenaron sus órdenes de compra contra los stops de los longs.
+</Info>
+
+---
+
+<Card title="Siguiente: Estructura de Mercado" icon="arrow-right" href="/learn/fundamentals/market-structure">
+  Con el ciclo de volatilidad entendido, aprendé a leer la estructura de tendencias del mercado.
+</Card>

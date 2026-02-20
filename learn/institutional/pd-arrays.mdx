@@ -1,0 +1,145 @@
+---
+title: 'PD Arrays: Order Blocks y Fair Value Gaps'
+description: 'Las zonas institucionales donde se espera que el precio reaccione'
+icon: 'layer-group'
+---
+
+## Qué son los PD Arrays
+
+**PD Arrays (Premium/Discount Arrays)** son zonas de precio donde se espera una reacción. Son los "niveles institucionales" del framework ICT.
+
+<iframe src="/charts/index.html?chart=ob-fvg&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+## Order Blocks (OB)
+
+**Definición:** La última vela contraria **antes** de un movimiento de displacement (expansión).
+
+<Tabs>
+  <Tab title="Bullish Order Block">
+    La última vela **bajista** (down-close) antes de un rally.
+
+    - Representa la zona donde las instituciones **acumularon** posiciones largas
+    - Se espera que el precio retorne a esta zona y **rebote al alza**
+    - Se marca desde el **LOW** de la vela hasta su **OPEN**
+
+    ```
+    ┌─────────────────────────────┐
+    │  Rally posterior (displacement)  ↑
+    │  ┌─┐                             │
+    │  │█│ ← Bearish candle            │
+    │  └─┘ ← ESTA es el Bullish OB     │
+    └─────────────────────────────┘
+    ```
+  </Tab>
+  <Tab title="Bearish Order Block">
+    La última vela **alcista** (up-close) antes de una caída.
+
+    - Representa la zona donde las instituciones **distribuyeron** posiciones cortas
+    - Se espera que el precio retorne a esta zona y **rebote a la baja**
+    - Se marca desde el **HIGH** de la vela hasta su **OPEN**
+
+    ```
+    ┌─────────────────────────────┐
+    │  ┌─┐ ← ESTA es el Bearish OB │
+    │  │█│ ← Bullish candle          │
+    │  └─┘                           │
+    │  Caída posterior (displacement) ↓
+    └─────────────────────────────┘
+    ```
+  </Tab>
+</Tabs>
+
+### Criterios de Calidad para un Order Block
+
+<Steps>
+  <Step title="Cuerpo significativo">
+    Debe tener un cuerpo grande ("beefy"). Velas con cuerpos pequeños NO son order blocks válidos.
+  </Step>
+  <Step title="Displacement posterior agresivo">
+    El movimiento después del OB debe ser **agresivo** — velas de cuerpo grande en la dirección opuesta.
+  </Step>
+  <Step title="Crea un FVG">
+    El displacement debe crear un **Fair Value Gap** (vacío de precio). Esto confirma la urgencia del movimiento.
+  </Step>
+  <Step title="Zona de Premium/Discount apropiada">
+    Un bullish OB en **discount** (debajo del 50%) o un bearish OB en **premium** (arriba del 50%) tiene más probabilidad.
+  </Step>
+  <Step title="No mitigado">
+    El OB no debe haber sido visitado previamente. Una vez que el precio retorna y reacciona, está "mitigado" — ya no es válido.
+  </Step>
+</Steps>
+
+## Fair Value Gaps (FVG)
+
+**Definición:** Un gap de 3 velas donde la mecha de la vela 1 **no se superpone** con la mecha de la vela 3, dejando un "vacío" en la vela 2.
+
+<Tabs>
+  <Tab title="Bullish FVG (BISI)">
+    **BISI** = Buyside Imbalance Sellside Inefficiency
+
+    `Low de vela 3 > High de vela 1`
+
+    Indica **compra agresiva** (imbalance al alza). Se espera que el precio retorne a llenar este gap.
+
+    ```
+    Vela 3:  ┌─┐
+             │ │
+             └─┘ ← Low de vela 3
+                  ← GAP (FVG)
+    Vela 2:  ┌─┐ (displacement)
+             │ │
+             └─┘
+                  ← GAP (FVG)
+             ┌─┐ ← High de vela 1
+    Vela 1:  │ │
+             └─┘
+    ```
+  </Tab>
+  <Tab title="Bearish FVG (SIBI)">
+    **SIBI** = Sellside Imbalance Buyside Inefficiency
+
+    `High de vela 3 < Low de vela 1`
+
+    Indica **venta agresiva** (imbalance a la baja). Se espera que el precio retorne a llenar este gap.
+
+    ```
+    Vela 1:  ┌─┐
+             │ │
+             └─┘ ← Low de vela 1
+                  ← GAP (FVG)
+    Vela 2:  ┌─┐ (displacement)
+             │ │
+             └─┘
+                  ← GAP (FVG)
+             ┌─┐ ← High de vela 3
+    Vela 3:  │ │
+             └─┘
+    ```
+  </Tab>
+</Tabs>
+
+### Consequent Encroachment (CE)
+
+El **50%** del FVG. Es el nivel óptimo de reacción.
+
+<Tip>
+  *"The bodies of the candles respect consequent encroachment. Tails may go beyond, but that's fine — it's not a deal breaker."* — ICT
+
+  Buscá que el precio reaccione al **CE (punto medio)** del FVG, no necesariamente a todo el gap.
+</Tip>
+
+## Otros PD Arrays
+
+| PD Array | Descripción |
+|----------|------------|
+| **Breaker Block** | Un OB que falló (fue mitigado) pero luego el precio lo reclamó. Actúa como soporte/resistencia invertido. |
+| **Mitigation Block** | Un old high/low que coincide con un OB. El precio retorna para "mitigar" las órdenes pendientes. |
+| **Rejection Block** | Zona de rechazo marcada por mechas largas, no por cuerpos. |
+| **Propulsion Block** | FVG que se forma dentro de un OB. Zona de **alta probabilidad**. |
+| **Vacuum Block** | Gap grande que el precio eventualmente debe llenar. |
+
+---
+
+<Card title="Siguiente: Displacement y Order Flow" icon="arrow-right" href="/learn/institutional/displacement">
+  Entendé qué es el displacement y cómo leer el order flow institucional.
+</Card>

@@ -1,0 +1,89 @@
+---
+title: 'Displacement e Institutional Order Flow'
+description: 'Movimientos agresivos, IOFED y volatilidad como señal de participación institucional'
+icon: 'bolt'
+---
+
+## Qué es Displacement
+
+**Displacement** es un movimiento agresivo del precio que indica participación institucional. Se caracteriza por:
+
+1. Una o más velas de **cuerpo grande** en la misma dirección
+2. Poca o ninguna mecha **contra** la dirección del movimiento
+3. **Crea Fair Value Gaps**
+4. Rompe estructura previa
+
+<Info>
+  *"When we see displacement, it's smart money showing their hand. It's not retail doing this — retail doesn't have the capital to create this kind of movement."* — ICT
+</Info>
+
+<iframe src="/charts/index.html?chart=displacement&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+### Cómo Identificar Displacement
+
+| Característica | Presente | Ausente |
+|----------------|---------|---------|
+| Cuerpo >70% del rango | Displacement probable | No es displacement |
+| Mechas mínimas en dirección contraria | Convicción fuerte | Puede ser falso |
+| Crea FVG | Confirma displacement | Solo es una barra grande |
+| Rompe estructura | Displacement institucional | Solo es volatilidad |
+
+## IOFED — Institutional Order Flow Entry Drill
+
+Concepto avanzado de ICT:
+
+**IOFED** es un rápido "dip" (raid) dentro de un FVG que **NO pasa** el equilibrio (50%) del FVG. Es una confirmación de que el order flow institucional está activo en esa dirección.
+
+```
+        ┌── FVG High
+        │
+    ────│──── CE (50%)
+    ↑   │
+    │   │  ← IOFED: price dips INTO the FVG but doesn't pass CE
+    │   │
+    ↓   │
+        └── FVG Low
+```
+
+<Tip>
+  Si el precio entra en un FVG pero **no pasa del 50% (CE)**, es señal de que el order flow institucional es fuerte en esa dirección. Podés usar el CE como tu nivel de invalidación.
+</Tip>
+
+## Chris Lori: Volatilidad como Señal de Order Flow
+
+Lori enseña a leer la volatilidad como indicador de participación institucional:
+
+<AccordionGroup>
+  <Accordion title="Volatilidad Creciente + Dirección Clara = Instituciones Entrando">
+    - Barras cada vez más grandes en una dirección
+    - Menor tiempo entre impulsos
+    - **Acción:** Operar en esa dirección. Las instituciones están revelando su posición.
+  </Accordion>
+  <Accordion title="Volatilidad Creciente + Sin Dirección = Instituciones Manipulando">
+    - Barras grandes en **ambas** direcciones
+    - Stop hunts en ambos lados
+    - Acumulación/distribución en progreso
+    - **Acción:** NO operar. Esperar a que se defina la dirección.
+  </Accordion>
+  <Accordion title="Volatilidad Decreciente = Instituciones Esperando">
+    - Barras cada vez más pequeñas
+    - Esperando catalizador (news, session open, etc.)
+    - **Acción:** Prepararse para la próxima expansión. Es la fase de contracción del ciclo.
+  </Accordion>
+</AccordionGroup>
+
+## Resumen del Order Flow
+
+| Señal | Significado | Acción |
+|-------|------------|--------|
+| Displacement (velas grandes, FVGs) | Instituciones actuando | Operar en esa dirección |
+| IOFED (dip que no pasa CE) | Order flow fuerte | Confirmación de entrada |
+| Volatilidad creciente con dirección | Instituciones entrando | Seguir la dirección |
+| Volatilidad creciente sin dirección | Manipulación | Esperar |
+| Volatilidad decreciente | Esperando catalizador | Prepararse |
+
+---
+
+<Card title="Siguiente: El Framework Completo" icon="arrow-right" href="/learn/framework/complete-framework">
+  Integrá todo en un sistema operativo paso a paso.
+</Card>
