@@ -47,7 +47,17 @@
                 "pages": [
                   "introduction",
                   "quickstart",
-                  "authentication"
+                  "authentication",
+                  "troubleshooting"
+                ]
+              },
+              {
+                "group": "MT4/MT5 Connection",
+                "pages": [
+                  "guides/connect-overview",
+                  "guides/install-ea",
+                  "guides/create-token",
+                  "guides/multi-account"
                 ]
               },
               {
@@ -197,7 +207,17 @@
                 "pages": [
                   "es/introduction",
                   "es/quickstart",
-                  "es/authentication"
+                  "es/authentication",
+                  "es/troubleshooting"
+                ]
+              },
+              {
+                "group": "Conexión MT4/MT5",
+                "pages": [
+                  "es/guides/connect-overview",
+                  "es/guides/install-ea",
+                  "es/guides/create-token",
+                  "es/guides/multi-account"
                 ]
               },
               {
