@@ -391,11 +391,11 @@ function createInnovaChart(containerId, config) {
     rightPriceScale: {
       borderColor: 'rgba(42,46,57,0.4)',
       visible: config.showPriceScale !== false,
-      scaleMargins: config.scaleMargins || { top: 0.1, bottom: 0.1 },
+      scaleMargins: config.scaleMargins || { top: 0.15, bottom: 0.15 },
     },
     timeScale: {
       borderColor: 'rgba(42,46,57,0.4)',
-      visible: config.showTimeScale === true,
+      visible: config.showTimeScale !== false,
       rightOffset: config.rightOffset || 5,
       barSpacing: config.barSpacing || 18,
     },
@@ -1097,6 +1097,88 @@ const CHARTS = {
       showTimeScale: true,
       barSpacing: 20,
       rightOffset: 3,
+    };
+  },
+
+  // ── SPREAD VISUAL ──────────────────────────────────────────
+  'spread-visual': () => {
+    const data = [
+      bar(0, 1.1050, 1.1068, 1.1042, 1.1060),
+      bar(1, 1.1060, 1.1075, 1.1055, 1.1070),
+      bar(2, 1.1070, 1.1082, 1.1058, 1.1065),
+      bar(3, 1.1065, 1.1078, 1.1050, 1.1055),
+      bar(4, 1.1055, 1.1072, 1.1048, 1.1068),
+      bar(5, 1.1068, 1.1090, 1.1065, 1.1085),
+      bar(6, 1.1085, 1.1095, 1.1070, 1.1078),
+      bar(7, 1.1078, 1.1088, 1.1060, 1.1065),
+    ];
+    return {
+      title: 'Spread: Bid vs Ask',
+      data,
+      barSpacing: 28,
+      rightOffset: 2,
+      labels: [
+        { price: 1.1072, text: 'Ask (Compra)', color: '#3b82f6', side: 'right' },
+        { price: 1.1070, text: 'Bid (Venta)', color: '#ef4444', side: 'right' },
+      ],
+      zones: [
+        { top: 1.1072, bottom: 1.1070, color: 'rgba(234,179,8,0.15)', label: 'Spread = 2 pips' },
+      ],
+    };
+  },
+
+  // ── SESSIONS ACTIVITY ──────────────────────────────────────
+  'sessions-activity': () => {
+    const data = [
+      bar(0, 100.0, 100.2, 99.9, 100.1),
+      bar(1, 100.1, 100.15, 100.0, 100.05),
+      bar(2, 100.05, 100.1, 99.95, 100.0),
+      bar(3, 100.0, 100.08, 99.92, 99.95),
+      bar(4, 99.95, 100.0, 99.9, 99.98),
+      bar(5, 99.98, 100.3, 99.85, 100.25),
+      bar(6, 100.25, 100.5, 100.1, 100.45),
+      bar(7, 100.45, 100.6, 100.3, 100.35),
+      bar(8, 100.35, 100.7, 100.2, 100.65),
+      bar(9, 100.65, 100.9, 100.5, 100.8),
+      bar(10, 100.8, 100.85, 100.6, 100.7),
+      bar(11, 100.7, 100.75, 100.6, 100.65),
+    ];
+    return {
+      title: 'Actividad por Sesion',
+      data,
+      barSpacing: 22,
+      rightOffset: 2,
+      zones: [
+        { top: 100.15, bottom: 99.9, color: 'rgba(234,179,8,0.08)', label: 'Asia' },
+        { top: 100.6, bottom: 99.85, color: 'rgba(59,130,246,0.08)', label: 'Londres' },
+        { top: 100.9, bottom: 100.2, color: 'rgba(239,68,68,0.08)', label: 'NY' },
+      ],
+    };
+  },
+
+  // ── NEWS IMPACT ────────────────────────────────────────────
+  'news-impact': () => {
+    const data = [
+      bar(0, 1.0850, 1.0858, 1.0845, 1.0855),
+      bar(1, 1.0855, 1.0860, 1.0850, 1.0858),
+      bar(2, 1.0858, 1.0862, 1.0852, 1.0856),
+      bar(3, 1.0856, 1.0860, 1.0854, 1.0858),
+      bar(4, 1.0858, 1.0920, 1.0830, 1.0905),
+      bar(5, 1.0905, 1.0915, 1.0885, 1.0895),
+      bar(6, 1.0895, 1.0910, 1.0880, 1.0900),
+      bar(7, 1.0900, 1.0908, 1.0892, 1.0898),
+    ];
+    return {
+      title: 'Impacto de Noticias en el Precio',
+      data,
+      barSpacing: 28,
+      rightOffset: 2,
+      scaleMargins: { top: 0.1, bottom: 0.1 },
+      labels: [
+        { price: 1.0920, text: 'Spike alto', color: '#22c55e', side: 'right' },
+        { price: 1.0830, text: 'Spike bajo', color: '#ef4444', side: 'right' },
+        { price: 1.0858, text: 'Pre-noticia', color: '#6b7280', side: 'left' },
+      ],
     };
   },
 

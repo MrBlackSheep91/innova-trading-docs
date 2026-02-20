@@ -8,7 +8,7 @@ icon: 'chart-mixed'
 
 Un gráfico de precios es una **representación visual** del movimiento del precio a lo largo del tiempo.
 
-<iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=market-structure&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+<iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=market-structure&h=310" style={{width: '100%', height: '310px', border: 'none', borderRadius: '8px'}} />
 
 - **Eje vertical (Y):** El precio del activo
 - **Eje horizontal (X):** El tiempo
@@ -23,7 +23,7 @@ Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué mom
 
     Cada "vela" muestra 4 datos: Open, High, Low, Close (OHLC) en un período de tiempo.
 
-    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-candlestick&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-candlestick&h=310" style={{width: '100%', height: '310px', border: 'none', borderRadius: '8px'}} />
 
     <Note>
       **Anatomía de una vela:** La mecha superior marca el **High** (máximo), la mecha inferior marca el **Low** (mínimo), y el cuerpo (bloque grueso) va del **Open** (apertura) al **Close** (cierre). Si el cierre es mayor que la apertura, la vela es verde (alcista). Si es menor, es roja (bajista).
@@ -41,7 +41,7 @@ Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué mom
 
     Muestra los mismos 4 datos pero con barras en vez de velas:
 
-    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-bars&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-bars&h=310" style={{width: '100%', height: '310px', border: 'none', borderRadius: '8px'}} />
 
     <Note>
       **Anatomía de una barra OHLC:** Una línea vertical del **High** al **Low**, con una marca horizontal a la izquierda para el **Open** y otra a la derecha para el **Close**.
@@ -54,7 +54,7 @@ Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué mom
 
     Solo muestra el **precio de cierre** conectado por una línea. No ves Open, High ni Low — solo el cierre de cada período.
 
-    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-line&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-line&h=310" style={{width: '100%', height: '310px', border: 'none', borderRadius: '8px'}} />
 
     **Ventajas:** Muy limpio, fácil de ver la tendencia general.
     **Desventajas:** Perdés toda la información de Open, High y Low — no podés analizar la estructura interna de cada período.
@@ -115,12 +115,46 @@ Abrí un gráfico de **EUR/USD en timeframe Diario** y hacé estas observaciones
 3. **Mechas:** Dónde hay mechas largas? Qué lado fue rechazado?
 4. **Patrones:** Ves zonas donde el precio rebota repetidamente?
 
+## Swing Points — Los Puntos de Giro
+
+Cuando mirás un gráfico, vas a notar que el precio no se mueve en línea recta. Sube, baja, vuelve a subir, vuelve a bajar. Los **puntos donde el precio cambia de dirección** se llaman **swing points**:
+
+- **Swing High:** Un punto alto donde el precio dejó de subir y empezó a bajar. Las velas a los lados son más bajas que la del medio.
+- **Swing Low:** Un punto bajo donde el precio dejó de bajar y empezó a subir. Las velas a los lados son más altas que la del medio.
+
+Estos puntos son **fundamentales** porque:
+1. Definen la **tendencia** — si los swing highs y lows van subiendo, es alcista
+2. Cuando un swing point se **rompe**, indica un posible cambio de dirección
+3. Son donde la mayoría de los traders ponen sus stops — y por lo tanto, donde hay **liquidez**
+
+<Info>
+  No necesitás memorizar reglas complejas ahora. Solo acostumbrate a identificar los picos y valles del precio. En el módulo de Fundamentos los vas a usar constantemente.
+</Info>
+
+## Los Dos Ejes: Precio Y Tiempo
+
+Ya sabés que el eje Y (vertical) muestra el **precio** y el eje X (horizontal) muestra el **tiempo**. Pero hay algo que la mayoría de los traders ignoran:
+
+> **El tiempo es tan importante como el precio.**
+
+La mayoría se obsesiona con "¿a qué precio va a llegar?" y se olvida de "**¿cuándo va a llegar?**"
+
+Pensalo así:
+- Una zona de soporte es importante. Pero si el precio llega a esa zona a las 3 de la tarde un viernes (cuando nadie opera), probablemente no va a reaccionar como esperás
+- El mismo setup a las 9 de la mañana un martes (cuando todos están activos) tiene MUCHA más probabilidad de funcionar
+
+**El precio no se mueve al azar en cualquier momento.** Se mueve según un ritmo — las sesiones de mercado, los horarios de mayor liquidez, los momentos donde los grandes participantes están activos. Vamos a explorar esto en profundidad en la siguiente lección.
+
+<Note>
+  Este concepto — que el CUÁNDO es tan importante como el DÓNDE — es uno de los pilares de todo lo que viene después. Tené en mente que cada vez que analizás un gráfico, estás mirando DOS dimensiones: precio y tiempo.
+</Note>
+
 <Info>
   No necesitás entender todo ahora. Solo **observá**. Familiarizate con cómo se ve el precio moviéndose. Es como aprender a leer — primero reconocés las letras, después las palabras, después las oraciones.
 </Info>
 
 ---
 
-<Card title="Siguiente: Gestión de Riesgo" icon="arrow-right" href="/learn/basics/risk-management">
-  Antes de aprender a operar, aprendé lo más importante: cómo NO perder tu capital.
+<Card title="Siguiente: Sesiones y Horarios" icon="arrow-right" href="/learn/basics/sessions-timing">
+  Cuándo se mueve el mercado — las sesiones y por qué importa el horario.
 </Card>

@@ -143,8 +143,10 @@
                   "learn/basics/financial-markets",
                   "learn/basics/market-participants",
                   "learn/basics/how-brokers-work",
+                  "learn/basics/prop-firms",
                   "learn/basics/reading-charts",
                   "learn/basics/sessions-timing",
+                  "learn/basics/news-fundamentals",
                   "learn/basics/risk-management"
                 ]
               },
@@ -157,7 +159,8 @@
                   "learn/fundamentals/volatility-cycles",
                   "learn/fundamentals/market-structure",
                   "learn/fundamentals/swing-points",
-                  "learn/fundamentals/amd-power-of-three"
+                  "learn/fundamentals/amd-power-of-three",
+                  "learn/fundamentals/killzones-timing"
                 ]
               },
               {
@@ -296,8 +299,10 @@
                   "learn/basics/financial-markets",
                   "learn/basics/market-participants",
                   "learn/basics/how-brokers-work",
+                  "learn/basics/prop-firms",
                   "learn/basics/reading-charts",
                   "learn/basics/sessions-timing",
+                  "learn/basics/news-fundamentals",
                   "learn/basics/risk-management"
                 ]
               },
@@ -310,7 +315,8 @@
                   "learn/fundamentals/volatility-cycles",
                   "learn/fundamentals/market-structure",
                   "learn/fundamentals/swing-points",
-                  "learn/fundamentals/amd-power-of-three"
+                  "learn/fundamentals/amd-power-of-three",
+                  "learn/fundamentals/killzones-timing"
                 ]
               },
               {
