@@ -403,18 +403,38 @@ function createInnovaChart(containerId, config) {
     handleScale: false,
   });
 
-  // Candles: muted/dark tones so annotations POP with contrast
-  // Annotations use bright cyan/blue/amber/white — never same as candle colors
-  const series = chart.addCandlestickSeries({
-    upColor: '#1a6b3c',       // Dark muted green (not bright)
-    downColor: '#8b2020',     // Dark muted red (not bright)
-    borderUpColor: '#2d9a56', // Slightly brighter border
-    borderDownColor: '#b33a3a',
-    wickUpColor: '#2d9a56',
-    wickDownColor: '#b33a3a',
-  });
+  // Series type: candlestick (default), bar, line
+  let series;
+  if (config.seriesType === 'bar') {
+    series = chart.addBarSeries({
+      upColor: '#2d9a56',
+      downColor: '#b33a3a',
+      thinBars: false,
+    });
+  } else if (config.seriesType === 'line') {
+    series = chart.addLineSeries({
+      color: '#3b82f6',
+      lineWidth: 2,
+      crosshairMarkerVisible: false,
+    });
+  } else {
+    // Candles: muted/dark tones so annotations POP with contrast
+    series = chart.addCandlestickSeries({
+      upColor: '#1a6b3c',       // Dark muted green (not bright)
+      downColor: '#8b2020',     // Dark muted red (not bright)
+      borderUpColor: '#2d9a56', // Slightly brighter border
+      borderDownColor: '#b33a3a',
+      wickUpColor: '#2d9a56',
+      wickDownColor: '#b33a3a',
+    });
+  }
 
-  series.setData(config.data);
+  // Line series needs {time, value} format; candlestick/bar needs OHLC
+  if (config.seriesType === 'line' && config.data.length && config.data[0].close !== undefined) {
+    series.setData(config.data.map(d => ({ time: d.time, value: d.close })));
+  } else {
+    series.setData(config.data);
+  }
 
   if (config.primitives) {
     config.primitives.forEach(p => series.attachPrimitive(p));
@@ -997,6 +1017,86 @@ const CHARTS = {
         new TextBadge({ time: t(8.5), price: 100.5, text: 'Retrace al OB → rebote', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
         new ArrowPrimitive({ fromTime: t(8.5), fromPrice: 100.8, toTime: t(8.5), toPrice: 101.5, color: '#f59e0b', dash: [3,3] }),
       ]
+    };
+  },
+
+  // ═══ READING CHARTS — Candlestick Example ═══
+  'reading-candlestick': () => {
+    const data = [
+      bar(0, 100, 101.5, 99.5, 101),
+      bar(1, 101, 102, 100.5, 100.8),
+      bar(2, 100.8, 101.2, 99.8, 100),
+      bar(3, 100, 100.5, 98.5, 99),
+      bar(4, 99, 100.2, 98.8, 100),
+      bar(5, 100, 101, 99.5, 100.8),
+      bar(6, 100.8, 103, 100.5, 102.5),
+      bar(7, 102.5, 103.5, 102, 103),
+      bar(8, 103, 104, 102.5, 103.8),
+      bar(9, 103.8, 104.2, 102, 102.5),
+      bar(10, 102.5, 103, 101.5, 101.8),
+      bar(11, 101.8, 103.5, 101.5, 103.2),
+      bar(12, 103.2, 105, 103, 104.5),
+    ];
+    return {
+      title: 'Gráfico de Velas (Candlestick)',
+      data,
+      showTimeScale: true,
+      barSpacing: 20,
+      rightOffset: 3,
+    };
+  },
+
+  // ═══ READING CHARTS — OHLC Bars Example ═══
+  'reading-bars': () => {
+    const data = [
+      bar(0, 100, 101.5, 99.5, 101),
+      bar(1, 101, 102, 100.5, 100.8),
+      bar(2, 100.8, 101.2, 99.8, 100),
+      bar(3, 100, 100.5, 98.5, 99),
+      bar(4, 99, 100.2, 98.8, 100),
+      bar(5, 100, 101, 99.5, 100.8),
+      bar(6, 100.8, 103, 100.5, 102.5),
+      bar(7, 102.5, 103.5, 102, 103),
+      bar(8, 103, 104, 102.5, 103.8),
+      bar(9, 103.8, 104.2, 102, 102.5),
+      bar(10, 102.5, 103, 101.5, 101.8),
+      bar(11, 101.8, 103.5, 101.5, 103.2),
+      bar(12, 103.2, 105, 103, 104.5),
+    ];
+    return {
+      title: 'Gráfico de Barras (OHLC)',
+      data,
+      seriesType: 'bar',
+      showTimeScale: true,
+      barSpacing: 20,
+      rightOffset: 3,
+    };
+  },
+
+  // ═══ READING CHARTS — Line Chart Example ═══
+  'reading-line': () => {
+    const data = [
+      bar(0, 100, 101.5, 99.5, 101),
+      bar(1, 101, 102, 100.5, 100.8),
+      bar(2, 100.8, 101.2, 99.8, 100),
+      bar(3, 100, 100.5, 98.5, 99),
+      bar(4, 99, 100.2, 98.8, 100),
+      bar(5, 100, 101, 99.5, 100.8),
+      bar(6, 100.8, 103, 100.5, 102.5),
+      bar(7, 102.5, 103.5, 102, 103),
+      bar(8, 103, 104, 102.5, 103.8),
+      bar(9, 103.8, 104.2, 102, 102.5),
+      bar(10, 102.5, 103, 101.5, 101.8),
+      bar(11, 101.8, 103.5, 101.5, 103.2),
+      bar(12, 103.2, 105, 103, 104.5),
+    ];
+    return {
+      title: 'Gráfico de Línea',
+      data,
+      seriesType: 'line',
+      showTimeScale: true,
+      barSpacing: 20,
+      rightOffset: 3,
     };
   },
 

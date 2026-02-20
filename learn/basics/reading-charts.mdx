@@ -23,8 +23,10 @@ Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué mom
 
     Cada "vela" muestra 4 datos: Open, High, Low, Close (OHLC) en un período de tiempo.
 
+    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-candlestick&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+
     <Note>
-      **Anatomia de una vela:** La mecha superior marca el **High**, la mecha inferior marca el **Low**, y el cuerpo (bloque grueso) va del **Open** al **Close**. Si el cierre es mayor que la apertura, la vela es verde (alcista). Si es menor, es roja (bajista).
+      **Anatomía de una vela:** La mecha superior marca el **High** (máximo), la mecha inferior marca el **Low** (mínimo), y el cuerpo (bloque grueso) va del **Open** (apertura) al **Close** (cierre). Si el cierre es mayor que la apertura, la vela es verde (alcista). Si es menor, es roja (bajista).
     </Note>
 
     **Ventajas:**
@@ -39,21 +41,25 @@ Cada punto del gráfico te dice **a qué precio** estaba el activo en **qué mom
 
     Muestra los mismos 4 datos pero con barras en vez de velas:
 
+    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-bars&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+
     <Note>
-      **Anatomia de una barra OHLC:** Una linea vertical del High al Low, con una marca horizontal a la izquierda para el **Open** y otra a la derecha para el **Close**.
+      **Anatomía de una barra OHLC:** Una línea vertical del **High** al **Low**, con una marca horizontal a la izquierda para el **Open** y otra a la derecha para el **Close**.
     </Note>
 
-    Algunos traders veteranos prefieren este formato.
+    Algunos traders veteranos prefieren este formato. La información es la misma que las velas — solo cambia la presentación visual.
   </Tab>
   <Tab title="Gráfico de Línea">
     ### El más simple
 
-    Solo muestra el **precio de cierre** conectado por una línea.
+    Solo muestra el **precio de cierre** conectado por una línea. No ves Open, High ni Low — solo el cierre de cada período.
+
+    <iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/index.html?chart=reading-line&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
 
     **Ventajas:** Muy limpio, fácil de ver la tendencia general.
-    **Desventajas:** Perdés toda la información de Open, High y Low.
+    **Desventajas:** Perdés toda la información de Open, High y Low — no podés analizar la estructura interna de cada período.
 
-    Útil para tener una vista general, pero no para analizar ni operar.
+    Útil para tener una vista rápida de la dirección, pero no para analizar ni operar.
   </Tab>
 </Tabs>
 
