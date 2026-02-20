@@ -49,17 +49,7 @@ Pensalo así:
 
 El mercado se mueve en un loop infinito:
 
-```
-  Eficiencia          Ineficiencia          Eficiencia
-  (equilibrio)  →  (movimiento brusco)  →  (reequilibrio)
-       │                    │                     │
-  Consolidación        Expansión             El precio
-  Acumulación         Displacement           "rellena"
-  Distribución        Price Run              el vacío
-       │                    │                     │
-       └────────────────────┴─────────────────────┘
-                     Se repite infinitamente
-```
+**Eficiencia** (consolidacion, acumulacion, distribucion) **-->** **Ineficiencia** (expansion, displacement, price run) **-->** **Eficiencia** (reequilibrio, el precio "rellena" el vacio). Se repite infinitamente.
 
 <Info>
   **Chris Lori** (13 años en FX institucional) lo describe así: el mercado pasa la **mayoría del tiempo operando de forma lateral** en todos los timeframes. Los movimientos bruscos son corridas de precio (price runs) que crean vacíos de liquidez, y el precio **siempre** tiende a volver a la base de liquidez donde ocurrió la mayor cantidad de transacciones.
@@ -112,21 +102,12 @@ Cuando el precio se mueve de forma ineficiente, deja rastros en el gráfico. Est
 
 Un FVG es la huella más visible de un movimiento ineficiente:
 
-```
-  Movimiento eficiente:        Movimiento ineficiente (FVG):
-
-  ┌──┐                         ┌──┐
-  │  │ ← Vela 3                │  │ ← Vela 3 (mecha no toca vela 1)
-  └──┘                         └──┘
-  ┌──┐                              ← GAP: zona sin transacciones
-  │  │ ← Vela 2                ┌────────┐
-  └──┘                         │        │ ← Vela 2 (cuerpo grande)
-  ┌──┐                         └────────┘
-  │  │ ← Vela 1                     ← GAP: zona sin transacciones
-  └──┘                         ┌──┐
-                               │  │ ← Vela 1 (mecha no toca vela 3)
-                               └──┘
-```
+| | Movimiento Eficiente | Movimiento Ineficiente (FVG) |
+|---|---|---|
+| **Vela 3** | Normal, solapada con Vela 2 | Mecha NO toca Vela 1 |
+| **Vela 2** | Normal, solapada con Vela 1 y 3 | Cuerpo grande, genera GAP arriba y abajo |
+| **Vela 1** | Normal, solapada con Vela 2 | Mecha NO toca Vela 3 |
+| **Resultado** | Cada vela se solapa con la anterior, hay transacciones en cada nivel | Hay un GAP (zona sin transacciones) entre la mecha de Vela 1 y la mecha de Vela 3 = **FVG** |
 
 **En el movimiento eficiente**, cada vela se solapa con la anterior — hay transacciones en cada nivel de precio.
 
@@ -164,19 +145,10 @@ No es conspiración. Es mecánica de mercado:
 - ¿Dónde hay vendedores concentrados? Donde están los **stop losses de los compradores**
 - El precio se mueve HACIA esa liquidez, ejecuta los stops, y el banco consigue su fill
 
-```
-  Lo que el retail ve:          Lo que realmente pasa:
-
-  "El mercado rompió             El precio fue a buscar
-   el soporte, voy a             los stops que estaban
-   vender"                       debajo del soporte para
-                                 que el smart money
-       ↓                         pudiera COMPRAR
-                                       ↓
-  Stop loss activado              El banco ejecutó su
-  = Pérdida                       orden de compra
-                                  = Inicio del rally
-```
+| Lo que el retail ve | Lo que realmente pasa |
+|---|---|
+| "El mercado rompio el soporte, voy a vender" | El precio fue a buscar los stops debajo del soporte para que el smart money pudiera COMPRAR |
+| Stop loss activado = Perdida | El banco ejecuto su orden de compra = Inicio del rally |
 
 <Warning>
   **El error del ego:** El peor error que ves en traders que empiezan a aprender estructura institucional es el ego — pensar que son más vivos que el resto, o peor, creer que pueden "ganarle" al institucional. No podés ganarle. Podés **seguirlo**. Entendés lo que está haciendo y te posicionás para beneficiarte.

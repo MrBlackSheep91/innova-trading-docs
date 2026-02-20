@@ -116,17 +116,9 @@ Todo lo anterior se traduce en patrones que ves todos los días:
 
 ### Patrón 1: Spike y Retorno
 
-```
-  Precio
-    │
-    │        ╭──╮  ← Spike: bids se secan aquí
-    │       ╭╯  ╰╮
-    │      ╭╯    ╰╮
-    │     ╭╯      ╰──── Retorno a base de liquidez
-    │────╯
-    │ ← Base de liquidez (volumen estable)
-    └───────────────────── Tiempo
-```
+<Note>
+  **Spike y Retorno:** El precio parte de una base de liquidez (volumen estable), sube bruscamente en spike (los bids se secan en la parte superior), y luego retorna a la base de liquidez donde habia estabilidad y volumen real.
+</Note>
 
 **Lo ves:** En gráfico de 1 minuto durante datos económicos. En gráfico de 15 minutos durante London Open. En gráfico de 4 horas durante cambios de sesión.
 
@@ -134,21 +126,12 @@ Todo lo anterior se traduce en patrones que ves todos los días:
 
 ### Patrón 2: Movimiento Eficiente vs Ineficiente
 
-```
-  Eficiente (tendencia sana):     Ineficiente (price run):
-
-  │    ┌─┐                        │         ┌─┐
-  │   ┌┘ └┐                       │        ┌┘ └┐
-  │  ┌┘   └┐                      │       ┌┘   │
-  │ ┌┘     └┐                     │  ┌────┘    │
-  │┌┘       └┐                    │  │         └──┐
-  └──────────── t                 │──┘            └──
-                                  └───────────────── t
-
-  Cada nivel tiene                 Salto brusco, sin
-  transacciones.                   transacciones en el
-  El precio "camina".              medio. Vacío de liquidez.
-```
+| | Eficiente (tendencia sana) | Ineficiente (price run) |
+|---|---|---|
+| **Movimiento** | El precio "camina" gradualmente | Salto brusco, sin transacciones en el medio |
+| **Velas** | Cada vela se solapa con la anterior | Gaps entre velas, solo un lado del mercado |
+| **Transacciones** | Hay compradores y vendedores en cada nivel | Vacio de liquidez: el precio "salta" niveles |
+| **Resultado** | Avance gradual y ordenado | Deja FVGs y liquidity voids |
 
 **Movimiento eficiente:** Cada vela se solapa con la anterior. Hay compradores y vendedores en cada nivel. El precio avanza gradualmente.
 
