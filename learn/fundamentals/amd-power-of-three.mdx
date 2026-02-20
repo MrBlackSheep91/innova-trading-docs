@@ -1,0 +1,285 @@
+---
+title: 'AMD — Power of Three'
+description: 'Acumulación, Manipulación, Distribución — el ciclo que gobierna cada vela, cada sesión, cada trimestre'
+icon: 'rotate'
+---
+
+## El Patrón más Importante del Trading
+
+Si tuvieras que aprender **un solo concepto** de todo este curso, debería ser este:
+
+> **AMD = Accumulation → Manipulation → Distribution**
+
+También conocido como **Power of Three (PO3)**. Es el mismo concepto con diferente nombre.
+
+Es el ciclo fundamental de cómo el smart money opera. Se repite en cada vela, cada sesión, cada día, cada semana, cada trimestre. Es **fractal** — el mismo patrón a todas las escalas.
+
+<Info>
+  AMD también puede describirse como: **Consolidación → Retroceso (fake move) → Expansión**. Es la misma idea con diferentes palabras.
+</Info>
+
+---
+
+## Las Tres Fases
+
+<Tabs>
+  <Tab title="A — Acumulación">
+    ### La Fase Silenciosa
+
+    **Qué es:** El mercado se mueve lateralmente, en un rango estrecho. Parece aburrido. Nada pasa.
+
+    **Qué está pasando realmente:** El smart money está construyendo posiciones. Comprando (o vendiendo) gradualmente, sin mover el precio. Acumulando.
+
+    **Lo que ves en el gráfico:**
+    - Rango lateral
+    - Velas pequeñas
+    - Baja volatilidad
+    - El precio oscila alrededor del precio de apertura
+
+    **Duración:** Puede durar minutos (en una vela de 15min), horas (sesión asiática), días (primeros días de la semana), o semanas (primer mes del trimestre).
+  </Tab>
+
+  <Tab title="M — Manipulación">
+    ### El Fake Move (Judas Swing)
+
+    **Qué es:** El precio se mueve bruscamente en la dirección **opuesta** a donde realmente va a ir. Es el movimiento falso. La trampa.
+
+    **Qué está pasando realmente:** El smart money está haciendo dos cosas al mismo tiempo:
+
+    1. **Ingeniería de liquidez corta:** El movimiento falso atrae a traders que venden (shorts), inundando el mercado con vendedores que el smart money necesita como contraparte para COMPRAR
+    2. **Neutralización de liquidez larga:** Barre los stop losses de los que ya estaban comprados, sacándolos de sus posiciones
+
+    **Lo que ves en el gráfico:**
+    - Movimiento brusco por debajo del rango (en caso alcista)
+    - Rompe lows recientes, equal lows, o soportes obvios
+    - Típicamente 10-20 pips por debajo del rango
+
+    <Warning>
+      **Este es el momento donde el 80% de los traders retail pierden.** Ven la "ruptura" del soporte y venden. Exactamente lo que el smart money necesita — vendedores para comprarles. Es ingeniería de liquidez pura.
+    </Warning>
+  </Tab>
+
+  <Tab title="D — Distribución">
+    ### La Expansión Real
+
+    **Qué es:** El precio se mueve agresivamente en la dirección real — la dirección que el smart money planeó desde el principio. Es la expansión.
+
+    **Qué está pasando realmente:** El smart money ya acumuló posiciones (fase A), usó la manipulación para llenar sus órdenes (fase M), y ahora distribuye — mueve el precio hacia su objetivo de liquidez.
+
+    **Lo que ves en el gráfico:**
+    - Movimiento fuerte y sostenido en la dirección real
+    - Velas grandes con cuerpo completo
+    - Displacement claro
+    - El precio va hacia los highs (si es alcista) donde hay stops de los que vendieron en la manipulación
+
+  </Tab>
+</Tabs>
+
+### AMD Bullish vs Bearish
+
+<Tabs>
+  <Tab title="AMD Bullish">
+    <iframe src="/charts/index.html?chart=amd-bullish&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+  </Tab>
+  <Tab title="AMD Bearish">
+    <iframe src="/charts/index.html?chart=amd-bearish&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+  </Tab>
+</Tabs>
+
+---
+
+## AMD en los Valores OHLC de una Vela
+
+Acá es donde se pone interesante. AMD no es solo un patrón de chart — **es la estructura interna de cada vela**:
+
+<iframe src="/charts/diagrams.html?d=po3" style={{width: '100%', height: '340px', border: 'none', borderRadius: '8px'}} />
+
+| Componente OHLC | Fase AMD | Qué representa |
+|-----------------|----------|----------------|
+| **Open** | Inicio de Acumulación | Donde el smart money empieza a posicionarse |
+| **Low** | Manipulación | El Judas Swing — barrió liquidez debajo del open |
+| **Close** (cerca del High) | Distribución | La expansión real — el precio se fue hacia arriba |
+| **High** | Fin de Distribución | Donde el smart money empieza a tomar ganancias |
+
+<Tip>
+  **Esto es Power of Three.** Cada vela que ves en el gráfico — ya sea de 1 minuto o mensual — contiene esta estructura AMD dentro. El Open es la acumulación, la mecha opuesta al cierre es la manipulación, y el cuerpo de la vela es la distribución.
+</Tip>
+
+---
+
+## Las Variaciones: AMDX y XAMD
+
+### AMDX — El Ciclo Completo
+
+AMDX agrega una cuarta fase:
+
+| Fase | Nombre | Qué pasa |
+|------|--------|----------|
+| **A** | Acumulación | Consolidación, posiciones se construyen |
+| **M** | Manipulación | Fake move, Judas Swing, captura de liquidez |
+| **D** | Distribución | Expansión real en la dirección verdadera |
+| **X** | Continuación o Reversión | El precio decide: ¿sigue o se revierte? |
+
+La **X** es crucial porque te dice qué viene después:
+- Si la tendencia es fuerte → X = **Continuación** (el siguiente ciclo AMD va en la misma dirección)
+- Si la tendencia se agota → X = **Reversión** (el siguiente ciclo AMD va en dirección opuesta)
+
+### XAMD — La Variante Quarterly
+
+En la **Quarterly Theory** (Teoría Trimestral de Trader Daye), el ciclo se lee como XAMD:
+
+```
+  Trimestre dividido en 4 partes:
+
+  Q1: X — No se opera. Es ruido. Soporte/resistencia dinámica.
+  Q2: A — Acumulación. Se construyen las posiciones.
+  Q3: M — Manipulación. Se busca liquidez.
+  Q4: D — Distribución. La expansión del movimiento real.
+```
+
+<Warning>
+  **Daye recomienda omitir el primer cuarto (Q1/X).** Si incluís Q1 en tu análisis como parte activa, tu precisión baja significativamente. Q1 sirve como referencia de soporte/resistencia, no como zona de trading.
+</Warning>
+
+---
+
+## AMD es Fractal — Se Repite en TODAS las Escalas
+
+| Timeframe | Acumulación | Manipulación | Distribución |
+|-----------|-------------|--------------|--------------|
+| **1 vela** | Open | Mecha opuesta al cierre | Cuerpo de la vela |
+| **Sesión** | Asia (rango) | London Open (Judas Swing) | NY (expansión) |
+| **Día** | Primeras horas | Killzone temprana (fake move) | Resto del día |
+| **Semana** | Lunes-Martes | Miércoles (mid-week reversal) | Jueves-Viernes |
+| **Trimestre** | Primer mes | Segundo mes | Tercer mes |
+| **Año** | Q1 (Ene-Mar) | Q2 (Abr-Jun) | Q3-Q4 (Jul-Dic) |
+
+<Info>
+  **Sincronicidad perfecta:** Si mirás los gráficos en múltiples timeframes, verás que AMD se alinea. La acumulación del día coincide con la sesión asiática, que coincide con el primer tercio de la vela diaria. Es el mismo patrón a diferentes escalas — fractal puro.
+</Info>
+
+---
+
+## Los Estados del Mercado
+
+AMD se traduce en 4 estados que el mercado atraviesa constantemente:
+
+<AccordionGroup>
+  <Accordion title="Consolidación (= Acumulación)">
+    **Qué es:** El mercado se mueve lateralmente en un rango definido.
+
+    **Lo que ves:** Velas pequeñas, mechas en ambas direcciones, sin dirección clara.
+
+    **Lo que pasa realmente:** El smart money está construyendo posiciones pacientemente, sin mover el precio. Es la calma antes de la tormenta.
+
+    **Regla:** Después de una consolidación, **siempre** viene una expansión. La pregunta es: ¿en qué dirección?
+  </Accordion>
+
+  <Accordion title="Expansión (= Distribución)">
+    **Qué es:** El precio se mueve agresivamente en una dirección con velas de rango amplio y displacement claro.
+
+    **Lo que ves:** Velas grandes, cuerpos completos, FVGs formándose, estructura de mercado avanzando.
+
+    **Lo que pasa realmente:** El smart money está distribuyendo — moviendo el precio hacia sus objetivos de liquidez.
+
+    **Regla:** Después de una expansión, viene un retroceso o una nueva consolidación. El mercado no se mueve en línea recta.
+  </Accordion>
+
+  <Accordion title="Retroceso (= Rebalanceo)">
+    **Qué es:** El precio vuelve parcialmente hacia atrás después de una expansión, rellenando FVGs y buscando la base de liquidez.
+
+    **Lo que ves:** Velas más pequeñas moviéndose contra la dirección de la expansión, llegando a FVGs o zonas de soporte/resistencia.
+
+    **Lo que pasa realmente:** El precio está rebalanceando las ineficiencias (FVGs) que dejó la expansión. Es el "rodillo de pintura" volviendo a cubrir los huecos.
+
+    **Regla:** Un retroceso **dentro de un FVG** en la dirección de la tendencia es una de las entradas más limpias que existen.
+  </Accordion>
+
+  <Accordion title="Reversión (= Cambio de dirección)">
+    **Qué es:** El precio cambia de dirección completamente. Lo que era alcista se vuelve bajista, o viceversa.
+
+    **Lo que ves:** Market Structure Shift (MSS), displacement en la dirección opuesta, FVGs nuevos en sentido contrario.
+
+    **Lo que pasa realmente:** El smart money completó su ciclo de distribución y ahora inicia un nuevo ciclo de acumulación en la dirección opuesta.
+
+    **Regla:** Una reversión real tiene **displacement** (no solo falta de bids). Si no ves velas agresivas en la nueva dirección, probablemente es solo un retroceso.
+  </Accordion>
+</AccordionGroup>
+
+### El Ciclo Completo de Estados
+
+```
+  Consolidación → Expansión → Retroceso → (Continuación o Reversión)
+       │              │            │                │
+       A              D            Rebalanceo       X
+       │              │            │                │
+       └──────────────┴────────────┴────────────────┘
+                     Se repite
+```
+
+---
+
+## Cómo Usar AMD en la Práctica
+
+<Steps>
+  <Step title="Identificá en qué fase estás">
+    ¿El mercado está consolidando? ¿Acaba de hacer un fake move? ¿Está expandiendo? Si no sabés en qué fase estás, no operés.
+  </Step>
+  <Step title="Esperá la manipulación">
+    La manipulación es tu SEÑAL. Cuando ves que el precio rompe un low/high obvio y luego se frena, es el Judas Swing. Es la trampa. Los que caen son tu contraparte.
+  </Step>
+  <Step title="Entrá en la distribución">
+    Después de la manipulación, buscá la confirmación: displacement en la dirección real, MSS, FVG formándose. Entrá en un retroceso al FVG dentro de la distribución.
+  </Step>
+  <Step title="Target: la liquidez opuesta">
+    Si la manipulación barrió los lows, tu target son los highs (donde hay stops de los que vendieron). El precio va de liquidez a liquidez.
+  </Step>
+</Steps>
+
+---
+
+## Las Noticias son la Cortina de Humo
+
+<Warning>
+  **CPI, PPI, FOMC, NFP** — las noticias no son la CAUSA del movimiento. Son la **excusa**. El algoritmo necesita mover el precio en esos momentos, pero para que parezca orgánico, usa las noticias como catalizador.
+
+  La razón por la que el precio se mueve en esos momentos es porque el algoritmo necesita que tenga ese valor. No es que "la noticia movió el mercado" — es que el mercado iba a moverse de todas formas.
+</Warning>
+
+**Patrón típico con noticias (ejemplo: CPI jueves, PPI viernes):**
+- **Lunes a Miércoles:** Entrega entrecortada, baja volatilidad (acumulación)
+- **Jueves (CPI):** Posible reversión/manipulación — toma dirección
+- **Viernes (PPI):** Puede ir en sentido contrario al jueves (distribución real)
+
+---
+
+## Resumen
+
+<Steps>
+  <Step title="AMD = Acumulación → Manipulación → Distribución">
+    El ciclo fundamental. Se repite en cada vela, sesión, día, semana y trimestre.
+  </Step>
+  <Step title="La manipulación es la clave">
+    Es donde el 80% pierde dinero. Es donde el smart money consigue liquidez. Y es tu señal para actuar.
+  </Step>
+  <Step title="Es fractal">
+    El mismo patrón a todas las escalas. La sesión asiática es acumulación del día. Q1 es acumulación del año.
+  </Step>
+  <Step title="AMDX agrega la continuación/reversión">
+    Después de la distribución, ¿sigue o se revierte? La X te dice si el ciclo se repite o cambia.
+  </Step>
+  <Step title="Las noticias no mueven el mercado">
+    El algoritmo mueve el mercado. Las noticias son la excusa.
+  </Step>
+</Steps>
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Anterior: Swing Points" icon="arrow-left" href="/learn/fundamentals/swing-points">
+    Los building blocks de la estructura — cómo se forman y validan.
+  </Card>
+  <Card title="Siguiente: Estructura Institucional" icon="arrow-right" href="/learn/institutional/institutional-structure">
+    Fractales, dealing ranges, premium/discount. El framework HTF.
+  </Card>
+</CardGroup>

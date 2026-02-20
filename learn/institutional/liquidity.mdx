@@ -1,0 +1,80 @@
+---
+title: 'Liquidez'
+description: 'Buy Side, Sell Side — por qué el precio va donde va'
+icon: 'water'
+---
+
+## Tipos de Liquidez
+
+<Tabs>
+  <Tab title="Buy Side Liquidity (BSL)">
+    **Qué es:** Órdenes de compra pendientes que se acumulan **ENCIMA** de swing highs.
+
+    **Qué incluye:**
+    - Stops de posiciones short (buy stop orders)
+    - Breakout buy orders de traders que esperan comprar arriba de un high
+    - Limit sell orders de traders que anticipan resistencia
+
+    **Se acumula encima de:** Swing highs, equal highs, resistance levels.
+
+    ```
+    BSL ──── stops + breakout orders ────
+    ─────────── Swing High ───────────────
+    ```
+  </Tab>
+  <Tab title="Sell Side Liquidity (SSL)">
+    **Qué es:** Órdenes de venta pendientes que se acumulan **DEBAJO** de swing lows.
+
+    **Qué incluye:**
+    - Stops de posiciones long (sell stop orders)
+    - Breakout sell orders de traders que esperan vender debajo de un low
+    - Limit buy orders de traders que anticipan soporte
+
+    **Se acumula debajo de:** Swing lows, equal lows, support levels.
+
+    ```
+    ─────────── Swing Low ────────────────
+    SSL ──── stops + breakout orders ────
+    ```
+  </Tab>
+</Tabs>
+
+## El Modelo de "Caza de Liquidez"
+
+<iframe src="/charts/index.html?chart=liquidity-sweep&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+### Liquidity Sweep
+
+El precio **APENAS** pasa un nivel de liquidez (por pocos pips) y luego revierte. Es la señal clásica de manipulación institucional — el "stop hunt" o "turtle soup" de ICT.
+
+### Liquidity Purge (Chris Lori)
+
+Un movimiento **violento** que barre liquidez en una dirección antes de revertir. Lori enfatiza que estos movimientos NO son aleatorios — son ejecuciones institucionales contra la liquidez retail.
+
+<Warning>
+  Si ves un movimiento violento que barre un nivel de liquidez y revierte inmediatamente, eso NO es "volatilidad aleatoria" — es una institución ejecutando órdenes. Aprendé a reconocer el patrón.
+</Warning>
+
+## Liquidez y Sesiones de Trading
+
+La liquidez se acumula y libera en ciclos de sesiones:
+
+| Sesión | Horario (UTC) | Comportamiento |
+|--------|--------------|----------------|
+| **Asia** | 00:00 - 08:00 | Acumulación. Rango estrecho. **Construye liquidez.** |
+| **London Open** | 08:00 - 12:00 | Primera expansión. Suele barrer la liquidez de Asia. |
+| **NY Open** | 13:00 - 16:00 | Segunda expansión. Puede continuar o revertir London. |
+| **NY Lunch** | 16:00 - 18:00 | Pausa. Consolidación. Macro runs for liquidity. |
+| **NY PM** | 18:00 - 21:00 | Última oportunidad de expansión. Establece el close. |
+
+<Tip>
+  *"London runs for the liquidity that Asia built. New York runs for the liquidity that London built."* — ICT
+
+  Cada sesión barre la liquidez acumulada por la sesión anterior. Entender esto te da una ventaja enorme.
+</Tip>
+
+---
+
+<Card title="Siguiente: PD Arrays" icon="arrow-right" href="/learn/institutional/pd-arrays">
+  Aprendé sobre Order Blocks, Fair Value Gaps y las zonas donde reacciona el precio.
+</Card>

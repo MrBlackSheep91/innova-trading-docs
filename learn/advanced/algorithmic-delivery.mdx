@@ -1,0 +1,396 @@
+---
+title: 'Entrega Algorítmica del Precio'
+description: 'IPDA — cómo el algoritmo interbancario entrega precio en ciclos predecibles de 20, 40 y 60 días'
+icon: 'microchip'
+---
+
+## El Mercado No es Caótico
+
+Una de las revelaciones más grandes cuando estudiás trading a nivel institucional es que el mercado **no es aleatorio**. Parece caótico, pero hay un orden subyacente.
+
+Ese orden tiene nombre: **IPDA** — Interbank Price Delivery Algorithm.
+
+<Info>
+  El IPDA es un concepto central de ICT (Inner Circle Trader) que describe cómo el precio es "entregado" por el mercado de forma algorítmica y cíclica. Combinado con la mecánica interbancaria de Chris Lori, nos da un framework completo para entender por qué el precio va donde va.
+</Info>
+
+---
+
+## ¿Qué es el IPDA?
+
+IPDA = **Interbank Price Delivery Algorithm** = El conjunto de reglas que gobierna cómo el precio se mueve en el mercado.
+
+No es un software específico que alguien programó. Es la **consecuencia emergente** de:
+
+1. Los pricing engines de los bancos (que vimos en el módulo anterior)
+2. Los algoritmos de ejecución de órdenes institucionales
+3. Los ciclos de liquidez del mercado
+4. El comportamiento repetitivo de los participantes
+
+El resultado es un patrón de entrega de precio que se repite en ciclos medibles.
+
+### La Regla Fundamental del IPDA
+
+> **El precio se mueve de liquidez a imbalance, y de imbalance a liquidez. De buy stops a sell stops, de sell stops a buy stops.**
+
+### La Analogía del Rodillo de Pintura
+
+ICT usa una analogía perfecta para entender la entrega eficiente de precio:
+
+> Pensá en un rodillo de pintura cuando pintás una pared. Empezás arriba y bajás el rodillo. Al principio, la pared queda bien pintada (entrega eficiente). Pero a medida que bajás, quedan zonas sin pintar (ineficiencias). Para cubrir esos huecos, tenés que pasar el rodillo en la dirección opuesta y pintar la pared de manera uniforme.
+
+El precio funciona igual. Cuando se mueve en una dirección, deja "zonas sin pintar" (FVGs, liquidity voids). El algoritmo eventualmente vuelve a "pintar" esas zonas antes de poder seguir avanzando de forma eficiente.
+
+O dicho de otra forma:
+
+```
+  ┌────────────┐         ┌────────────┐         ┌────────────┐
+  │  LIQUIDEZ  │ ──────→ │ IMBALANCE  │ ──────→ │  LIQUIDEZ  │
+  │            │         │            │         │            │
+  │ Stops      │         │ FVGs       │         │ Stops      │
+  │ Highs/Lows │         │ Voids      │         │ Highs/Lows │
+  │ Pool de    │         │ Zonas sin  │         │ Pool de    │
+  │ órdenes    │         │ trading    │         │ órdenes    │
+  └────────────┘         └────────────┘         └────────────┘
+```
+
+1. El precio **va hacia la liquidez** (stops, highs/lows) para ejecutar órdenes grandes
+2. Al moverse hacia la liquidez, crea **imbalances** (FVGs, voids) en el camino
+3. Después de capturar liquidez, el precio **vuelve a los imbalances** para rellenarlos
+4. Al rellenar, se acerca a **nueva liquidez** del otro lado
+5. Se repite
+
+---
+
+## Los Ciclos de 20, 40 y 60 Días
+
+El IPDA opera en tres rangos de tiempo que se solapan:
+
+<iframe src="/charts/diagrams.html?d=ipda-cycle" style={{width: '100%', height: '260px', border: 'none', borderRadius: '8px'}} />
+
+### Qué Significa Cada Rango
+
+<Tabs>
+  <Tab title="20 Días (Corto Plazo)">
+    ### El Rango Inmediato
+
+    Los últimos 20 días de trading definen el **rango operativo actual**:
+
+    - **High de 20 días** = Liquidez buyside (buy stops por encima)
+    - **Low de 20 días** = Liquidez sellside (sell stops por debajo)
+    - El precio oscila dentro de este rango buscando liquidez en ambos extremos
+
+    **Es el rango donde la mayoría de los day traders y swing traders operan.** Los highs y lows de 20 días son los objetivos más inmediatos del algoritmo.
+  </Tab>
+
+  <Tab title="40 Días (Mediano Plazo)">
+    ### El Rango Intermedio
+
+    Los últimos 40 días extienden la visión:
+
+    - Si el precio ya capturó los highs/lows de 20 días, el siguiente objetivo son los de 40 días
+    - Este rango captura un ciclo completo de acumulación → distribución
+    - Los **FVGs que quedaron** en este período son objetivos de rebalanceo
+
+    **Útil para swing traders** que buscan movimientos de 1-2 semanas.
+  </Tab>
+
+  <Tab title="60 Días (Largo Plazo)">
+    ### El Rango Macro
+
+    60 días de trading = aproximadamente **3 meses** = un trimestre.
+
+    - Los highs/lows de 60 días representan la **liquidez macro** del mercado
+    - Son los niveles más significativos que el IPDA busca
+    - Cuando el precio captura liquidez de 60 días, suele marcar **reversiones trimestrales** (quarterly shifts)
+
+    **Es donde los grandes fondos y bancos centrales** tienen sus referencias de pricing.
+  </Tab>
+</Tabs>
+
+### El Quarterly Shift
+
+Cada 3 meses aproximadamente, el mercado tiende a hacer un **cambio de dirección trimestral**:
+
+```
+  Q1 (Ene-Mar)    Q2 (Abr-Jun)    Q3 (Jul-Sep)    Q4 (Oct-Dic)
+  ───────────     ───────────     ───────────     ───────────
+       ↗               ↘               ↗               ↘
+  Alcista →       Bajista →       Alcista →       Bajista →
+  toma liquidez   toma liquidez   toma liquidez   toma liquidez
+  sellside        buyside         sellside        buyside
+```
+
+<Warning>
+  Esto NO significa que cada trimestre es opuesto al anterior siempre. Es una **tendencia cíclica**, no una regla fija. A veces dos trimestres van en la misma dirección. Lo que sí es consistente es que en cada transición trimestral, el IPDA busca liquidez del rango de 60 días.
+</Warning>
+
+### Cuando se Limpia Todo el Rango
+
+Un momento especialmente poderoso es cuando **toda la liquidez dentro del rango de 60 días ya fue capturada** — tanto los highs como los lows:
+
+> Si el precio tomó la liquidez por encima Y por debajo de los últimos 60 días, no tiene otra posibilidad que **expandir en alguna dirección**. Y esa expansión va a buscar la liquidez que está fuera del rango — los máximos o mínimos de más de 60 días atrás.
+
+Esto genera los movimientos más explosivos. El algoritmo "agotó" su rango de datos y necesita crear nuevos puntos de referencia. Buscá el próximo high o low significativo fuera del rango de 60 días — ese es el probable objetivo.
+
+### Open Interest: La Señal del Smart Money
+
+En futuros (no disponible en Forex spot), el **Open Interest** te da una pista de lo que el smart money está haciendo:
+
+- Si el OI tiene una **caída del 15% o más** mientras el precio consolida lateralmente → **señal alcista**
+- Esa caída significa que los creadores de mercado no quieren mantener el lado vendedor — están cerrando posiciones cortas
+- Combinado con los rangos IPDA y un nivel de soporte en HTF, es una configuración de alta probabilidad para una reversión
+
+<Tip>
+  Las variaciones fuertes de Open Interest en los tiempos específicos de IPDA (día 20, 40, 60) te muestran la intención clara de giro del mercado. Es como ver las cartas del otro jugador en la mesa de poker.
+</Tip>
+
+---
+
+## Cómo el IPDA Entrega Precio
+
+### El Proceso Paso a Paso
+
+<Steps>
+  <Step title="Identificar liquidez">
+    El algoritmo "identifica" dónde hay liquidez acumulada:
+    - **Buyside:** Stops por encima de highs recientes, equal highs, resistencias obvias
+    - **Sellside:** Stops por debajo de lows recientes, equal lows, soportes obvios
+
+    El IPDA trabaja primero con el rango de 20 días. Si esa liquidez ya fue tomada, pasa a 40. Si esa también fue tomada, va a 60.
+  </Step>
+
+  <Step title="Displacement hacia la liquidez">
+    El precio se mueve de forma agresiva hacia la liquidez objetivo. Este movimiento:
+    - Crea FVGs y liquidity voids en el camino
+    - Puede ser triggered por datos económicos, apertura de sesión, o simplemente flujo institucional
+    - Es el "price run" que Chris Lori describe — los pricing engines en cascada
+  </Step>
+
+  <Step title="Liquidez capturada">
+    El precio llega al pool de liquidez (los stops):
+    - Los stops se ejecutan → genera volumen para las órdenes institucionales
+    - El "liquidity sweep" completa la captura
+    - Muchas veces ves una mecha larga que perfora el nivel y vuelve — esa mecha ES la captura de liquidez
+  </Step>
+
+  <Step title="Market Structure Shift (MSS)">
+    Después de capturar liquidez, si hay suficiente volumen institucional del otro lado:
+    - El precio cambia de dirección (displacement en dirección opuesta)
+    - Se rompe la estructura de mercado reciente
+    - Este es el **Market Structure Shift** — la confirmación de que el IPDA cambió de objetivo
+  </Step>
+
+  <Step title="Rebalanceo de imbalances">
+    Con la nueva dirección establecida, el precio:
+    - Vuelve a rellenar los FVGs que dejó en el camino
+    - Usa esos FVGs como soporte/resistencia para entradas
+    - Se mueve hacia la **siguiente zona de liquidez** del otro lado
+
+    Y el ciclo se repite.
+  </Step>
+</Steps>
+
+---
+
+## Lookback y Cast Forward
+
+Un concepto clave del IPDA es el **lookback con proyección forward**:
+
+```
+  ← ← ← 20 días atrás → → → HOY → → → 20 días forward → → →
+
+  │ Lookback: ¿Qué liquidez    │  Cast Forward: ¿Hacia dónde    │
+  │ se creó en los últimos      │  es probable que el precio      │
+  │ 20/40/60 días?              │  vaya en los próximos           │
+  │                             │  20/40/60 días?                 │
+  │ • Highs/Lows formados       │  • Liquidez pendiente           │
+  │ • FVGs sin rellenar         │  • FVGs que necesitan relleno   │
+  │ • Liquidez sin capturar     │  • Pools de liquidez objetivo   │
+```
+
+### Cómo Usarlo en la Práctica
+
+1. **Marcá los highs y lows** de los últimos 20, 40 y 60 días de trading
+2. **Identificá qué liquidez fue capturada** y cuál sigue pendiente
+3. **Buscá los FVGs sin rellenar** en esos rangos
+4. **Preguntate:** ¿Qué hizo el IPDA más recientemente? ¿Capturó buyside o sellside?
+5. **Proyectá:** Si capturó buyside, el próximo objetivo probable es sellside (y viceversa)
+
+<Tip>
+  **Pregunta clave de ICT:** "¿Qué hizo el IPDA más recientemente?" Si tomó liquidez del high de 20 días y hubo un MSS bajista, el siguiente objetivo probable es el low de 20 o 40 días. Así de simple es la lógica base.
+</Tip>
+
+---
+
+## IPDA + Interbank Pricing: La Imagen Completa
+
+Cuando combinás el IPDA de ICT con la mecánica interbancaria de Chris Lori, todo encaja:
+
+| IPDA (ICT) | Interbank (Chris Lori) | Lo que pasa |
+|---|---|---|
+| "El precio busca liquidez" | "Los bancos fragmentan órdenes y necesitan volumen del otro lado" | Los bancos mueven precio hacia los stops para ejecutar |
+| "FVG = ineficiencia" | "Price run = efecto aspiradora de los pricing engines" | Los FVGs son las huellas de los pricing engines en cascada |
+| "El precio rellena FVGs" | "El precio vuelve a la base de liquidez" | La base de liquidez de Lori = los FVGs de ICT |
+| "Ciclos de 20/40/60 días" | "Fractal — los mismos patrones a diferentes escalas" | Los ciclos temporales son fractales del mismo comportamiento |
+| "Market Structure Shift" | "Diferencia entre retorno por falta de bids vs venta agresiva" | Un MSS real tiene displacement (venta agresiva), no solo falta de bids |
+
+### El Framework de Fractales
+
+Chris Lori usa el concepto de **fractal** en su sentido geométrico (no el indicador de MT4):
+
+> **Fractal = patrones de auto-similitud que se repiten a múltiples escalas.**
+
+El mismo patrón de price run → retorno a base de liquidez que ves en el gráfico de 1 minuto, lo ves en el de 15 minutos, en el de 4 horas, en el diario.
+
+```
+  1 minuto:    ╱╲     ╱╲     ╱╲
+              ╱  ╲   ╱  ╲   ╱  ╲
+
+  15 minutos:      ╱╲           ╱╲
+                  ╱  ╲         ╱  ╲
+                 ╱    ╲       ╱    ╲
+
+  4 horas:             ╱╲
+                      ╱  ╲
+                     ╱    ╲
+                    ╱      ╲
+
+  Mismo patrón. Diferente escala. Diferente duración.
+  Misma mecánica detrás: pricing engines + liquidez.
+```
+
+---
+
+## Las Killzones: Cuándo se Activa el IPDA
+
+No todos los momentos del día son iguales. El IPDA se "activa" con más fuerza durante las **killzones** — ventanas de tiempo donde el volumen institucional es máximo:
+
+| Killzone | Horario (EST) | Horario (Argentina) | Qué pasa |
+|----------|--------------|---------------------|----------|
+| **Asia** | 20:00 - 00:00 | 22:00 - 02:00 | Consolidación, acumulación. Se define el rango del día |
+| **London Open** | 02:00 - 05:00 | 04:00 - 07:00 | Primer impulso fuerte. Captura de liquidez asiática |
+| **NY Open** | 08:30 - 11:00 | 10:30 - 13:00 | Segundo impulso. Puede continuar o revertir London |
+| **London Close** | 10:00 - 12:00 | 12:00 - 14:00 | Cierre de posiciones. Movimientos de liquidación |
+
+<Info>
+  **Chris Lori confirma esto:** "Usualmente empezamos a ver que los libros se abren entre 05:30 y 06:00 [GMT]" — lo que coincide con el London Open killzone de ICT. En mercados muy finos (poca liquidez), los price runs son más pronunciados e ineficientes.
+</Info>
+
+---
+
+## De la Teoría a la Acción: Tu Proceso
+
+Entender el IPDA es una cosa. Usarlo es otra. Acá va un proceso práctico:
+
+### Análisis Semanal (Domingo)
+
+<Steps>
+  <Step title="Marcar los rangos IPDA">
+    En el gráfico diario, marcá:
+    - High y Low de los últimos 20 días de trading
+    - High y Low de los últimos 40 días
+    - High y Low de los últimos 60 días
+  </Step>
+  <Step title="Evaluar liquidez capturada">
+    ¿Qué hizo el precio la semana pasada?
+    - ¿Capturó el high o low de algún rango?
+    - ¿Hubo un MSS después de la captura?
+    - ¿Quedaron FVGs sin rellenar?
+  </Step>
+  <Step title="Proyectar la semana">
+    Basándote en lo que el IPDA hizo más recientemente:
+    - ¿Cuál es el próximo objetivo de liquidez probable?
+    - ¿Hay FVGs en el camino que pueden actuar como soporte/resistencia?
+    - ¿Qué killzones son más relevantes para ese movimiento?
+  </Step>
+</Steps>
+
+### Análisis Diario (Pre-sesión)
+
+Todos los días te sentás frente al gráfico y te preguntás:
+
+<Steps>
+  <Step title="¿Dónde estamos en el rango?">
+    - ¿Dónde está el precio respecto al mínimo y máximo de los últimos 20 días?
+    - ¿Y de los últimos 40? ¿Y 60?
+    - ¿Estamos en premium (arriba del 50%) o discount (abajo del 50%)?
+  </Step>
+  <Step title="¿Hemos despejado ambos lados?">
+    - ¿Se tomó la liquidez buyside (los highs) de los últimos 60 días?
+    - ¿Se tomó la liquidez sellside (los lows)?
+    - Si se despejaron ambos lados → puede venir **equilibrio lateral** o **expansión fuera del rango**
+  </Step>
+  <Step title="¿Cuál es el Draw on Liquidity (DOL)?">
+    - ¿Dónde está la liquidez más obvia que NO fue capturada?
+    - ¿Hay FVGs sin rellenar en el camino?
+    - Previous Day High/Low como liquidez inmediata
+  </Step>
+  <Step title="Esperar la killzone">
+    No operes fuera de las killzones. El IPDA se activa con volumen, y el volumen está en las killzones.
+  </Step>
+</Steps>
+
+<Info>
+  **Esto no es un casino, no es un juego de azar.** No estás intentando acertar. Es un tema de subirte en un movimiento que el dinero inteligente va a realizar y estar del lado correcto cuando ocurra — de forma que sería imposible no salir beneficiado si ellos ganan.
+</Info>
+
+---
+
+## La Lección Más Importante
+
+Todo lo que acabás de leer — IPDA, ciclos, killzones, pricing engines — son **hipótesis** hasta que las validás con datos.
+
+No porque lo diga ICT o Chris Lori es verdad para TU trading. Lo que necesitás hacer:
+
+<CardGroup cols={2}>
+  <Card title="Medir" icon="ruler">
+    ¿Cuántas veces el precio capturó el high/low de 20 días antes de revertir? Anotalo. Medilo. Hacé una estadística.
+  </Card>
+  <Card title="Validar" icon="check-double">
+    ¿Los FVGs realmente actúan como soporte/resistencia en tu par y timeframe? No lo asumas — probalo.
+  </Card>
+  <Card title="Comprobar" icon="flask">
+    ¿Las killzones realmente producen los movimientos más grandes en los pares que operás? Revisá los últimos 60 días.
+  </Card>
+  <Card title="Iterar" icon="arrows-rotate">
+    Basándote en tus datos, ajustá. Quizás para tu par el rango de 40 días es más relevante que el de 20. Solo los datos te lo dirán.
+  </Card>
+</CardGroup>
+
+<Warning>
+  **Recordá:** Información que no mediste = opinión. No importa cuántos videos de YouTube veas ni cuántos libros leas. Si no tenés datos de primera mano que validen un concepto en TU contexto, es solo ruido. El verdadero edge viene de medir, no de memorizar.
+</Warning>
+
+---
+
+## Resumen
+
+<Steps>
+  <Step title="El IPDA gobierna la entrega de precio">
+    No es aleatorio. El precio se mueve de liquidez a imbalance y de imbalance a liquidez, en ciclos repetitivos.
+  </Step>
+  <Step title="Ciclos de 20, 40 y 60 días">
+    Tres rangos que definen dónde está la liquidez y hacia dónde es probable que vaya el precio. Los quarterly shifts marcan cambios de dirección macro.
+  </Step>
+  <Step title="Killzones = cuando el IPDA se activa">
+    Asia, London Open, NY Open, London Close. El volumen institucional se concentra en estas ventanas.
+  </Step>
+  <Step title="IPDA + Interbank = la imagen completa">
+    Los ciclos del IPDA son el "qué". La mecánica interbancaria de Chris Lori es el "cómo". Juntos explican por qué el precio hace lo que hace.
+  </Step>
+  <Step title="Medí TODO">
+    Ningún concepto tiene valor hasta que lo validás con datos en tu propio contexto.
+  </Step>
+</Steps>
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Anterior: Interbank Pricing" icon="arrow-left" href="/learn/advanced/interbank-pricing">
+    Cómo se forma el precio dentro del sistema bancario.
+  </Card>
+  <Card title="Siguiente: Proveedores de Datos" icon="arrow-right" href="/learn/advanced/data-providers">
+    Feeds, agregadores, y por qué tu gráfico puede diferir del de otro trader.
+  </Card>
+</CardGroup>

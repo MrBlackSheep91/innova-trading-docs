@@ -1,0 +1,254 @@
+---
+title: 'Tipos de Trading'
+description: 'Discrecional, algorítmico, cuantitativo, semi-automático — encontrá tu estilo antes de empezar'
+icon: 'compass'
+---
+
+## No Todos los Traders Son Iguales
+
+Antes de aprender técnicas, necesitás entender que hay **formas muy diferentes** de hacer trading. Elegir la correcta para vos es tan importante como aprender a leer un gráfico.
+
+Es como elegir un deporte: podés ser velocista o maratonista, ambos corren, pero el entrenamiento, mentalidad y aptitudes son completamente diferentes.
+
+---
+
+## Los 4 Tipos Principales de Trading
+
+<Tabs>
+  <Tab title="Discrecional">
+    ### El Trader Artesano
+
+    **Qué es:** Tomás cada decisión de forma manual. Analizás el gráfico, identificás patrones, decidís cuándo entrar y salir. Tu cerebro es el sistema.
+
+    **Cómo funciona:**
+    - Abrís el gráfico y analizás la estructura del mercado
+    - Identificás zonas de interés (FVGs, liquidez, order blocks)
+    - Decidís si operás o esperás basándote en tu criterio
+    - Ejecutás y gestionás la operación manualmente
+
+    **Ventajas:**
+    - Flexibilidad total — podés adaptarte a cualquier situación
+    - Entendés profundamente lo que hace el mercado
+    - No necesitás programar nada
+
+    **Desventajas:**
+    - Tus emociones son tu peor enemigo (miedo, codicia, FOMO)
+    - Requiere mucho tiempo frente a la pantalla
+    - Es difícil ser consistente — cada día operás un poco diferente
+    - No podés backtestear tu "criterio"
+
+    **Ideal para:** Personas que disfrutan el análisis, tienen paciencia, y quieren entender el mercado en profundidad.
+
+    ```
+    Tu cerebro → Análisis → Decisión → Ejecución manual
+         ↑                                    │
+         └────── Emociones (peligro) ─────────┘
+    ```
+  </Tab>
+
+  <Tab title="Algorítmico">
+    ### El Trader Programador
+
+    **Qué es:** Creás un programa (algoritmo) que opera automáticamente según reglas que vos definiste. La computadora hace todo — analiza, decide, ejecuta.
+
+    **Cómo funciona:**
+    - Definís reglas precisas: "Si el precio rompe el high de ayer y hay un FVG debajo, comprá con SL de 20 pips"
+    - Programás esas reglas en código (Python, MQL, Pine Script)
+    - El algoritmo opera solo, 24 horas, sin emociones
+    - Vos monitoreás y ajustás el sistema
+
+    **Ventajas:**
+    - Sin emociones — el algo sigue las reglas siempre
+    - Podés backtestear con datos históricos antes de arriesgar dinero
+    - Opera mientras dormís
+    - Escala fácilmente (un mismo algo en 10 pares)
+
+    **Desventajas:**
+    - Necesitás saber programar (o pagar a alguien)
+    - Un bug = pérdidas automáticas
+    - El mercado cambia y el algo puede dejar de funcionar
+    - Requiere infraestructura (servidores, data feeds, APIs)
+
+    **Ideal para:** Personas con perfil técnico, que prefieren sistemas y datos sobre intuición.
+
+    ```
+    Reglas definidas → Código → Computadora → Ejecución automática
+                                    │
+                        Sin emociones ✓
+                        Backtesteable ✓
+                        24/7 ✓
+    ```
+  </Tab>
+
+  <Tab title="Cuantitativo / Data-Driven">
+    ### El Trader Científico
+
+    **Qué es:** Usás datos y estadística para encontrar patrones con ventaja probabilística. No operás por "intuición" — operás porque los números dicen que hay un edge.
+
+    **Cómo funciona:**
+    - Recolectás datos históricos (miles de operaciones, patrones de precio)
+    - Analizás estadísticamente: "¿Qué pasa cuando X ocurre? ¿Con qué probabilidad?"
+    - Definís reglas basadas en los datos: "Este patrón tiene 63% de winrate con R:R de 1:2"
+    - Ejecutás esas reglas (manual o algorítmicamente)
+    - Medís, iterás, mejorás
+
+    **Ventajas:**
+    - Tus decisiones tienen respaldo estadístico real
+    - Podés medir tu edge con precisión
+    - Eliminás la subjetividad (y por lo tanto, la ansiedad)
+    - Es la base para construir cualquier sistema serio
+
+    **Desventajas:**
+    - Requiere tiempo para recolectar y analizar datos
+    - Necesitás herramientas (Excel mínimo, Python idealmente)
+    - El análisis puede llevar a "parálisis por análisis"
+    - Los datos del pasado no garantizan resultados futuros
+
+    **Ideal para:** Personas analíticas, que confían más en números que en opiniones. Los que quieren **saber** en vez de **creer**.
+
+    <Info>
+      **Este es el enfoque de Innova Trading.** Creemos que el trading basado en datos es el camino más sólido y sostenible. No es el más sexy ni el más rápido, pero es el que te da un edge medible y repetible.
+    </Info>
+  </Tab>
+
+  <Tab title="Semi-Automático">
+    ### Lo Mejor de Dos Mundos
+
+    **Qué es:** Combinás análisis humano con ejecución o detección automatizada. Tu criterio decide la dirección, la máquina te ayuda con el timing y la ejecución.
+
+    **Cómo funciona:**
+    - Un sistema te **alerta** cuando detecta un setup que coincide con tus criterios
+    - Vos **confirmás** manualmente (o no) basándote en el contexto
+    - La ejecución puede ser automática (entry, SL, TP predefinidos)
+    - El journaling y tracking se hacen automáticamente
+
+    **Ejemplo práctico:**
+    1. Tu sistema detecta: "FVG en discount + MSS confirmado + killzone activa"
+    2. Te llega una alerta al celular
+    3. Abrís el gráfico, verificás el contexto
+    4. Apretás "ejecutar" y el sistema pone la orden con SL y TP
+    5. El sistema trackea la operación y la agrega a tu journal
+
+    **Ventajas:**
+    - Reducís el screen time (no necesitás mirar gráficos todo el día)
+    - Mantenés el control humano sobre la decisión final
+    - Las emociones se reducen (el sistema pone el SL, no vos)
+    - Escala mejor que 100% discrecional
+
+    **Desventajas:**
+    - Requiere configurar el sistema de alertas
+    - Necesitás confiar en el sistema (si no confiás, empezás a sobreescribir)
+    - Dependencia tecnológica
+
+    **Ideal para:** Personas que quieren los beneficios de la automatización pero no quieren ceder el control total. **Es hacia donde van la mayoría de los traders profesionales.**
+  </Tab>
+</Tabs>
+
+---
+
+## ¿Cuál es Mejor?
+
+Ninguno es "mejor" en absoluto. Cada uno tiene su lugar:
+
+| Tipo | Winrate potencial | Screen time | Skill técnico | Manejo emocional | Escalabilidad |
+|------|------------------|-------------|---------------|-------------------|---------------|
+| **Discrecional** | Alto (si sos bueno) | Muy alto | Bajo | Crítico | Baja |
+| **Algorítmico** | Medio-Alto | Bajo | Muy alto | No aplica | Muy alta |
+| **Cuantitativo** | Alto | Medio | Alto | Medio | Alta |
+| **Semi-Automático** | Alto | Medio-Bajo | Medio | Medio | Alta |
+
+---
+
+## Estilos por Temporalidad
+
+Además del tipo de trading, hay estilos según cuánto tiempo mantenés una operación:
+
+<AccordionGroup>
+  <Accordion title="Scalping (Segundos a Minutos)">
+    - Operaciones de **muy corta duración** (1-15 minutos)
+    - Buscás movimientos de 5-20 pips
+    - Muchas operaciones por día (10-50+)
+    - Requiere: reflejos rápidos, spreads bajos, mucho tiempo frente a la pantalla
+    - **No recomendado para principiantes** — el costo de spread/comisiones te come
+  </Accordion>
+
+  <Accordion title="Day Trading (Minutos a Horas)">
+    - Operaciones dentro del **mismo día** — cerras todo antes de dormir
+    - Buscás movimientos de 20-100 pips
+    - 1-5 operaciones por día
+    - Requiere: entender sesiones/killzones, buena gestión de riesgo
+    - **El estilo más popular** entre traders retail
+  </Accordion>
+
+  <Accordion title="Swing Trading (Días a Semanas)">
+    - Mantenés operaciones **varios días**
+    - Buscás movimientos de 100-500 pips
+    - 2-5 operaciones por semana
+    - Requiere: paciencia, análisis de timeframes altos, tolerar drawdown
+    - **Ideal para personas con trabajo/estudio** — no necesitás estar pegado al gráfico
+  </Accordion>
+
+  <Accordion title="Position Trading (Semanas a Meses)">
+    - Operaciones de **largo plazo**
+    - Buscás movimientos de 500-2000+ pips
+    - 1-3 operaciones por mes
+    - Requiere: análisis fundamental + técnico, mucha paciencia, capital suficiente para aguantar retrocesos
+    - **El estilo de los fondos y traders institucionales**
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Encontrá Tu Perfil
+
+Respondé estas preguntas mentalmente:
+
+<Steps>
+  <Step title="¿Cuánto tiempo tenés por día?">
+    - **Menos de 30 minutos** → Swing trading o semi-automático
+    - **1-3 horas** → Day trading
+    - **4+ horas** → Day trading o scalping
+  </Step>
+  <Step title="¿Te gusta programar o usar datos?">
+    - **Sí, me encanta** → Algorítmico o cuantitativo
+    - **Un poco, lo básico** → Semi-automático
+    - **No, prefiero lo visual** → Discrecional
+  </Step>
+  <Step title="¿Cómo manejás tus emociones bajo presión?">
+    - **Soy impulsivo/a** → Algorítmico (sacá las emociones de la ecuación)
+    - **Soy paciente** → Discrecional o swing trading
+    - **Depende del día** → Semi-automático con reglas claras
+  </Step>
+  <Step title="¿Qué te motiva más?">
+    - **Entender el mercado profundamente** → Discrecional + cuantitativo
+    - **Construir un sistema que funcione solo** → Algorítmico
+    - **Generar ingresos consistentes** → Semi-automático + data-driven
+  </Step>
+</Steps>
+
+<Tip>
+  **No te cases con un tipo.** La mayoría de los traders profesionales **evolucionan**: empiezan discrecionales, aprenden a medir con datos (cuantitativo), automatizan partes del proceso (semi-automático), y eventualmente construyen sistemas completos (algorítmico). Es un camino, no una elección de una vez.
+</Tip>
+
+---
+
+## El Camino que Te Proponemos
+
+En Innova Trading, creemos en un camino progresivo:
+
+<iframe src="/charts/diagrams.html?d=trading-evolution" style={{width: '100%', height: '260px', border: 'none', borderRadius: '8px'}} />
+
+<Warning>
+  **No saltes etapas.** Si empezás con algorítmico sin entender el mercado, vas a programar reglas que no tienen sentido. Si operás discrecionalmente sin medir datos, nunca vas a saber si realmente tenés un edge o si tuviste suerte. Cada etapa construye sobre la anterior.
+</Warning>
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Anterior: Qué es el Trading" icon="arrow-left" href="/learn/basics/what-is-trading">
+    Ventajas, desventajas y la verdad sin filtro sobre el trading.
+  </Card>
+  <Card title="Siguiente: Los Mercados Financieros" icon="arrow-right" href="/learn/basics/financial-markets">
+    Forex, acciones, índices, crypto — qué es cada uno y cuál elegir.
+  </Card>
+</CardGroup>

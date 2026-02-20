@@ -1,0 +1,110 @@
+---
+title: 'Anatomia de una Barra'
+description: 'Los 4 datos que componen cada vela y que significan para el trading'
+icon: 'chart-candlestick'
+---
+
+Cada barra (o vela) en un grafico contiene exactamente **4 datos** que representan toda la actividad de trading en ese periodo.
+
+## Los 4 Componentes OHLC
+
+<iframe src="/charts/diagrams.html?d=ohlc" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+| Componente | Significado |
+|-----------|------------|
+| **Open** (Apertura) | Primer precio negociado en el periodo. Refleja el sentimiento al inicio. |
+| **High** (Maximo) | Precio mas alto alcanzado. Representa el punto maximo de poder comprador. |
+| **Low** (Minimo) | Precio mas bajo alcanzado. Representa el punto maximo de poder vendedor. |
+| **Close** (Cierre) | Ultimo precio negociado. **El dato MAS importante** — refleja el consenso final. |
+
+<Tip>
+  El **Close** es el dato mas importante de la barra. Es el consenso final del mercado sobre el valor del activo en ese periodo. Cuando analizas patrones, prioriza siempre el cierre.
+</Tip>
+
+## Barra Alcista vs Bajista
+
+<Tabs>
+  <Tab title="Alcista (Bullish)">
+    **Close > Open** — Los compradores ganaron el periodo.
+
+    El cuerpo se colorea verde. El precio subio desde la apertura hasta el cierre, lo que significa que la presion compradora domino.
+
+    <iframe src="/charts/diagrams.html?d=bullish" style={{width: '100%', height: '260px', border: 'none', borderRadius: '8px'}} />
+  </Tab>
+  <Tab title="Bajista (Bearish)">
+    **Close < Open** — Los vendedores ganaron el periodo.
+
+    El cuerpo se colorea rojo. El precio cayo desde la apertura hasta el cierre, lo que significa que la presion vendedora domino.
+
+    <iframe src="/charts/diagrams.html?d=bearish" style={{width: '100%', height: '260px', border: 'none', borderRadius: '8px'}} />
+  </Tab>
+  <Tab title="Doji">
+    **Close ≈ Open** — Indecision total.
+
+    Ni compradores ni vendedores dominaron. El precio abrio y cerro practicamente al mismo nivel. Puede indicar un posible cambio de direccion.
+
+    <iframe src="/charts/diagrams.html?d=doji" style={{width: '100%', height: '260px', border: 'none', borderRadius: '8px'}} />
+  </Tab>
+</Tabs>
+
+## El Cuerpo Cuenta la Historia
+
+El **cuerpo** es el rango entre Open y Close. Es lo mas relevante de la barra:
+
+| Tipo de Cuerpo | Significado |
+|----------------|------------|
+| **Cuerpo grande** ("beefy candle") | Conviccion fuerte. Una direccion domino claramente. |
+| **Cuerpo pequeno** | Indecision o equilibrio entre compradores y vendedores. |
+| **Sin cuerpo** (doji) | Batalla perfectamente equilibrada. |
+
+<Warning>
+  **Regla ICT:** Para marcar niveles institucionales (order blocks, breakers), necesitas una "beefy body candle" — no velas con cuerpos pequenos. *"We don't like these little wimpy things... we want a beefy candle."*
+</Warning>
+
+## Las Mechas Cuentan el Rechazo
+
+Las **mechas** (wicks/shadows) representan precios que se visitaron pero **NO se mantuvieron**:
+
+<iframe src="/charts/diagrams.html?d=wicks" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+
+<AccordionGroup>
+  <Accordion title="Mecha superior larga">
+    Se intento ir mas alto pero los vendedores rechazaron. El precio no pudo mantenerse arriba. Esto indica **resistencia** — hay vendedores esperando en esos niveles.
+  </Accordion>
+  <Accordion title="Mecha inferior larga">
+    Se intento ir mas bajo pero los compradores rechazaron. El precio no pudo mantenerse abajo. Esto indica **soporte** — hay compradores esperando en esos niveles.
+  </Accordion>
+  <Accordion title="Sin mechas">
+    El movimiento fue puro y sin rechazo — **maxima conviccion**. Todo el rango de la barra fue aceptado como valor justo.
+  </Accordion>
+</AccordionGroup>
+
+## Relacion Cuerpo/Mecha — La Proporcion que Importa
+
+| Patron | Significado |
+|--------|------------|
+| Cuerpo grande, mechas pequenas | Movimiento fuerte, poca oposicion |
+| Cuerpo pequeno, mechas grandes | Mucha volatilidad pero indecision |
+| Cuerpo grande arriba, mecha larga abajo | "Spring" — rechazaron los bajos, compradores tomaron control |
+| Cuerpo grande abajo, mecha larga arriba | Rechazaron los altos, vendedores tomaron control |
+
+<iframe src="/charts/diagrams.html?d=body-sizes" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+
+<Info>
+  **Forma de pensar:** El cuerpo te dice quien gano. Las mechas te dicen donde se peleo. Juntos te cuentan la batalla completa de ese periodo.
+</Info>
+
+## Aplicacion Practica
+
+Cuando mires un grafico, preguntate por cada barra:
+
+1. **Quien gano** — mira el cuerpo (verde = compradores, rojo = vendedores)
+2. **Con cuanta conviccion** — mira el tamano del cuerpo (grande = mucha, pequeno = poca)
+3. **Donde hubo pelea** — mira las mechas (mechas largas = zona de batalla)
+4. **Que se rechazo** — mecha superior = rechazo arriba, mecha inferior = rechazo abajo
+
+---
+
+<Card title="Siguiente: Tipos de Barras" icon="arrow-right" href="/learn/fundamentals/bar-types">
+  Ahora que entendes la anatomia, aprende a clasificar barras y que revelan sobre el mercado.
+</Card>

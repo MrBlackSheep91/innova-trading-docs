@@ -1,0 +1,286 @@
+---
+title: 'Interbank Pricing'
+description: 'Cómo se forma el precio real del mercado — desde los bancos hasta tu pantalla. El juego de las grandes ligas.'
+icon: 'building-columns'
+---
+
+## El Precio que Ves No es "El" Precio
+
+Cuando abrís tu plataforma de trading y ves EUR/USD en 1.0850, estás viendo **una versión procesada** del precio. El precio real — el que se negocia entre bancos — puede ser ligeramente diferente.
+
+Entender cómo se forma ese precio, quién lo controla, y cómo llega hasta tu pantalla te da una perspectiva que el 99% de los traders retail nunca tienen.
+
+<Info>
+  Esta sección está basada en las enseñanzas de **Chris Lori**, quien operó durante 13+ años directamente a través del sistema bancario interbancario como gestor de fondos FX institucional. No es teoría — es cómo funciona el mercado desde adentro.
+</Info>
+
+---
+
+## La Estructura: De los Bancos a Tu Pantalla
+
+El precio hace un recorrido antes de llegar a tu gráfico:
+
+<iframe src="/charts/diagrams.html?d=interbank-pyramid" style={{width: '100%', height: '360px', border: 'none', borderRadius: '8px'}} />
+
+### Las Capas del Pricing
+
+<Tabs>
+  <Tab title="Nivel 1: Dentro del Banco">
+    ### Liquidez Interna
+
+    Cada banco grande tiene **su propia pool de liquidez**. Dentro de JP Morgan, por ejemplo:
+
+    - **Cliente A** quiere comprar 50M de EUR/USD
+    - **Cliente B** quiere vender 40M de EUR/USD
+    - El banco cruza las órdenes internamente — Cliente A compra 40M de B, y los 10M restantes van al mercado interbancario
+
+    **El banco también puede sostener el riesgo.** Si Cliente A vende 50M de euros, el banco puede **quedarse con esos euros** en vez de ponerlos en el mercado. ¿Por qué? Porque ve que hay flujos que van a empujar el euro arriba y puede venderlos más caro después.
+
+    **Esto es clave:** Cuando el banco sostiene riesgo y no libera liquidez al mercado, **crea un vacío en un lado del mercado** que empuja el precio hacia el lado débil.
+  </Tab>
+
+  <Tab title="Nivel 2: El Interbancario">
+    ### Best Bid / Best Offer
+
+    Los agregadores (Hotspot, Integral, Currenex, etc.) conectan a todos los bancos y crean el **BBBO** — el mejor precio de compra y el mejor precio de venta disponible entre TODOS los bancos.
+
+    Esto significa que un gestor de fondos con prime brokerage puede:
+    - Ver qué cotiza cada banco individualmente
+    - Comprar en un banco y vender en otro si hay diferencia
+    - Elegir la mejor liquidez disponible en tiempo real
+
+    **Los spreads a este nivel** son increíblemente ajustados — a veces cero, a veces hasta **invertidos** (el bid es mayor que el offer).
+
+    <Tip>
+      Cuando tenés un buen feed con muchos bancos conectados, los spreads son consistentemente ultra-estrechos. Por eso los brokers ECN con buenos proveedores de liquidez tienen mejores spreads que los market makers.
+    </Tip>
+  </Tab>
+
+  <Tab title="Nivel 3: Tu Broker">
+    ### El Markup
+
+    Tu broker recibe el feed del agregador, pero antes de mostrártelo:
+
+    - Puede **agregar un markup** al spread (ej: el interbancario muestra 0.1 pip de spread, el broker te muestra 1.2)
+    - Puede tener **diferentes niveles de pricing** según tu volumen de trading
+    - Puede **re-fijar precios** dependiendo de las condiciones del mercado
+    - Si es market maker, puede tomar el otro lado de tu operación
+
+    **No todos los brokers son iguales.** El precio que ves en la plataforma de un broker puede diferir en 1-3 pips del precio que ves en otro. Esto no es conspiración — es la cadena de intermediarios.
+  </Tab>
+</Tabs>
+
+---
+
+## Cómo los Bancos Mueven el Precio
+
+Ahora viene lo interesante. Sabiendo cómo funciona la estructura, ¿cómo se crea un movimiento de precio?
+
+### El Mecanismo del Price Run
+
+Chris Lori describe un proceso que pasa literalmente todo el día:
+
+<Steps>
+  <Step title="Estabilidad de volumen">
+    Las órdenes entran en bloques normales. Digamos entre 1 y 10 millones. El mercado opera de forma lateral, pasiva. Los spreads son estables.
+  </Step>
+  <Step title="La liquidez se seca">
+    La frecuencia de ticks baja. El mercado se pone **muy silencioso**. Menos volumen en ambos lados. Esto puede pasar antes de un dato económico, o simplemente porque el flujo se detuvo.
+
+    **Esto es la señal de alarma.** Cuando el mercado se pone muy silencioso, algo está por pasar.
+  </Step>
+  <Step title="Entra una orden grande">
+    Un banco libera un bloque grande — por ejemplo, 300 millones cuando el promedio era 5-10. O un banco que estaba sosteniendo riesgo decide liberar su posición al mercado.
+  </Step>
+  <Step title="Los pricing engines reaccionan">
+    Los algoritmos de los **otros bancos** detectan el movimiento y entran en **modo de auto-protección**. No quieren que alguien compre barato a sus precios y venda caro segundos después. Entonces mueven sus bids y offers en la dirección del movimiento.
+  </Step>
+  <Step title="Efecto aspiradora">
+    Un pricing engine trigger una respuesta de **todos los demás**. Esto crea un efecto cascada — cada banco mueve sus precios, lo que fuerza al siguiente a hacer lo mismo. El precio se succiona hacia arriba (o abajo) como una aspiradora.
+  </Step>
+  <Step title="Overshoot e ineficiencia">
+    Las monedas tienden a **excederse** (overshoot). La aspiradora lleva el precio más allá de donde debería ir. En la cima del movimiento, los bids se secan, el volumen es mínimo, y ves velas con saltos de precio (gaps entre ticks).
+  </Step>
+  <Step title="Retorno a la base">
+    Sin bids que sostengan el precio arriba, este **cae de vuelta** a la base de liquidez — el nivel donde había estabilidad y volumen real. Esto NO es porque entraron vendedores, sino porque los bids crearon un vacío y se agotaron.
+
+    **Diferencia crucial:** Un retorno por falta de bids es diferente a un retorno por venta agresiva. El primero es temporal (el precio puede volver a subir). El segundo indica cambio de dirección.
+  </Step>
+</Steps>
+
+---
+
+## Lo que Esto Significa en Tu Gráfico
+
+Todo lo anterior se traduce en patrones que ves todos los días:
+
+### Patrón 1: Spike y Retorno
+
+```
+  Precio
+    │
+    │        ╭──╮  ← Spike: bids se secan aquí
+    │       ╭╯  ╰╮
+    │      ╭╯    ╰╮
+    │     ╭╯      ╰──── Retorno a base de liquidez
+    │────╯
+    │ ← Base de liquidez (volumen estable)
+    └───────────────────── Tiempo
+```
+
+**Lo ves:** En gráfico de 1 minuto durante datos económicos. En gráfico de 15 minutos durante London Open. En gráfico de 4 horas durante cambios de sesión.
+
+**Lo que pasa:** Un pricing engine triggered el movimiento, todos los demás reaccionaron, el precio se excedió, y volvió a la base.
+
+### Patrón 2: Movimiento Eficiente vs Ineficiente
+
+```
+  Eficiente (tendencia sana):     Ineficiente (price run):
+
+  │    ┌─┐                        │         ┌─┐
+  │   ┌┘ └┐                       │        ┌┘ └┐
+  │  ┌┘   └┐                      │       ┌┘   │
+  │ ┌┘     └┐                     │  ┌────┘    │
+  │┌┘       └┐                    │  │         └──┐
+  └──────────── t                 │──┘            └──
+                                  └───────────────── t
+
+  Cada nivel tiene                 Salto brusco, sin
+  transacciones.                   transacciones en el
+  El precio "camina".              medio. Vacío de liquidez.
+```
+
+**Movimiento eficiente:** Cada vela se solapa con la anterior. Hay compradores y vendedores en cada nivel. El precio avanza gradualmente.
+
+**Movimiento ineficiente:** Gaps entre velas. Solo un lado del mercado. El precio "salta". Deja FVGs y liquidity voids.
+
+---
+
+## Órdenes Grandes: Cómo se Ejecutan Realmente
+
+Si un fondo quiere comprar 200 millones de EUR/USD, **no manda una orden de 200M**. Eso movería el mercado brutalmente en su contra.
+
+En cambio:
+
+<AccordionGroup>
+  <Accordion title="Fragmentación de órdenes (Chunking)">
+    La orden de 200M se divide en bloques de 5M. Cada bloque se ejecuta por separado, buscando la mejor liquidez disponible. El objetivo es **no mover el mercado** más de lo necesario.
+
+    Pero inevitablemente, si 40 bloques de 5M entran en una dirección, el precio se mueve. Esto es lo que ves como una tendencia gradual en timeframes altos.
+  </Accordion>
+
+  <Accordion title="Spread tolerance">
+    Cada bloque tiene una tolerancia de spread — un rango de precio aceptable. Si el spread se amplía demasiado, el algoritmo pausa la ejecución y espera.
+
+    Por eso a veces ves movimientos que se detienen temporalmente — no es que "el soporte aguantó", es que el algoritmo está esperando mejores condiciones de liquidez.
+  </Accordion>
+
+  <Accordion title="Búsqueda de liquidez">
+    Para ejecutar compras grandes, necesitás vendedores. ¿Dónde hay vendedores concentrados? En los **stop losses** de compradores retail, debajo de soportes obvios.
+
+    Esto explica por qué el precio frecuentemente rompe un soporte (activando stops = generando vendedores) justo antes de subir fuertemente. El smart money usó esos stops como liquidez para ejecutar sus compras.
+  </Accordion>
+
+  <Accordion title="Redistribución de riesgo">
+    Después de acumular una posición, el banco necesita puntos de liquidez para ir distribuyendo. Los niveles de resistencia, los highs anteriores, las zonas donde hay stops de vendedores — son puntos donde el banco puede ir vendiendo parcialmente.
+
+    Chris Lori: cuando un banco sostiene riesgo, a menudo lo redistribuye en **puntos donde hay pools de liquidez** — niveles de resistencia donde sabe que hay órdenes concentradas.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Por Qué los Precios Difieren Entre Brokers
+
+Si alguna vez comparaste el precio de EUR/USD en dos brokers y notaste diferencias de 1-3 pips, ahora sabés por qué:
+
+| Factor | Impacto |
+|--------|---------|
+| **Agregador usado** | Diferentes agregadores conectan diferentes bancos |
+| **Markup del broker** | Cada broker agrega su propio margen al spread |
+| **Liquidez interna** | Si el broker es market maker, su precio puede diferir más |
+| **Latencia** | Microsegundos de diferencia en la transmisión del feed |
+| **Momento del día** | En horarios de baja liquidez, las diferencias se amplían |
+
+<Warning>
+  Esto también significa que un FVG que ves en tu gráfico puede **no existir exactamente igual** en el gráfico de otro broker. Los niveles "exactos" al pip son aproximaciones. Lo que importa es la **zona**, no el precio exacto.
+</Warning>
+
+---
+
+## Los Dos Tipos de Movimiento de Precio
+
+Chris Lori hace una distinción crucial que la mayoría de los traders no conocen:
+
+<Tabs>
+  <Tab title="Retorno por falta de bids">
+    ### El precio baja porque los bids se secaron
+
+    Después de un price run alcista:
+    - Los bids que crearon el movimiento se agotan
+    - No hay nuevos compradores en la parte superior
+    - El precio **cae por gravedad** hacia la base de liquidez
+    - NO es que entraron vendedores agresivos
+
+    **Implicación:** El movimiento alcista original puede continuar después de que el precio se reequilibre en la base. Esto es un **retroceso dentro de tendencia**.
+  </Tab>
+
+  <Tab title="Retorno por venta agresiva">
+    ### El precio baja porque entraron vendedores
+
+    - Nueva liquidez de venta entra al mercado
+    - Los pricing engines triggered en dirección opuesta
+    - El movimiento de bajada tiene su propio momentum
+    - Se crean FVGs y liquidity voids en la bajada
+
+    **Implicación:** Esto puede ser un **cambio de dirección** real. La estructura del mercado está cambiando.
+  </Tab>
+</Tabs>
+
+**¿Cómo los diferenciás?** Mirando la **velocidad y estructura del retorno**:
+
+- Retorno gradual, con velas pequeñas, sin FVGs → Probablemente falta de bids (retroceso)
+- Retorno brusco, con displacement, FVGs en la bajada → Probablemente venta agresiva (reversión)
+
+---
+
+## Lo que la Mayoría no Entiende sobre "Oferta y Demanda"
+
+La narrativa popular dice: "el precio sube porque hay más compradores que vendedores" (demanda > oferta).
+
+**Eso es una simplificación peligrosa.**
+
+La realidad según el funcionamiento interbancario:
+
+1. **Siempre hay un comprador y un vendedor** en cada transacción. No puede haber "más compradores".
+2. Lo que cambia es la **agresividad** — si los compradores están dispuestos a pagar precios más altos (bidding up) o si los vendedores están desesperados por vender (offering down).
+3. El precio se mueve por **desequilibrios en la liquidez**, no por "oferta y demanda" en el sentido clásico.
+4. Los pricing engines de los bancos **crean movimiento** al proteger su riesgo, no porque "haya más demanda".
+
+<Info>
+  El precio no sube porque "hay demanda". El precio sube porque un pricing engine se triggered, creó un efecto aspiradora, y todos los demás bancos movieron sus precios para protegerse. La "demanda" es el catalizador, no la causa del movimiento en sí.
+</Info>
+
+---
+
+## Resumen: Lo que Cambia Cuando Entendés Esto
+
+| Antes (mentalidad retail) | Después (mentalidad interbancaria) |
+|---|---|
+| "El precio sube por oferta y demanda" | "Un pricing engine se triggered y creó un efecto cascada" |
+| "El soporte aguantó" | "El algoritmo pausó porque no hay liquidez suficiente" |
+| "Rompió el soporte, es bajista" | "Fue a buscar los stops debajo del soporte para llenar una orden de compra" |
+| "El FVG es un nivel exacto" | "El FVG es una zona aproximada — el precio real difiere entre brokers" |
+| "La vela grande significa tendencia" | "La vela grande es un price run ineficiente — el precio puede volver" |
+| "Sigo las noticias" | "Las noticias son catalizadores de liquidez, no la causa del movimiento" |
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Anterior: Eficiencia del Mercado" icon="arrow-left" href="/learn/advanced/market-efficiency">
+    Por qué los movimientos bruscos son oportunidades y cómo el precio busca equilibrio.
+  </Card>
+  <Card title="Siguiente: Entrega Algorítmica del Precio" icon="arrow-right" href="/learn/advanced/algorithmic-delivery">
+    Cómo el algoritmo IPDA entrega precio en ciclos predecibles de 20, 40 y 60 días.
+  </Card>
+</CardGroup>

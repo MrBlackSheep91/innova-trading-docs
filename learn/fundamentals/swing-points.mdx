@@ -1,0 +1,158 @@
+---
+title: 'Swing Points'
+description: 'Qué son, cómo se forman, criterios de validación y por qué crean liquidez'
+icon: 'turn-up'
+---
+
+## Qué es un Swing Point
+
+Un swing point es un **punto de giro local** del precio — un máximo o mínimo relativo que define la estructura del mercado. Son los bloques fundamentales con los que se construye todo el análisis técnico.
+
+<iframe src="/charts/index.html?chart=swing-points&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+## Criterio Clásico (3-Bar Swing)
+
+El criterio más común y el que se usa en la mayoría de indicadores:
+
+<Tabs>
+  <Tab title="Swing High">
+    Una barra cuyo **HIGH** es mayor que el high de la barra anterior **Y** mayor que el high de la barra siguiente.
+
+    La barra central tiene "lower highs" a ambos lados.
+
+    ```
+            SH
+           ╱  ╲
+          ╱    ╲
+         ╱      ╲
+        ╱        ╲
+    ```
+
+    **Fórmula:** `High[i] > High[i-1]` AND `High[i] > High[i+1]`
+  </Tab>
+  <Tab title="Swing Low">
+    Una barra cuyo **LOW** es menor que el low de la barra anterior **Y** menor que el low de la barra siguiente.
+
+    La barra central tiene "higher lows" a ambos lados.
+
+    ```
+        ╲        ╱
+         ╲      ╱
+          ╲    ╱
+           ╲  ╱
+            SL
+    ```
+
+    **Fórmula:** `Low[i] < Low[i-1]` AND `Low[i] < Low[i+1]`
+  </Tab>
+</Tabs>
+
+## Criterio con Lookback Configurable
+
+Para swing points de mayor significancia, aumentamos el **lookback** (cuántas barras deben confirmar a cada lado):
+
+| Lookback | Barras totales | Descripción | Uso |
+|----------|---------------|-------------|-----|
+| **1** | 3 barras | Swing point mínimo | Ruidoso pero rápido. Scalping. |
+| **2** | 5 barras | El más común | Filtra ruido menor. Day trading. |
+| **3** | 7 barras | Significativos | Swing trading. |
+| **5+** | 11+ barras | Solo los más importantes | Position trading. HTF analysis. |
+
+<Info>
+  **Regla:** Un Swing High con lookback N requiere que las **N barras ANTES** y las **N barras DESPUÉS** tengan highs menores. Ídem para Swing Low con lows.
+</Info>
+
+## Swing Points según ICT
+
+ICT define los swing points esencialmente con el criterio de 3-bar (lookback 1), pero agrega **contexto institucional**:
+
+### Solo 2 Formas de Turning Points Institucionales
+
+<AccordionGroup>
+  <Accordion title="1. Stop Run / Turtle Soup (la más probable)">
+    - El precio hace un high/low que **APENAS supera** un high/low previo
+    - Luego falla y revierte
+    - Es un "false break" — una **caza de stops**
+    - Es el patrón más poderoso y significativo según ICT
+
+    ```
+    Old SH ──────────
+                      ╲
+    New SH ──────────── ← Solo pasa por unos pips
+                      ╱
+              Reversal ← Y revierte violentamente
+    ```
+
+    *"Most powerful, significant price pattern. He can see when it's forming."*
+  </Accordion>
+  <Accordion title="2. Break of Structure genuino">
+    - El precio rompe un swing point **Y se mantiene**
+    - Confirma continuación de tendencia
+    - Se convierte en un nuevo nivel de soporte/resistencia
+
+    ```
+    Old SH ──────────
+                      ╱
+    New price ───────── ← Pasa y se mantiene arriba
+                      ╱
+              Continuation
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Swing Points y Liquidez
+
+Cada swing point crea un **pool de liquidez**:
+
+| Ubicación | Tipo de Liquidez | Qué hay ahí |
+|-----------|-----------------|--------------|
+| **Encima** de Swing Highs | Buy Side Liquidity (BSL) | Stops de shorts + breakout buy orders |
+| **Debajo** de Swing Lows | Sell Side Liquidity (SSL) | Stops de longs + breakout sell orders |
+
+```
+   BSL (buy stops acumulados)
+   ─────────────────────────  ← Encima de Swing Highs
+         ↑
+   Pool de liquidez que el precio eventualmente buscará
+         ↓
+   ─────────────────────────  ← Debajo de Swing Lows
+   SSL (sell stops acumulados)
+```
+
+<Warning>
+  **Equal highs o equal lows** crean pools de liquidez especialmente fuertes. Si ves dos o más swing highs al mismo nivel, el algoritmo los va a buscar.
+
+  *"Equal highs or equal lows create especially strong liquidity pools. The algorithm targets these levels preferentially."*
+</Warning>
+
+## Criterios de Calidad
+
+No todos los swing points son iguales. Estos criterios determinan su calidad:
+
+| Criterio | Alto Valor | Bajo Valor |
+|----------|-----------|-----------|
+| **Cuerpo de la vela pivot** | Beefy body (cuerpo grande) | Cuerpo pequeño/wimpy |
+| **Mechas** | Rejection wicks largas | Sin rechazo claro |
+| **Lookback** | 3+ barras a cada lado | Solo 1 barra a cada lado |
+| **Volumen** | Incremento en la formación | Sin cambio notable |
+| **Ubicación** | En PD Array (OB, FVG, liquidity) | En zona aleatoria |
+| **Timeframe** | HTF (Daily, 4H) | LTF (1min, 5min) |
+| **Repetición** | Equal highs/lows (doble techo/suelo) | Nivel único |
+
+<Tip>
+  Un swing point formado por una vela de **cuerpo grande** (beefy), con **mecha de rechazo**, en un **timeframe alto**, dentro de un **order block** — ese es un swing point de máxima calidad. El precio muy probablemente va a respetar ese nivel.
+</Tip>
+
+## Resumen
+
+1. Los swing points son los **building blocks** de la estructura de mercado
+2. Se definen por tener highs/lows menores a ambos lados (criterio N-bar)
+3. Crean **liquidez** que el precio eventualmente buscará
+4. Los **equal highs/lows** son imanes de precio
+5. La **calidad** del swing point importa más que su existencia
+
+---
+
+<Card title="Siguiente: Estructura Institucional" icon="arrow-right" href="/learn/institutional/institutional-structure">
+  Pasá al siguiente nivel: cómo los institucionales ven la estructura del mercado.
+</Card>

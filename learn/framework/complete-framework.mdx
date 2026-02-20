@@ -1,0 +1,113 @@
+---
+title: 'El Framework Completo'
+description: 'Análisis top-down, checklist de trading y proceso paso a paso para operar'
+icon: 'list-check'
+---
+
+## Proceso de Análisis Top-Down (HTF → LTF)
+
+<Steps>
+  <Step title="Daily/Weekly — Determinar Bias">
+    Respondé estas preguntas:
+    - **Tendencia alcista o bajista?** (HH/HL vs LH/LL)
+    - **Dónde está el precio en el dealing range?** (Premium o Discount)
+    - **Qué swing points tiene como target?** (BSL arriba, SSL abajo)
+    - **Qué dicen los Commercials?** (COT: acumulando o distribuyendo)
+  </Step>
+  <Step title="4H/1H — Identificar PD Arrays">
+    Marcá en el gráfico:
+    - Order Blocks **no mitigados**
+    - Fair Value Gaps **abiertos**
+    - Liquidez pendiente (equal highs/lows, swing points)
+    - La siguiente zona de reacción probable
+  </Step>
+  <Step title="15min/5min — Timing de Entrada">
+    Esperá la confirmación:
+    - El precio llega a la PD Array identificada en HTF
+    - Buscá **CHOCH/MSS** en LTF como confirmación
+    - Entry en el OB/FVG del LTF que causa el shift
+    - Stop debajo del swing low del shift (para longs) o arriba del swing high (para shorts)
+  </Step>
+  <Step title="Gestión del Trade">
+    - **TP** en el siguiente pool de liquidez (swing high/low opuesto)
+    - **Trail stop** siguiendo swing points de LTF
+    - Si hay range expansion parabólica → **tomar profits** (regla Larry Williams)
+  </Step>
+</Steps>
+
+## Checklist Antes de Operar
+
+Antes de ejecutar cualquier trade, verificá **TODOS** estos puntos:
+
+| # | Check | Pregunta |
+|---|-------|----------|
+| 1 | **Bias definido** | Tengo dirección clara en HTF? |
+| 2 | **Zona de interés** | El precio está en una PD Array de HTF (OB, FVG, liquidez)? |
+| 3 | **Confirmación LTF** | Hay un CHOCH/BOS en LTF en mi dirección? |
+| 4 | **Entry level** | Tengo un OB o FVG de LTF para entrar? |
+| 5 | **Risk definido** | SL debajo/arriba del swing del shift? |
+| 6 | **Target definido** | Próximo pool de liquidez identificado? |
+| 7 | **R:R mínimo 2:1** | El target justifica el riesgo? |
+| 8 | **Sesión activa** | Estoy operando en London o NY (no Asia, no lunch)? |
+| 9 | **Sin noticias** | No hay high-impact news en los próximos 30min? |
+
+<Warning>
+  Si alguno de estos puntos no se cumple, **NO operes**. Es mejor perder una oportunidad que perder capital. Las oportunidades siempre vuelven.
+</Warning>
+
+## Ejemplos de Proceso Completo
+
+<Tabs>
+  <Tab title="Ejemplo Long (Compra)">
+    <Steps>
+      <Step title="Daily: Bias Alcista">
+        Daily muestra HH/HL. Precio en discount del dealing range. BSL arriba como target.
+      </Step>
+      <Step title="4H: Bullish OB identificado">
+        Hay un bullish OB sin mitigar en 4H, dentro de la zona de discount. También hay un FVG abierto.
+      </Step>
+      <Step title="15min: Precio llega al OB">
+        El precio retrace hasta el bullish OB del 4H. En 15min, se forma un CHOCH alcista (rompe un LH del retroceso).
+      </Step>
+      <Step title="Entry en el OB del 15min">
+        Entrás en el bullish OB del 15min que causó el CHOCH. SL debajo del swing low del shift. TP en el próximo BSL (swing high del 4H).
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Ejemplo Short (Venta)">
+    <Steps>
+      <Step title="Daily: Bias Bajista">
+        Daily muestra LH/LL. Precio en premium del dealing range. SSL abajo como target.
+      </Step>
+      <Step title="4H: Bearish OB identificado">
+        Hay un bearish OB sin mitigar en 4H, dentro de la zona de premium. También hay un SIBI (bearish FVG).
+      </Step>
+      <Step title="15min: Precio llega al OB">
+        El precio retrace al alza hasta el bearish OB del 4H. En 15min, se forma un CHOCH bajista (rompe un HL del retroceso).
+      </Step>
+      <Step title="Entry en el OB del 15min">
+        Entrás en el bearish OB del 15min que causó el CHOCH. SL arriba del swing high del shift. TP en el próximo SSL (swing low del 4H).
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Ejemplo Visual: Trade Signal Completo
+
+<iframe src="/charts/index.html?chart=trade-signal&h=320" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+El chart muestra un trade completo con entrada, stop loss y múltiples take profits — exactamente como deberías planificar cada operación.
+
+## Fuentes
+
+- **Larry Williams:** "Long-Term Secrets to Short-Term Trading", "Trade Stocks & Commodities with the Insiders"
+- **Larry Williams & Linda Raschke:** "Street Smarts: High Probability Short-Term Trading Strategies"
+- **ICT (Inner Circle Trader):** Mentorship 2021-2024, YouTube content
+- **Chris Lori:** "Institutional Order Flow & Volatility", funds management methodology
+- **Toby Crabel:** "Day Trading with Short-Term Price Patterns and Opening Range Breakout"
+
+---
+
+<Card title="Siguiente: Glosario" icon="arrow-right" href="/learn/framework/glossary">
+  Consultá la referencia rápida de todos los términos del curso.
+</Card>

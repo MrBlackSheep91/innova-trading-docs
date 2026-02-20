@@ -1,0 +1,123 @@
+---
+title: 'Estructura de Mercado'
+description: 'Higher highs, higher lows, break of structure y cambios de carácter'
+icon: 'arrow-trend-up'
+---
+
+## Definición Fundamental
+
+La estructura de mercado es el patrón de **Higher Highs / Higher Lows** (tendencia alcista) o **Lower Highs / Lower Lows** (tendencia bajista) que forma el precio.
+
+<Tabs>
+  <Tab title="Tendencia Alcista">
+    <iframe src="/charts/index.html?chart=market-structure&h=300" style={{width: '100%', height: '300px', border: 'none', borderRadius: '8px'}} />
+
+    | Elemento | Definición |
+    |----------|-----------|
+    | **Higher High (HH)** | Cada máximo es más alto que el anterior |
+    | **Higher Low (HL)** | Cada mínimo es más alto que el anterior |
+    | **Operar** | Comprar en los HL (pullbacks) |
+    | **Invalidación** | Se rompe un HL — la tendencia puede estar cambiando |
+  </Tab>
+  <Tab title="Tendencia Bajista">
+    ```
+    ╲           LH
+     ╲ LH     ╱  ╲
+      ╲  ╲   ╱    ╲
+       ╲  ╲ ╱  LL  ╲
+        ╲  ╲
+         LL
+    ```
+
+    | Elemento | Definición |
+    |----------|-----------|
+    | **Lower High (LH)** | Cada máximo es más bajo que el anterior |
+    | **Lower Low (LL)** | Cada mínimo es más bajo que el anterior |
+    | **Operar** | Vender en los LH (pullbacks) |
+    | **Invalidación** | Se rompe un LH — la tendencia puede estar cambiando |
+  </Tab>
+</Tabs>
+
+## Break of Structure (BOS)
+
+**BOS** = El precio rompe un swing high/low anterior **EN la dirección** de la tendencia. Confirma continuación.
+
+<AccordionGroup>
+  <Accordion title="BOS Alcista">
+    En una tendencia alcista, el precio rompe el **último HH** → BOS alcista → la tendencia continúa.
+
+    ```
+    Antes:  HH ── nivel de resistencia
+    Ahora:  Precio rompe arriba → ¡BOS! → nuevo HH confirmado
+    ```
+
+    **Significado:** Los compradores siguen teniendo el control. Buscá compras en el siguiente retroceso.
+  </Accordion>
+  <Accordion title="BOS Bajista">
+    En una tendencia bajista, el precio rompe el **último LL** → BOS bajista → la tendencia continúa.
+
+    ```
+    Antes:  LL ── nivel de soporte
+    Ahora:  Precio rompe abajo → ¡BOS! → nuevo LL confirmado
+    ```
+
+    **Significado:** Los vendedores siguen teniendo el control. Buscá ventas en el siguiente retroceso.
+  </Accordion>
+</AccordionGroup>
+
+## CHOCH / MSS — Cambio de Carácter
+
+**CHOCH (Change of Character)** / **MSS (Market Structure Shift)** = El precio rompe estructura **CONTRA** la tendencia. Señala posible reversión.
+
+<Tabs>
+  <Tab title="CHOCH Bajista">
+    En una tendencia **alcista**, el precio rompe el **último HL** → CHOCH bajista → posible reversión a baja.
+
+    ```
+        HH
+       ╱  ╲
+      ╱    ╲
+     ╱  HL  ╲
+              ╲
+               ╲──→ Rompe HL = ¡CHOCH!
+    ```
+
+    **Acción:** Dejar de buscar compras. Prepararse para posibles ventas.
+  </Tab>
+  <Tab title="CHOCH Alcista">
+    En una tendencia **bajista**, el precio rompe el **último LH** → CHOCH alcista → posible reversión a alza.
+
+    ```
+    ╲  LH
+     ╲╱
+      ╲
+       ╲  LH
+        ╲╱──→ Rompe LH = ¡CHOCH!
+    ```
+
+    **Acción:** Dejar de buscar ventas. Prepararse para posibles compras.
+  </Tab>
+</Tabs>
+
+<Info>
+  **CISD (Change in State of Delivery):** Concepto ICT más refinado que CHOCH. Es la **primera vela** que cierra más allá de un nivel clave de estructura. Es una señal más temprana y más precisa que el CHOCH clásico.
+</Info>
+
+## Resumen Visual
+
+| Evento | Significado | Acción |
+|--------|------------|--------|
+| **BOS alcista** | HH roto en tendencia alcista | Confirma — seguir comprando en pullbacks |
+| **BOS bajista** | LL roto en tendencia bajista | Confirma — seguir vendiendo en pullbacks |
+| **CHOCH bajista** | HL roto en tendencia alcista | Alerta — posible reversión a baja |
+| **CHOCH alcista** | LH roto en tendencia bajista | Alerta — posible reversión a alza |
+
+<Warning>
+  Un CHOCH no garantiza reversión — es una **alerta**. Necesitás confirmación adicional (displacement, desplazamiento institucional) para actuar. Un CHOCH sin displacement suele ser un false break.
+</Warning>
+
+---
+
+<Card title="Siguiente: Swing Points" icon="arrow-right" href="/learn/fundamentals/swing-points">
+  Aprendé a identificar y validar los puntos de giro que definen toda la estructura de mercado.
+</Card>

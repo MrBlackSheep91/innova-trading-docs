@@ -1,0 +1,160 @@
+---
+title: 'Cómo Funcionan los Brokers'
+description: 'Tipos de brokers, ejecución de órdenes, spreads, apalancamiento y cómo elegir el correcto'
+icon: 'building'
+---
+
+## Qué Hace un Broker
+
+Un broker es el **intermediario** entre vos y el mercado. Sin un broker, no podés operar.
+
+Cuando hacés click en "Comprar EUR/USD" en tu plataforma, esto es lo que pasa:
+
+<Steps>
+  <Step title="Tu orden sale">
+    Hacés click en "Comprar" en tu plataforma (MetaTrader, cTrader, etc.).
+  </Step>
+  <Step title="El broker la recibe">
+    Tu broker recibe la orden en sus servidores.
+  </Step>
+  <Step title="Ejecución">
+    Dependiendo del tipo de broker, tu orden se ejecuta de diferente manera (ver abajo).
+  </Step>
+  <Step title="Confirmación">
+    Recibís confirmación de que tu operación está abierta con el precio de entrada.
+  </Step>
+</Steps>
+
+## Tipos de Ejecución
+
+<Tabs>
+  <Tab title="ECN/STP (Recomendado)">
+    ### Electronic Communication Network / Straight Through Processing
+
+    Tu orden va **directamente al mercado** (a los proveedores de liquidez — bancos).
+
+    ```
+    Vos → Broker ECN → Pool de Liquidez (bancos) → Ejecución
+    ```
+
+    **Ventajas:**
+    - Sin conflicto de interés — el broker NO gana si vos perdés
+    - Spreads más ajustados (a veces 0.0 pips)
+    - Ejecución más rápida
+    - Precios reales del mercado
+
+    **Desventajas:**
+    - Comisión por operación ($3-7 por lote)
+    - Spreads pueden ampliarse en noticias
+    - Requiere más capital inicial usualmente
+  </Tab>
+  <Tab title="Market Maker">
+    ### El Broker Toma el Otro Lado
+
+    El broker **crea su propio mercado**. Cuando comprás, el broker vende. Cuando vendés, el broker compra.
+
+    ```
+    Vos → Broker Market Maker → (No sale al mercado real)
+    ```
+
+    **Ventajas:**
+    - Spreads fijos (sabés cuánto pagás siempre)
+    - Sin comisiones adicionales
+    - Puede aceptar cuentas más pequeñas
+    - Ejecución instantánea
+
+    **Desventajas:**
+    - **Conflicto de interés** — gana cuando vos perdés
+    - Puede haber re-quotes (te cambian el precio)
+    - Algunos manipulan precios (stop hunting)
+    - Spreads más amplios en general
+
+    <Warning>
+      No todos los market makers son malos. Muchos son regulados y honestos. Pero el modelo tiene un conflicto de interés inherente. Si podés, elegí ECN/STP.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## Conceptos Clave que Debés Entender
+
+### Spread
+
+La diferencia entre el precio de **compra (Ask)** y el precio de **venta (Bid)**.
+
+```
+EUR/USD:
+  Bid (venta): 1.10000
+  Ask (compra): 1.10020
+  Spread: 2 pips (0.00020)
+```
+
+Cada vez que abrís una operación, empezás "perdiendo" el spread. Es el costo de operar.
+
+### Pip
+
+La unidad mínima de movimiento del precio. En la mayoría de pares de Forex:
+
+**1 pip = 0.0001** (cuarto decimal)
+
+Ejemplo: Si EUR/USD pasa de 1.1000 a 1.1050, se movió **50 pips**.
+
+### Lote
+
+La **cantidad** que operás. En Forex:
+
+| Tipo | Unidades | Valor por pip (EUR/USD) |
+|------|----------|------------------------|
+| **Lote estándar** | 100,000 | $10 |
+| **Mini lote** | 10,000 | $1 |
+| **Micro lote** | 1,000 | $0.10 |
+| **Nano lote** | 100 | $0.01 |
+
+<Tip>
+  Si estás empezando, operá con **micro lotes** (0.01). Así podés practicar con riesgo mínimo mientras aprendés.
+</Tip>
+
+### Apalancamiento (Leverage)
+
+El apalancamiento te permite operar con **más dinero del que tenés**.
+
+| Apalancamiento | Con $1,000 podés operar | Riesgo |
+|----------------|------------------------|--------|
+| **1:1** | $1,000 | Mínimo |
+| **1:10** | $10,000 | Bajo |
+| **1:50** | $50,000 | Medio |
+| **1:100** | $100,000 | Alto |
+| **1:500** | $500,000 | Muy Alto |
+
+<Warning>
+  **El apalancamiento es una espada de doble filo.** Si operás con 1:100 y el precio se mueve 1% en tu contra, perdiste todo tu capital. Usá apalancamiento responsablemente. No más de 1:30 para empezar.
+</Warning>
+
+### Margen
+
+El **depósito** que el broker te pide para mantener una operación abierta.
+
+Ejemplo: Con apalancamiento 1:100, para abrir una operación de $100,000, necesitás $1,000 de margen.
+
+Si tu cuenta baja por debajo del margen requerido → **Margin Call** → el broker cierra tus operaciones automáticamente para proteger su dinero.
+
+## Cómo Elegir un Broker
+
+| Criterio | Qué buscar |
+|----------|-----------|
+| **Regulación** | FCA (UK), ASIC (Australia), CySEC (Chipre), NFA (USA). **Nunca uses un broker sin regulación.** |
+| **Tipo** | ECN/STP preferido. Market Maker si es regulado y de buena reputación. |
+| **Spreads** | Menores = mejor. Comparar en el par que más operés. |
+| **Comisiones** | Si es ECN, comparar comisión total (spread + comisión). |
+| **Plataforma** | MetaTrader 4/5, cTrader. Asegurate que la plataforma funcione bien. |
+| **Depósito mínimo** | $100-500 es razonable para empezar. Desconfiá de los que piden $0. |
+| **Retiros** | Investigá si pagan a tiempo y sin problemas. |
+
+<Info>
+  **Para traders de LatAm:** EC Markets, Pepperstone, IC Markets y FPMarkets son opciones populares y reguladas. Innova Trading funciona con EC Markets para copy trading.
+</Info>
+
+---
+
+<Card title="Siguiente: Leyendo un Gráfico" icon="arrow-right" href="/learn/basics/reading-charts">
+  Tu primer contacto con un gráfico de precios — qué estás mirando y cómo interpretarlo.
+</Card>

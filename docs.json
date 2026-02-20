@@ -121,6 +121,68 @@
                 ]
               }
             ]
+          },
+          {
+            "tab": "Learn Trading",
+            "groups": [
+              {
+                "group": "Aprende Trading",
+                "pages": [
+                  "learn/introduction"
+                ]
+              },
+              {
+                "group": "Los Básicos (Desde Cero)",
+                "pages": [
+                  "learn/basics/history-of-trading",
+                  "learn/basics/what-is-trading",
+                  "learn/basics/trading-types",
+                  "learn/basics/financial-markets",
+                  "learn/basics/market-participants",
+                  "learn/basics/how-brokers-work",
+                  "learn/basics/reading-charts",
+                  "learn/basics/sessions-timing",
+                  "learn/basics/risk-management"
+                ]
+              },
+              {
+                "group": "Fundamentos del Precio",
+                "pages": [
+                  "learn/fundamentals/bar-anatomy",
+                  "learn/fundamentals/bar-types",
+                  "learn/fundamentals/why-price-moves",
+                  "learn/fundamentals/volatility-cycles",
+                  "learn/fundamentals/market-structure",
+                  "learn/fundamentals/swing-points",
+                  "learn/fundamentals/amd-power-of-three"
+                ]
+              },
+              {
+                "group": "Trading Institucional",
+                "pages": [
+                  "learn/institutional/institutional-structure",
+                  "learn/institutional/liquidity",
+                  "learn/institutional/pd-arrays",
+                  "learn/institutional/displacement"
+                ]
+              },
+              {
+                "group": "El Juego de las Grandes Ligas",
+                "pages": [
+                  "learn/advanced/market-efficiency",
+                  "learn/advanced/interbank-pricing",
+                  "learn/advanced/algorithmic-delivery",
+                  "learn/advanced/data-providers"
+                ]
+              },
+              {
+                "group": "Framework Completo",
+                "pages": [
+                  "learn/framework/complete-framework",
+                  "learn/framework/glossary"
+                ]
+              }
+            ]
           }
         ]
       },
@@ -206,6 +268,68 @@
                   "es/sdks/overview",
                   "es/sdks/python",
                   "es/sdks/javascript"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Aprende Trading",
+            "groups": [
+              {
+                "group": "Aprende Trading",
+                "pages": [
+                  "learn/introduction"
+                ]
+              },
+              {
+                "group": "Los Básicos (Desde Cero)",
+                "pages": [
+                  "learn/basics/history-of-trading",
+                  "learn/basics/what-is-trading",
+                  "learn/basics/trading-types",
+                  "learn/basics/financial-markets",
+                  "learn/basics/market-participants",
+                  "learn/basics/how-brokers-work",
+                  "learn/basics/reading-charts",
+                  "learn/basics/sessions-timing",
+                  "learn/basics/risk-management"
+                ]
+              },
+              {
+                "group": "Fundamentos del Precio",
+                "pages": [
+                  "learn/fundamentals/bar-anatomy",
+                  "learn/fundamentals/bar-types",
+                  "learn/fundamentals/why-price-moves",
+                  "learn/fundamentals/volatility-cycles",
+                  "learn/fundamentals/market-structure",
+                  "learn/fundamentals/swing-points",
+                  "learn/fundamentals/amd-power-of-three"
+                ]
+              },
+              {
+                "group": "Trading Institucional",
+                "pages": [
+                  "learn/institutional/institutional-structure",
+                  "learn/institutional/liquidity",
+                  "learn/institutional/pd-arrays",
+                  "learn/institutional/displacement"
+                ]
+              },
+              {
+                "group": "El Juego de las Grandes Ligas",
+                "pages": [
+                  "learn/advanced/market-efficiency",
+                  "learn/advanced/interbank-pricing",
+                  "learn/advanced/algorithmic-delivery",
+                  "learn/advanced/data-providers"
+                ]
+              },
+              {
+                "group": "Framework Completo",
+                "pages": [
+                  "learn/framework/complete-framework",
+                  "learn/framework/glossary"
                 ]
               }
             ]

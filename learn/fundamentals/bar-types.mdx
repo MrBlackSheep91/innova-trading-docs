@@ -1,0 +1,130 @@
+---
+title: 'Tipos de Barras y lo que Revelan'
+description: 'Wide range, narrow range, barras de senal — clasificacion segun rango e intencion'
+icon: 'chart-bar'
+---
+
+No todas las barras son iguales. El **tipo de barra** te dice que esta pasando debajo de la superficie.
+
+## Clasificacion por Rango (High - Low)
+
+### Wide Range Bar (WRB)
+
+Barra con rango **significativamente mayor** al promedio. Indica:
+
+- Participacion institucional
+- Displacement (desplazamiento del precio)
+- Posible inicio o fin de un movimiento
+
+<iframe src="/charts/index.html?chart=wrb&h=300" style={{width: '100%', height: '300px', border: 'none', borderRadius: '8px'}} />
+
+### Narrow Range Bar (NRB)
+
+Barra con rango **comprimido**. Indica:
+
+- Consolidacion
+- Acumulacion o distribucion silenciosa
+- **Preludio a expansion** (Larry Williams)
+
+<iframe src="/charts/index.html?chart=nrb&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+
+<Warning>
+  Las barras de rango estrecho parecen "aburridas" pero son la calma antes de la tormenta. Es cuando las instituciones estan acumulando posiciones.
+</Warning>
+
+### El Patron Clave: Compresion → Expansion
+
+Cuando ves una serie de NRBs seguida de una WRB, estas viendo el algoritmo en accion: **acumulo en silencio y ahora distribuye con fuerza**.
+
+<iframe src="/charts/index.html?chart=compression-expansion&h=340" style={{width: '100%', height: '340px', border: 'none', borderRadius: '8px'}} />
+
+<Info>
+  **Regla practica:** Cuando veas 3+ barras con rangos decrecientes (NRBs), preparate para una expansion. No intentes predecir la direccion — espera a que la primera WRB te la muestre.
+</Info>
+
+---
+
+## Barras de Senal — Larry Williams
+
+Larry Williams identifico patrones especificos en barras individuales tras decadas de investigacion:
+
+### Barra de Rango Expandido (Range Expansion)
+
+<Tip>
+  *"A range-expansion move is a very large trading bar caused by the last of the market's participants (the emotional latecomers) dog piling into the market. When this last group has entered, there is nobody left to continue to drive prices."* — Larry Williams
+</Tip>
+
+Esto es contra-intuitivo: la barra mas impresionante suele ser la **ultima** del movimiento, no la primera.
+
+**Por que:** Cuando la ultima persona emocional entra al mercado, no queda nadie para seguir empujando el precio. Es un **climax** — el final del movimiento.
+
+<iframe src="/charts/index.html?chart=climax&h=340" style={{width: '100%', height: '340px', border: 'none', borderRadius: '8px'}} />
+
+| Senal | Contexto | Significado |
+|-------|----------|------------|
+| WRB alcista despues de rally prolongado | Final de tendencia alcista | Posible techo |
+| WRB bajista despues de caida prolongada | Final de tendencia bajista | Posible piso |
+| WRB al inicio de movimiento | Despues de consolidacion | Inicio de tendencia |
+
+### Barra de Pausa
+
+Despues de una serie de barras en una direccion, una barra pequena o doji indica que la **conviccion se esta agotando**. Los participantes originales del movimiento estan tomando ganancias.
+
+---
+
+## Barras Institucionales — ICT
+
+ICT clasifica barras segun su **funcion en el delivery algoritmico** del precio:
+
+<Tabs>
+  <Tab title="Displacement Candle">
+    Barra con cuerpo grande que "desplaza" el precio con urgencia.
+
+    **Caracteristicas:**
+    - Cuerpo grande (>70% del rango)
+    - Mechas pequenas o inexistentes
+    - Crea Fair Value Gaps
+    - Evidencia de dinero institucional actuando
+
+    <iframe src="/charts/index.html?chart=displacement&h=300" style={{width: '100%', height: '300px', border: 'none', borderRadius: '8px'}} />
+
+    **Uso:** Confirma direccion institucional. El displacement valida que hay smart money detras del movimiento. El gap entre la barra anterior y la siguiente es el **Fair Value Gap**.
+  </Tab>
+
+  <Tab title="Up-Close Candle">
+    Close en el **tercio superior** del rango.
+
+    **Uso:** Importante para marcar el nivel superior de un **bullish order block**. Si la vela cierra arriba, los compradores dominaron al final.
+
+    <iframe src="/charts/index.html?chart=up-close&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+  </Tab>
+
+  <Tab title="Down-Close Candle">
+    Close en el **tercio inferior** del rango.
+
+    **Uso:** Importante para marcar el nivel inferior de un **bearish order block**. Si la vela cierra abajo, los vendedores dominaron al final.
+
+    <iframe src="/charts/index.html?chart=down-close&h=280" style={{width: '100%', height: '280px', border: 'none', borderRadius: '8px'}} />
+  </Tab>
+</Tabs>
+
+---
+
+## Como Leer Barras en Contexto
+
+Una barra individual dice poco. El valor real esta en leerla **en contexto**:
+
+| Secuencia | Interpretacion |
+|-----------|---------------|
+| NRB → NRB → NRB → **WRB** | Compresion seguida de expansion. La WRB marca la direccion. |
+| WRB → NRB | Impulso seguido de pausa. Posible continuacion o reversion. |
+| WRB alcista → WRB alcista → **WRB alcista gigante** | Climax. Probablemente el final del movimiento (Williams). |
+| NRB con mechas largas | "Inside day" con rechazo. Las instituciones estan acumulando en un rango. |
+
+<iframe src="/charts/index.html?chart=context&h=370" style={{width: '100%', height: '370px', border: 'none', borderRadius: '8px'}} />
+
+---
+
+<Card title="Siguiente: Por Que se Mueve el Precio" icon="arrow-right" href="/learn/fundamentals/why-price-moves">
+  Ahora que sabes leer barras, entende las fuerzas que mueven el precio segun tres maestros del trading.
+</Card>

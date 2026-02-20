@@ -1,0 +1,100 @@
+---
+title: 'Por Qué se Mueve el Precio'
+description: 'Tres perspectivas complementarias: Commitment of Traders, liquidez e ingeniería de precio, y order flow institucional'
+icon: 'arrows-up-down'
+---
+
+Esta es la pregunta más importante del trading. Tres maestros ofrecen respuestas complementarias.
+
+<iframe src="/charts/diagrams.html?d=three-frameworks" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+
+## Larry Williams: Commitment of Traders
+
+Larry Williams estudió durante décadas el reporte **COT (Commitment of Traders)** para entender quién mueve realmente el mercado.
+
+### Los Tres Grupos de Participantes
+
+| Grupo | Quiénes son | Cómo operan |
+|-------|------------|-------------|
+| **Commercials (Hedgers)** | Bancos, corporaciones, productores | Compran cuando baja, venden cuando sube. Son el dinero inteligente del COT. |
+| **Large Speculators** | Hedge funds, CTAs, fondos | Siguen tendencias. A menudo llegan tarde al movimiento. |
+| **Small Speculators** | Traders retail | Generalmente están en el lado equivocado. |
+
+### El Patrón Clave
+
+Los commercials (institucionales) compran **progresivamente** cuando el precio cae y venden progresivamente cuando sube. No intentan "adivinar" el fondo o techo — **acumulan posiciones gradualmente**.
+
+<Warning>
+  **Regla Williams:** *"When the commercial net buying level is less than at a previous low, despite lower prices, this breaks the pattern — a reversal is likely."*
+
+  Traducción: Cuando los commercials dejan de comprar en una caída (reducen su interés comprador a pesar de precios más bajos), algo cambió fundamentalmente.
+</Warning>
+
+## ICT: Liquidez e Ingeniería de Precio
+
+ICT ofrece una explicación complementaria y más granular:
+
+### El Precio Va Hacia la Liquidez
+
+La liquidez son las órdenes pendientes — stops, limits, market orders — que representan dinero disponible para ser "cosechado."
+
+El precio es diseñado algorítmicamente para:
+
+<Steps>
+  <Step title="Buscar liquidez">
+    El precio se mueve hacia donde hay clusters de stop losses (buy side o sell side liquidity).
+  </Step>
+  <Step title="Rebalancear ineficiencias">
+    Llenar Fair Value Gaps dejados por movimientos impulsivos anteriores.
+  </Step>
+  <Step title="Mitigar order blocks">
+    Retornar a zonas donde instituciones dejaron órdenes pendientes sin ejecutar.
+  </Step>
+</Steps>
+
+<Tip>
+  *"The market is engineered to seek liquidity. Every swing high and swing low exists because there are resting orders at those levels."* — ICT
+</Tip>
+
+## Chris Lori: Order Flow Institucional
+
+Chris Lori (13 años en FX, ex CTA/NFA) aporta la perspectiva del participante institucional real.
+
+### Volatilidad como Herramienta Institucional
+
+Las instituciones **NECESITAN** volatilidad para:
+
+1. **Acumular** posiciones grandes sin mover el precio demasiado
+2. **Distribuir** posiciones a traders que entran tarde
+3. **Ejecutar** órdenes de gran tamaño contra la liquidez retail
+
+<Info>
+  *"Institutional order flow creates volatility spikes that are NOT random — they are engineered moves designed to fill large positions against retail liquidity."* — Chris Lori
+</Info>
+
+### Cómo Operan las Instituciones
+
+Las instituciones no operan como retail. No ponen una orden y esperan. Ellos:
+
+- **Fragmentan** órdenes enormes en partes más pequeñas
+- **Crean "shakeouts"** (volatilidad artificial) para generar liquidez contra la cual ejecutar
+- **Operan en AMBAS direcciones** simultáneamente (hedging) y luego eliminan el lado perdedor
+
+## Síntesis: Las Tres Perspectivas Unificadas
+
+| Pregunta | Williams | ICT | Lori |
+|----------|---------|-----|------|
+| **Quién mueve el precio** | Commercials / Hedgers | Smart Money / Algorithm | Instituciones (bancos, fondos) |
+| **Por qué se mueve** | Supply & Demand fundamentada | Buscar liquidez + rebalancear | Ejecutar órdenes institucionales |
+| **Cómo lo rastreo** | COT Report | Price Action + PD Arrays | Order flow + Volatilidad |
+| **Cuándo cambia** | Cuando commercials cambian patrón | Market Structure Shift (MSS) | Cambio en order flow dominante |
+
+<Note>
+  Las tres perspectivas no se contradicen — se complementan. Williams te dice **quién** mueve el precio (macro). ICT te dice **cómo** lo mueven (price action). Lori te dice **por qué** necesitan moverlo así (ejecución institucional).
+</Note>
+
+---
+
+<Card title="Siguiente: Ciclos de Volatilidad" icon="arrow-right" href="/learn/fundamentals/volatility-cycles">
+  Entendé el ciclo contracción-expansión que gobierna todos los movimientos del precio.
+</Card>
