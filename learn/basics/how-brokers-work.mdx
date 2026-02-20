@@ -141,6 +141,94 @@ Ejemplo: Con apalancamiento 1:100, para abrir una operación de \$100,000, neces
 
 Si tu cuenta baja por debajo del margen requerido → **Margin Call** → el broker cierra tus operaciones automáticamente para proteger su dinero.
 
+## Los Costos Reales de Operar
+
+Entender exactamente cuánto te cuesta cada operación es clave para tu rentabilidad:
+
+<Tabs>
+  <Tab title="Spread">
+    ### La Diferencia Bid/Ask
+
+    El spread puede ser **fijo** o **variable**:
+
+    | Tipo | Cómo funciona | Cuándo conviene |
+    |------|--------------|-----------------|
+    | **Spread fijo** | Siempre el mismo (ej: 2 pips en EUR/USD) | Si operás durante noticias y querés saber tu costo exacto |
+    | **Spread variable** | Cambia según la liquidez (0.1 a 5+ pips) | Mejor en condiciones normales — más barato que fijo |
+
+    **En condiciones normales**, un spread variable es más barato. **Durante noticias** (NFP, CPI, FOMC), el spread variable puede dispararse a 10-20 pips momentáneamente.
+  </Tab>
+  <Tab title="Comisión">
+    ### Cobro Fijo por Lote
+
+    Los brokers ECN cobran una **comisión por lote operado** además del spread:
+
+    - Típico: \$3 a \$7 por lote estándar (100,000 unidades)
+    - Se cobra al abrir Y al cerrar (total \$6-14 por operación completa)
+    - Con micro lotes (0.01), la comisión es proporcional: \$0.03-0.07
+
+    **Costo total = Spread + Comisión.** Algunos brokers ECN con spread 0.0 y comisión de \$7/lote terminan siendo más baratos que un market maker con spread fijo de 2 pips y sin comisión.
+  </Tab>
+  <Tab title="Swap (Overnight)">
+    ### El Interés por Mantener Posiciones
+
+    Si mantenés una operación abierta después de las **17:00 hora de NY** (rollover diario), el broker te cobra o te paga un **swap** — un interés basado en la diferencia de tasas entre las dos monedas del par.
+
+    - **Swap positivo:** Si la moneda que compraste tiene mayor tasa de interés que la que vendiste, te **pagan**
+    - **Swap negativo:** Si es al revés, te **cobran** cada noche
+    - **Triple swap:** Los miércoles se cobran 3 noches (por el fin de semana)
+
+    <Tip>
+      Si hacés **day trading** (cerrás todo el mismo día), el swap no te afecta. Solo importa para swing traders que mantienen posiciones varios días.
+    </Tip>
+  </Tab>
+  <Tab title="Otros Costos">
+    ### Rebates, Inactividad, Conversión
+
+    - **Rebates:** Algunos brokers te **devuelven** parte del spread/comisión por volumen operado. Es como un cashback por tradear. Preguntá a tu broker si tiene programa de rebates.
+    - **Fee de inactividad:** Si no operás por 3-6 meses, algunos brokers cobran \$5-15/mes. Verificá las condiciones.
+    - **Fee de conversión:** Si tu cuenta está en USD y depositás en otra moneda (o viceversa), el broker cobra una pequeña comisión de conversión.
+    - **Fee de retiro:** Algunos cobran por transferencias bancarias (no por e-wallets).
+  </Tab>
+</Tabs>
+
+## Copy Trading
+
+El **copy trading** te permite copiar automáticamente las operaciones de otro trader en tu cuenta:
+
+- **Cómo funciona:** Elegís un trader "proveedor de señales", conectás tu cuenta, y cada operación que él haga se replica automáticamente en la tuya (proporcional a tu capital)
+- **Comisiones:** El proveedor cobra un **20-50% de las ganancias** que genere en tu cuenta (performance fee)
+- **Plataformas:** cTrader Copy, ZuluTrade, eToro, EC Markets CopyTrading
+- **Riesgo:** Si el proveedor pierde, vos también perdés. No aprendés a operar solo. Si el proveedor tiene una mala racha, tu cuenta sufre igual.
+
+<Warning>
+  **Copy trading ≠ aprender trading.** Puede ser útil mientras aprendés para generar algo de retorno con tu capital. Pero NO reemplaza el aprendizaje. Idealmente, eventualmente VOS sos el proveedor que otros copian — no al revés.
+</Warning>
+
+## CTA y Programas de Referidos (IB)
+
+<AccordionGroup>
+  <Accordion title="CTA (Commodity Trading Advisor)">
+    Un **CTA** es un asesor de inversión registrado que opera dinero de terceros. En el mundo retail, algunos traders exitosos se registran como CTA para gestionar cuentas de otros legalmente.
+
+    - Requiere registro regulatorio (NFA en USA, por ejemplo)
+    - Cobra **management fee** (1-2% anual) + **performance fee** (15-30% de ganancias)
+    - Es el camino "legal y serio" para gestionar dinero de otros
+  </Accordion>
+  <Accordion title="IB (Introducing Broker) / Referidos">
+    Un **IB** o broker introductor es alguien que refiere clientes a un broker a cambio de una comisión:
+
+    - El broker te paga **\$2-10 por lote** que opere cada persona que referiste
+    - Es un ingreso pasivo recurrente mientras tus referidos sigan operando
+    - Muchas comunidades de trading y educadores usan este modelo
+    - **No tiene conflicto de interés** si el broker es ECN (tu referido paga lo mismo, el broker te paga de su margen)
+
+    <Info>
+      Innova Trading usa un modelo IB con EC Markets — los usuarios pagan los mismos spreads y comisiones, y parte del margen del broker va a sostener la comunidad y las herramientas.
+    </Info>
+  </Accordion>
+</AccordionGroup>
+
 ## Prop Firms: Qué Son y Qué NO Son
 
 Las prop firms aparecen en la conversación de brokers porque son otro "punto de acceso" al mercado. Pero son fundamentalmente diferentes.

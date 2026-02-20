@@ -63,7 +63,7 @@ Ejemplo de compra en EUR/USD:
 
 **NUNCA operes sin stop loss.** Una operación sin SL puede destruir toda tu cuenta en un movimiento.
 
-<iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/diagrams.html?d=risk-reward" style={{width: '100%', height: '320px', border: 'none', borderRadius: '8px'}} />
+<iframe src="https://mrblacksheep91.github.io/innova-trading-docs/charts/diagrams.html?d=risk-reward" style={{width: '100%', height: '430px', border: 'none', borderRadius: '8px'}} />
 
 ### Regla 3: Buscá Risk:Reward mínimo 1:2
 
@@ -96,6 +96,27 @@ $10 ÷ (30 × $0.10) = $10 ÷ $3 = 3.33 micro lotes (usá 3 micro lotes = 0.03 l
 ```
 
 Así, si perdés los 30 pips, perdés exactamente \$9 — menos del 1% de tu cuenta.
+
+## ADR — Average Daily Range (Rango Diario Promedio)
+
+El **ADR** es el promedio de pips que un par se mueve en un día. Es una métrica esencial para gestionar tu riesgo y definir objetivos realistas.
+
+**Cómo se calcula:** Promedio del rango (High - Low) de los últimos 14 días de trading.
+
+| Par | ADR típico | Qué significa |
+|-----|-----------|--------------|
+| **EUR/USD** | 60-80 pips | Si ya se movió 70 pips hoy, probablemente no va a moverse 70 más |
+| **GBP/USD** | 80-120 pips | Más volátil — más rango, más oportunidad, más riesgo |
+| **USD/JPY** | 50-70 pips | Rango moderado |
+
+**Para qué te sirve:**
+- **Stop Loss:** Si tu SL es de 60 pips pero el ADR del par es 50, tu SL es más grande que el movimiento promedio diario — probablemente vas a ser sacado
+- **Take Profit:** No esperes 200 pips de TP en un par que mueve 80 por día. Sé realista
+- **Timing:** Si el par ya consumió 80% de su ADR y recién entrás, queda poco recorrido. Mejor esperá al día siguiente
+
+<Tip>
+  **Regla práctica:** Tu SL debería ser **menor al 30%** del ADR del par, y tu TP realista no debería superar el **80%** del ADR restante del día.
+</Tip>
 
 ## La Psicología del Riesgo
 

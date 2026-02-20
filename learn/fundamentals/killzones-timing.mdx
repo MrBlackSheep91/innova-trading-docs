@@ -1,0 +1,201 @@
+---
+title: 'Killzones, Silver Bullets y Macros'
+description: 'Las ventanas de tiempo exactas donde el algoritmo manipula y distribuye — y cómo usarlas a tu favor'
+icon: 'crosshairs'
+---
+
+## De Sesiones a Killzones
+
+En Basics aprendiste que el mercado tiene tres sesiones principales y que no todas las horas son iguales. Ahora vamos más profundo: dentro de cada sesión hay **ventanas específicas** donde la manipulación y la distribución ocurren con mayor probabilidad.
+
+Estas ventanas se llaman **Killzones** — y no son arbitrarias. Existen porque es cuando **hay más gente operando** → más stop losses en el mercado → más liquidez disponible para que el smart money ejecute sus órdenes.
+
+> **Killzone = zona de alta liquidez = zona donde el algoritmo puede manipular y distribuir eficientemente.**
+
+---
+
+## Las 4 Killzones
+
+| Killzone | Horario (NY) | Fase AMD | Por Qué Hay Liquidez |
+|----------|-------------|----------|----------------------|
+| **Asia KZ** | 20:00 - 00:00 | A — Acumulación | Tokyo/Sydney activos. Crea el rango que Londres va a romper |
+| **London Open KZ** | 01:00 - 05:00 | M — Manipulación | Europa entera operando. Bancos de Londres, Frankfurt, Zurich. Máxima liquidez Forex |
+| **New York KZ** | 07:00 - 10:00 | D — Distribución | Wall Street + Europa = pico de liquidez. Ideal para la expansión real |
+| **London Close KZ** | 10:00 - 12:00 | X — Cierre | Europa cierra posiciones. Completa el rango o revierte |
+
+### El Judas Swing — La Trampa de Londres
+
+El movimiento más típico de la London KZ es el **Judas Swing** — una falsa ruptura que atrapa a los traders impacientes:
+
+1. **Asia** consolida en un rango estrecho
+2. **Pre-London (00:00-03:00):** El precio rompe por debajo del rango asiático (falsa ruptura bajista)
+3. **London Open (03:00):** El precio barre los lows de Asia, capturando stop losses → este es el punto mínimo del día
+4. **Expansión real (03:00-05:00):** El precio se revierte con fuerza y sube 25-50 pips en la dirección real
+
+<Warning>
+  **Fuera de las killzones, la probabilidad baja drásticamente.** Operar entre las 12:00 y las 20:00 (fuera del PM Silver Bullet) es operar en "horario basura".
+</Warning>
+
+---
+
+## Silver Bullets — Ventanas de 1 Hora para Entradas Precisas
+
+Las **Silver Bullets** son ventanas de exactamente 1 hora donde el precio forma un **FVG (Fair Value Gap)** que podés usar como entrada mecánica.
+
+| Silver Bullet | Horario (NY) | Mejor Para |
+|--------------|-------------|------------|
+| **London SB** | 03:00 - 04:00 | Forex (EUR/USD, GBP/USD) |
+| **AM Silver Bullet** | 10:00 - 11:00 | Índices (ES, NQ, US30) + Forex |
+| **PM Silver Bullet** | 14:00 - 15:00 | Índices primariamente |
+
+**Cómo funciona:**
+1. **Antes** de la ventana: Identificá hacia dónde va el precio (tu Draw on Liquidity)
+2. **Durante** la ventana: Esperá que se forme un FVG en la dirección correcta
+3. **Entrá** dentro del FVG cuando el precio lo retestee
+4. **Target:** La liquidez que identificaste en el paso 1
+
+<Tip>
+  **Si perdés la London Silver Bullet, esperá la AM. Si perdés la AM, esperá la PM.** Siempre hay otra oportunidad. El peor error es forzar una entrada fuera de ventana.
+</Tip>
+
+---
+
+## Macros — Ventanas de 20 Minutos del Algoritmo
+
+Las **macros** son ventanas ultra-específicas donde el algoritmo ejecuta "micro-órdenes":
+
+| Macro | Horario (NY) | Sesión |
+|-------|-------------|--------|
+| London Macro 1 | 02:03 - 02:30 | London KZ |
+| London Macro 2 | 04:03 - 04:30 | London KZ |
+| NY Open Macro 1 | 08:50 - 09:10 | NY Pre-market |
+| NY Open Macro 2 | 09:50 - 10:10 | NY AM |
+| Mid-Morning | 10:50 - 11:10 | NY AM |
+| Lunch Macro | 11:50 - 12:10 | NY Lunch |
+| PM Macro 1 | 14:50 - 15:10 | PM Session |
+| Final Hour | 15:15 - 15:45 | PM Session |
+
+<Info>
+  **Las macros son para traders avanzados.** Enfocate primero en dominar las killzones y Silver Bullets.
+</Info>
+
+---
+
+## Rangos de Referencia
+
+Dos rangos que debés marcar **todos los días** en tu gráfico de 15 minutos:
+
+| Rango | Horario (NY) | Qué Es |
+|-------|-------------|--------|
+| **CBDR** (Central Bank Dealing Range) | 14:00 - 20:00 | Rango que los bancos crean la tarde anterior |
+| **Asian Range** | 20:00 - 00:00 | Rango de la sesión asiática |
+| **FLOUT** (CBDR + Asian combinado) | 14:00 - 00:00 | Cuando CBDR y Asian están al mismo nivel |
+
+**Regla:** Usá el **más pequeño** entre CBDR y Asian Range como referencia. Si ambos están al mismo nivel (consolidación total), usá FLOUT.
+
+---
+
+## Puntos de Referencia Temporales
+
+| Punto | Hora (NY) | Por Qué Importa |
+|-------|----------|-----------------|
+| **True Day Open** | 00:00 | El algoritmo empieza un nuevo "día". Tu línea base |
+| **CME (Chicago Mercantile Exchange) Open** | 08:20 | Apertura de futuros — referencia para índices |
+| **Noticias** | 08:30 | CPI, PPI, NFP (Non-Farm Payrolls) — volatilidad extrema |
+| **RTH (Regular Trading Hours) Open** | 09:30 | Apertura de acciones — Opening Range |
+| **IPDA True Day Close** | 15:00 | El algoritmo empieza a cerrar el rango diario |
+| **Bond Close** | 16:00 | Fin real del rango diario |
+
+---
+
+## La Entrega del Precio
+
+El precio no se mueve al azar. Se **entrega** de un punto de liquidez a otro:
+
+1. **Asia** crea el rango → define dónde están los stops (liquidez)
+2. **London KZ** barre un lado del rango (manipulación) → captura liquidez
+3. **NY KZ** entrega el precio al otro lado → alcanza la liquidez opuesta
+4. **PM** completa la entrega o empieza el ciclo del día siguiente
+
+Cada killzone es un eslabón en esta cadena. Si entendés de dónde viene el precio y hacia dónde va, las killzones te dicen **cuándo va a llegar**.
+
+---
+
+## El Mercado es Fractal
+
+Lo que pasa en las sesiones del día es **exactamente lo mismo** que pasa dentro de una vela, una semana, o un trimestre:
+
+| Escala | Acumulación (A) | Manipulación (M) | Distribución (D) |
+|--------|-----------------|-------------------|-------------------|
+| **1 vela** | Open | Mecha opuesta al cierre | Cuerpo |
+| **Sesiones** | Asia | London KZ | NY KZ |
+| **Semana** | Lunes-Martes | Miércoles (mid-week reversal) | Jueves-Viernes |
+| **Trimestre** | Mes 1 | Mes 2 | Mes 3 |
+
+<Info>
+  **Fractal = el mismo patrón en todas las escalas.** Cuando ves que Asia consolidó, Londres manipuló, y NY expandió — estás viendo lo mismo que pasa dentro de UNA vela diaria: Open (Asia), mecha (London), cuerpo (NY).
+</Info>
+
+---
+
+## Cuándo Operar Según Tu Estilo
+
+<Tabs>
+  <Tab title="Day Trader (Forex)">
+    **Ventana primaria:** London KZ (02:00 - 05:00 NY)
+    **Ventana secundaria:** NY KZ (07:00 - 10:00 NY)
+    **Screen time:** 3-4 horas
+  </Tab>
+  <Tab title="Day Trader (Índices)">
+    **Ventana primaria:** AM Silver Bullet (10:00 - 11:00 NY)
+    **Ventana secundaria:** PM Silver Bullet (14:00 - 15:00 NY)
+    **Screen time:** 2-3 horas
+  </Tab>
+  <Tab title="Swing Trader">
+    **Mejores días:** Martes (London), Miércoles
+    **Análisis:** Diario y 4H para dirección, 1H para entradas
+    **Screen time:** 30-60 minutos por día
+  </Tab>
+</Tabs>
+
+---
+
+## Quick Reference Card
+
+<AccordionGroup>
+  <Accordion title="Killzones">
+    | Killzone | Horario (NY) |
+    |----------|-------------|
+    | Asia KZ | 20:00 - 00:00 |
+    | London KZ | 01:00 - 05:00 |
+    | NY KZ | 07:00 - 10:00 |
+    | London Close | 10:00 - 12:00 |
+  </Accordion>
+  <Accordion title="Silver Bullets">
+    | Silver Bullet | Horario (NY) |
+    |---------------|-------------|
+    | London SB | 03:00 - 04:00 |
+    | AM SB | 10:00 - 11:00 |
+    | PM SB | 14:00 - 15:00 |
+  </Accordion>
+  <Accordion title="Puntos Clave">
+    | Punto | Hora (NY) |
+    |-------|----------|
+    | True Day Open | 00:00 |
+    | CME Open | 08:20 |
+    | Noticias | 08:30 |
+    | RTH Open | 09:30 |
+    | Bond Close | 16:00 |
+  </Accordion>
+</AccordionGroup>
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Anterior: AMD — Power of Three" icon="arrow-left" href="/learn/fundamentals/amd-power-of-three">
+    El ciclo de Acumulación, Manipulación y Distribución.
+  </Card>
+  <Card title="Siguiente: Trading Institucional" icon="arrow-right" href="/learn/institutional/institutional-structure">
+    Cómo operan los grandes jugadores — liquidez, order blocks, FVGs.
+  </Card>
+</CardGroup>
