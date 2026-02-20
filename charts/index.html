@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Innova Charts Engine v2</title>
+<script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; overflow: hidden; }
+  #chart { width: 100%; height: 100vh; }
+  .chart-title {
+    position: absolute; top: 8px; left: 12px; z-index: 10;
+    font: 500 11px/1 'Inter', -apple-system, system-ui, sans-serif;
+    color: rgba(156,163,175,0.75); letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+<div id="chart"></div>
+<script>
+// ═══════════════════════════════════════════════════════════════
+// INNOVA CHARTS ENGINE v2.1
+// Plugin-based — annotations in clean space, never on candles
+// ═══════════════════════════════════════════════════════════════
+
+// ── UTILITIES ──────────────────────────────────────────────────
+
+function hexToRgba(hex, alpha) {
+  if (!hex) return 'rgba(255,255,255,0.5)';
+  if (hex.startsWith('rgba')) return hex;
+  if (!hex.startsWith('#')) return hex;
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `rgba(${r},${g},${b},${alpha != null ? alpha : 1})`;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// ── PRIMITIVE: LevelPrimitive ─────────────────────────────────
+// Horizontal line between two time points + badge label at end
+class LevelPrimitive {
+  constructor(cfg) { this._c = cfg; this._chart = null; this._series = null; }
+  attached(p) { this._chart = p.chart; this._series = p.series; }
+  detached() { this._chart = null; this._series = null; }
+  paneViews() {
+    const self = this;
+    return [{ zOrder: () => 'top', renderer: () => ({ draw(target) {
+      if (!self._chart || !self._series) return;
+      const c = self._c;
+      target.useMediaCoordinateSpace(scope => {
+        const ctx = scope.context;
+        const y = self._series.priceToCoordinate(c.price);
+        if (y === null) return;
+
+        const x1 = c.timeStart ? self._chart.timeScale().timeToCoordinate(c.timeStart) : null;
+        const x2 = c.timeEnd ? self._chart.timeScale().timeToCoordinate(c.timeEnd) : null;
+        const lineStart = x1 ?? 0;
+        const lineEnd = x2 ?? scope.mediaSize.width;
+
+        ctx.save();
+        ctx.strokeStyle = c.color;
+        ctx.lineWidth = c.lineWidth || 1.5;
+        if (c.dash) ctx.setLineDash(c.dash);
+        ctx.beginPath();
+        ctx.moveTo(lineStart, y);
+        ctx.lineTo(lineEnd, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Badge at the end
+        if (c.text) {
+          ctx.font = '600 10px Inter, -apple-system, system-ui, sans-serif';
+          const tw = ctx.measureText(c.text).width;
+          const ph = 5, bh = 15, br = 3;
+          const bx = lineEnd + 5;
+
+          ctx.fillStyle = c.color;
+          ctx.globalAlpha = 0.95;
+          roundRect(ctx, bx, y - bh / 2, tw + ph * 2, bh, br);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = c.textColor || '#000';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(c.text, bx + ph, y);
+        }
+        ctx.restore();
+      });
+    }}) }];
+  }
+}
+
+// ── PRIMITIVE: ZonePrimitive ──────────────────────────────────
+class ZonePrimitive {
+  constructor(cfg) { this._c = cfg; this._chart = null; this._series = null; }
+  attached(p) { this._chart = p.chart; this._series = p.series; }
+  detached() { this._chart = null; this._series = null; }
+  paneViews() {
+    const self = this;
+    return [{ zOrder: () => 'bottom', renderer: () => ({ draw(target) {
+      if (!self._chart || !self._series) return;
+      const c = self._c;
+      target.useMediaCoordinateSpace(scope => {
+        const ctx = scope.context;
+        const x1r = self._chart.timeScale().timeToCoordinate(c.timeStart);
+        const x2r = self._chart.timeScale().timeToCoordinate(c.timeEnd);
+        const y1 = self._series.priceToCoordinate(c.priceHigh);
+        const y2 = self._series.priceToCoordinate(c.priceLow);
+        if (y1 === null || y2 === null) return;
+        if (x1r === null && x2r === null) return;
+
+        const x1 = x1r ?? 0, x2 = x2r ?? scope.mediaSize.width;
+        const left = Math.min(x1, x2), right = Math.max(x1, x2);
+        const top = Math.min(y1, y2), bottom = Math.max(y1, y2);
+        const w = right - left, h = bottom - top;
+
+        ctx.save();
+        const opacity = (c.fillOpacity != null ? c.fillOpacity : 15) / 100;
+        ctx.fillStyle = hexToRgba(c.fillColor, opacity);
+        ctx.fillRect(left, top, w, h);
+
+        if (c.borderColor) {
+          ctx.strokeStyle = c.borderColor;
+          ctx.lineWidth = c.borderWidth || 1;
+          if (c.borderDash) ctx.setLineDash(c.borderDash);
+          ctx.strokeRect(left, top, w, h);
+          ctx.setLineDash([]);
+        }
+
+        if (c.text) {
+          ctx.font = '600 9px Inter, -apple-system, system-ui, sans-serif';
+          ctx.fillStyle = c.textColor || hexToRgba(c.fillColor, 0.7);
+          const pos = c.textPos || 'top-left';
+          let tx = left + 5, ty = top + 12;
+          if (pos.includes('center')) tx = left + (w - ctx.measureText(c.text).width) / 2;
+          if (pos.includes('right')) tx = right - ctx.measureText(c.text).width - 5;
+          if (pos.includes('middle')) ty = top + h / 2 + 3;
+          if (pos.includes('bottom')) ty = bottom - 5;
+          ctx.fillText(c.text, tx, ty);
+        }
+        ctx.restore();
+      });
+    }}) }];
+  }
+}
+
+// ── PRIMITIVE: BracketPrimitive ───────────────────────────────
+// Vertical bracket showing range — positioned at a TIME coordinate
+// with an offset in the NEXT empty bar position
+class BracketPrimitive {
+  constructor(cfg) { this._c = cfg; this._chart = null; this._series = null; }
+  attached(p) { this._chart = p.chart; this._series = p.series; }
+  detached() { this._chart = null; this._series = null; }
+  paneViews() {
+    const self = this;
+    return [{ zOrder: () => 'top', renderer: () => ({ draw(target) {
+      if (!self._chart || !self._series) return;
+      const c = self._c;
+      target.useMediaCoordinateSpace(scope => {
+        const ctx = scope.context;
+        const xRef = self._chart.timeScale().timeToCoordinate(c.time);
+        const yH = self._series.priceToCoordinate(c.priceHigh);
+        const yL = self._series.priceToCoordinate(c.priceLow);
+        if (xRef === null || yH === null || yL === null) return;
+
+        // Position bracket at annotationTime if provided, else use offset
+        let bx;
+        if (c.annotationTime) {
+          const ax = self._chart.timeScale().timeToCoordinate(c.annotationTime);
+          bx = ax !== null ? ax : xRef + (c.offset || 40);
+        } else {
+          bx = xRef + (c.offset || 40);
+        }
+
+        const capW = c.capWidth || 10;
+
+        ctx.save();
+        ctx.strokeStyle = c.color || '#9ca3af';
+        ctx.lineWidth = 1.5;
+        if (c.dash) ctx.setLineDash(c.dash);
+
+        // Vertical line
+        ctx.beginPath(); ctx.moveTo(bx, yH); ctx.lineTo(bx, yL); ctx.stroke();
+        // Top cap
+        ctx.beginPath(); ctx.moveTo(bx - capW, yH); ctx.lineTo(bx, yH); ctx.stroke();
+        // Bottom cap
+        ctx.beginPath(); ctx.moveTo(bx - capW, yL); ctx.lineTo(bx, yL); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Connector from candle to bracket
+        if (c.showConnector !== false) {
+          ctx.strokeStyle = hexToRgba(c.color || '#9ca3af', 0.3);
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 3]);
+          const midY = (yH + yL) / 2;
+          ctx.beginPath(); ctx.moveTo(xRef + 15, midY); ctx.lineTo(bx - capW - 3, midY); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Label with background badge
+        if (c.text) {
+          ctx.font = '600 11px Inter, -apple-system, system-ui, sans-serif';
+          const tw = ctx.measureText(c.text).width;
+          const midY = (yH + yL) / 2;
+          const lx = bx + 6;
+
+          // Background badge
+          ctx.fillStyle = hexToRgba(c.color || '#9ca3af', 0.15);
+          roundRect(ctx, lx - 4, midY - 9, tw + 8, 18, 4);
+          ctx.fill();
+
+          // Text
+          ctx.fillStyle = c.color || '#9ca3af';
+          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'left';
+          ctx.fillText(c.text, lx, midY);
+        }
+
+        ctx.restore();
+      });
+    }}) }];
+  }
+}
+
+// ── PRIMITIVE: TextBadge ──────────────────────────────────────
+// Text label with background badge at (time, price) — ALWAYS has bg
+class TextBadge {
+  constructor(cfg) { this._c = cfg; this._chart = null; this._series = null; }
+  attached(p) { this._chart = p.chart; this._series = p.series; }
+  detached() { this._chart = null; this._series = null; }
+  paneViews() {
+    const self = this;
+    return [{ zOrder: () => 'top', renderer: () => ({ draw(target) {
+      if (!self._chart || !self._series) return;
+      const c = self._c;
+      target.useMediaCoordinateSpace(scope => {
+        const ctx = scope.context;
+        const x = self._chart.timeScale().timeToCoordinate(c.time);
+        const y = self._series.priceToCoordinate(c.price);
+        if (x === null || y === null) return;
+
+        const fs = c.fontSize || 11;
+        ctx.save();
+        ctx.font = `${c.bold !== false ? '600' : '400'} ${fs}px Inter, -apple-system, system-ui, sans-serif`;
+        ctx.textAlign = c.align || 'center';
+        ctx.textBaseline = 'middle';
+
+        const tw = ctx.measureText(c.text).width;
+        const pad = 5;
+        let bx = x - tw / 2 - pad;
+        if (c.align === 'left') bx = x - pad;
+        if (c.align === 'right') bx = x - tw - pad;
+
+        // Background
+        const bgColor = c.bg || hexToRgba(c.color || '#e5e7eb', 0.12);
+        ctx.fillStyle = bgColor;
+        roundRect(ctx, bx, y - fs / 2 - pad, tw + pad * 2, fs + pad * 2, 4);
+        ctx.fill();
+
+        // Optional border
+        if (c.borderColor) {
+          ctx.strokeStyle = c.borderColor;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(bx, y - fs / 2 - pad, tw + pad * 2, fs + pad * 2);
+        }
+
+        // Text
+        ctx.fillStyle = c.color || '#e5e7eb';
+        ctx.fillText(c.text, x, y);
+        ctx.restore();
+      });
+    }}) }];
+  }
+}
+
+// ── PRIMITIVE: ArrowPrimitive ─────────────────────────────────
+// Arrow from a label position to a target candle
+class ArrowPrimitive {
+  constructor(cfg) { this._c = cfg; this._chart = null; this._series = null; }
+  attached(p) { this._chart = p.chart; this._series = p.series; }
+  detached() { this._chart = null; this._series = null; }
+  paneViews() {
+    const self = this;
+    return [{ zOrder: () => 'normal', renderer: () => ({ draw(target) {
+      if (!self._chart || !self._series) return;
+      const c = self._c;
+      target.useMediaCoordinateSpace(scope => {
+        const ctx = scope.context;
+        const x1 = self._chart.timeScale().timeToCoordinate(c.fromTime);
+        const y1 = self._series.priceToCoordinate(c.fromPrice);
+        const x2 = self._chart.timeScale().timeToCoordinate(c.toTime);
+        const y2 = self._series.priceToCoordinate(c.toPrice);
+        if (x1 === null || y1 === null || x2 === null || y2 === null) return;
+
+        ctx.save();
+        ctx.strokeStyle = c.color || '#6b7280';
+        ctx.fillStyle = c.color || '#6b7280';
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = c.opacity || 0.6;
+        if (c.dash) ctx.setLineDash(c.dash);
+
+        // Line
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Arrowhead at target
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const aSize = 7;
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - aSize * Math.cos(angle - Math.PI / 6), y2 - aSize * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(x2 - aSize * Math.cos(angle + Math.PI / 6), y2 - aSize * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      });
+    }}) }];
+  }
+}
+
+// ── PRIMITIVE: ConnectorLine ──────────────────────────────────
+class ConnectorLine {
+  constructor(cfg) { this._c = cfg; this._chart = null; this._series = null; }
+  attached(p) { this._chart = p.chart; this._series = p.series; }
+  detached() { this._chart = null; this._series = null; }
+  paneViews() {
+    const self = this;
+    return [{ zOrder: () => 'normal', renderer: () => ({ draw(target) {
+      if (!self._chart || !self._series) return;
+      const c = self._c;
+      target.useMediaCoordinateSpace(scope => {
+        const ctx = scope.context;
+        const x1 = self._chart.timeScale().timeToCoordinate(c.time1);
+        const y1 = self._series.priceToCoordinate(c.price1);
+        const x2 = c.time2 ? self._chart.timeScale().timeToCoordinate(c.time2) : x1;
+        const y2 = self._series.priceToCoordinate(c.price2);
+        if (x1 === null || y1 === null || y2 === null) return;
+
+        ctx.save();
+        ctx.strokeStyle = c.color || '#6b7280';
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.4;
+        ctx.setLineDash(c.dash || [3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2 ?? x1, y2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      });
+    }}) }];
+  }
+}
+
+// ── CHART FACTORY ─────────────────────────────────────────────
+
+function createInnovaChart(containerId, config) {
+  const container = document.getElementById(containerId);
+  const h = parseInt(new URLSearchParams(window.location.search).get('h')) || 300;
+  container.style.height = h + 'px';
+
+  const chart = LightweightCharts.createChart(container, {
+    width: container.clientWidth,
+    height: h,
+    layout: {
+      background: { type: 'solid', color: '#0a0a0f' },
+      textColor: '#4b5563',
+      fontSize: 10,
+    },
+    grid: {
+      vertLines: { color: 'rgba(42,46,57,0.25)' },
+      horzLines: { color: 'rgba(42,46,57,0.25)' },
+    },
+    crosshair: { mode: 0 },
+    rightPriceScale: {
+      borderColor: 'rgba(42,46,57,0.4)',
+      visible: config.showPriceScale !== false,
+      scaleMargins: config.scaleMargins || { top: 0.1, bottom: 0.1 },
+    },
+    timeScale: {
+      borderColor: 'rgba(42,46,57,0.4)',
+      visible: config.showTimeScale === true,
+      rightOffset: config.rightOffset || 5,
+      barSpacing: config.barSpacing || 18,
+    },
+    handleScroll: false,
+    handleScale: false,
+  });
+
+  // Candles: muted/dark tones so annotations POP with contrast
+  // Annotations use bright cyan/blue/amber/white — never same as candle colors
+  const series = chart.addCandlestickSeries({
+    upColor: '#1a6b3c',       // Dark muted green (not bright)
+    downColor: '#8b2020',     // Dark muted red (not bright)
+    borderUpColor: '#2d9a56', // Slightly brighter border
+    borderDownColor: '#b33a3a',
+    wickUpColor: '#2d9a56',
+    wickDownColor: '#b33a3a',
+  });
+
+  series.setData(config.data);
+
+  if (config.primitives) {
+    config.primitives.forEach(p => series.attachPrimitive(p));
+  }
+
+  chart.timeScale().fitContent();
+
+  if (config.title) {
+    const titleEl = document.createElement('div');
+    titleEl.className = 'chart-title';
+    titleEl.textContent = config.title;
+    container.style.position = 'relative';
+    container.appendChild(titleEl);
+  }
+
+  new ResizeObserver(() => {
+    chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+  }).observe(container);
+
+  return { chart, series };
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+
+const T0 = 1706745600;
+function t(i) { return T0 + i * 86400; } // Daily candles for cleaner spacing
+function bar(i, o, h, l, c) { return { time: t(i), open: o, high: h, low: l, close: c }; }
+
+// ── CHART CONFIGURATIONS ──────────────────────────────────────
+
+const CHARTS = {
+
+  // ═══ WRB — Wide Range Bar ═══
+  // ANNOTATION COLORS: cyan (#06b6d4), white (#e5e7eb), amber (#f59e0b) — NOT green/red
+  'wrb': () => {
+    const data = [
+      bar(0, 100.5, 101.2, 100, 101),
+      bar(1, 101, 101.8, 100.5, 101.5),
+      bar(2, 101.5, 102, 101.2, 101.8),
+      bar(3, 101.8, 102, 101.3, 101.5),
+      bar(4, 101.5, 101.8, 101, 101.3),
+      // WRB — massive range
+      bar(5, 101.3, 106, 101, 105.5),
+      bar(6, 105.5, 106.5, 105, 106),
+    ];
+    return {
+      title: 'Wide Range Bar (WRB)',
+      data,
+      rightOffset: 8,
+      barSpacing: 22,
+      scaleMargins: { top: 0.05, bottom: 0.15 },
+      primitives: [
+        new BracketPrimitive({ time: t(2), priceHigh: 102, priceLow: 101.2, color: '#9ca3af', text: 'Normal', offset: 45, dash: [3,3] }),
+        new BracketPrimitive({ time: t(5), priceHigh: 106, priceLow: 101, color: '#06b6d4', text: 'WRB', offset: 50 }),
+        new TextBadge({ time: t(3), price: 99, text: 'Rango amplio = participacion institucional', color: '#e5e7eb', fontSize: 10, bg: 'rgba(6,182,212,0.12)' }),
+        new ArrowPrimitive({ fromTime: t(3), fromPrice: 99.5, toTime: t(5), toPrice: 101, color: '#06b6d4', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ NRB — Narrow Range Bars ═══
+  'nrb': () => {
+    const data = [
+      bar(0, 100, 101.5, 99.5, 101),
+      bar(1, 101, 101.5, 100.5, 101.2),
+      // NRBs
+      bar(2, 101.2, 101.4, 101, 101.3),
+      bar(3, 101.3, 101.4, 101.1, 101.15),
+      bar(4, 101.15, 101.3, 101, 101.1),
+      bar(5, 101.1, 101.2, 100.95, 101.05),
+      // Normal again
+      bar(6, 101.05, 102.2, 100.8, 102),
+    ];
+    return {
+      title: 'Narrow Range Bars (NRB)',
+      data,
+      rightOffset: 6,
+      scaleMargins: { top: 0.08, bottom: 0.15 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(2), timeEnd: t(5), priceHigh: 101.5, priceLow: 100.9, fillColor: '#f59e0b', fillOpacity: 8, borderColor: hexToRgba('#f59e0b', 0.25), borderDash: [4,3], text: 'COMPRESION', textColor: hexToRgba('#f59e0b', 0.5), textPos: 'top-center' }),
+        new TextBadge({ time: t(3.5), price: 99.2, text: 'Rangos comprimidos = acumulacion silenciosa', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.08)' }),
+        new ArrowPrimitive({ fromTime: t(3.5), fromPrice: 99.6, toTime: t(3), toPrice: 100.95, color: '#f59e0b', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ COMPRESSION → EXPANSION ═══
+  'compression-expansion': () => {
+    const data = [
+      bar(0, 100.5, 101.2, 100, 100.8),
+      // Compression
+      bar(1, 100.8, 101.1, 100.6, 100.9),
+      bar(2, 100.9, 101.05, 100.75, 100.85),
+      bar(3, 100.85, 100.95, 100.7, 100.78),
+      bar(4, 100.78, 100.88, 100.68, 100.72),
+      // EXPANSION
+      bar(5, 100.72, 104.5, 100.5, 104.2),
+      bar(6, 104.2, 105, 103.8, 104.6),
+    ];
+    return {
+      title: 'Compresion → Expansion',
+      data,
+      rightOffset: 7,
+      barSpacing: 22,
+      scaleMargins: { top: 0.08, bottom: 0.15 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(1), timeEnd: t(4), priceHigh: 101.15, priceLow: 100.6, fillColor: '#f59e0b', fillOpacity: 8, borderColor: hexToRgba('#f59e0b', 0.2), borderDash: [4,3] }),
+        new TextBadge({ time: t(2.5), price: 99.5, text: 'Compresion (NRBs)', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        new BracketPrimitive({ time: t(5), priceHigh: 104.5, priceLow: 100.5, color: '#22c55e', text: 'EXPANSION', offset: 45 }),
+        new ArrowPrimitive({ fromTime: t(2.5), fromPrice: 99.8, toTime: t(3), toPrice: 100.68, color: '#f59e0b', dash: [3,3] }),
+        new TextBadge({ time: t(5), price: 105.5, text: 'La calma antes de la tormenta', color: '#22c55e', fontSize: 9, bg: 'rgba(34,197,94,0.08)' }),
+      ]
+    };
+  },
+
+  // ═══ DISPLACEMENT CANDLE + FVG ═══
+  'displacement': () => {
+    const data = [
+      bar(0, 102, 102.5, 101.5, 102.2),
+      bar(1, 102.2, 102.8, 102, 102.6),
+      bar(2, 102.6, 103, 102.3, 102.8),
+      // Displacement (massive bearish)
+      bar(3, 102.8, 103, 99.5, 99.8),
+      bar(4, 99.8, 100.5, 99, 99.5),
+      bar(5, 99.5, 100, 98.5, 99.2),
+    ];
+    return {
+      title: 'Displacement + Fair Value Gap',
+      data,
+      rightOffset: 7,
+      barSpacing: 24,
+      scaleMargins: { top: 0.12, bottom: 0.12 },
+      primitives: [
+        // FVG zone (gap between candle 2 low and candle 4 high)
+        new ZonePrimitive({ timeStart: t(2.5), timeEnd: t(4.5), priceHigh: 102.3, priceLow: 100.5, fillColor: '#3b82f6', fillOpacity: 10, borderColor: hexToRgba('#3b82f6', 0.3), borderDash: [4,3], text: 'FVG', textColor: '#60a5fa', textPos: 'middle-center' }),
+        // Label ABOVE candles
+        new TextBadge({ time: t(3), price: 104, text: 'Displacement = Smart Money', color: '#60a5fa', fontSize: 10, bg: 'rgba(59,130,246,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(3), fromPrice: 103.6, toTime: t(3), toPrice: 103.1, color: '#3b82f6', dash: [3,3] }),
+        // Bracket for body
+        new BracketPrimitive({ time: t(3), priceHigh: 102.8, priceLow: 99.8, color: '#ef4444', text: 'Cuerpo >70%', offset: 45, showConnector: false }),
+      ]
+    };
+  },
+
+  // ═══ UP-CLOSE CANDLE ═══
+  'up-close': () => {
+    const data = [
+      bar(0, 100, 100.8, 99.5, 100.3),
+      bar(1, 100.3, 100.8, 100, 100.5),
+      // Up-close candle
+      bar(2, 100, 103, 99.5, 102.5),
+      bar(3, 102.5, 103, 102, 102.8),
+    ];
+    const range = 103 - 99.5;
+    const third1 = 99.5 + range / 3;
+    const third2 = 99.5 + range * 2 / 3;
+    return {
+      title: 'Up-Close Candle',
+      data,
+      rightOffset: 7,
+      barSpacing: 28,
+      scaleMargins: { top: 0.12, bottom: 0.15 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(1.5), timeEnd: t(2.5), priceHigh: 103, priceLow: third2, fillColor: '#22c55e', fillOpacity: 12, text: 'TERCIO SUPERIOR', textColor: hexToRgba('#22c55e', 0.6), textPos: 'middle-center' }),
+        new ZonePrimitive({ timeStart: t(1.5), timeEnd: t(2.5), priceHigh: third2, priceLow: third1, fillColor: '#6b7280', fillOpacity: 5 }),
+        new ZonePrimitive({ timeStart: t(1.5), timeEnd: t(2.5), priceHigh: third1, priceLow: 99.5, fillColor: '#6b7280', fillOpacity: 5 }),
+        new TextBadge({ time: t(2), price: 104, text: 'Close en tercio superior = Bullish OB', color: '#22c55e', fontSize: 10, bg: 'rgba(34,197,94,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(2), fromPrice: 103.6, toTime: t(2), toPrice: 103.1, color: '#22c55e', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ DOWN-CLOSE CANDLE ═══
+  'down-close': () => {
+    const data = [
+      bar(0, 103, 103.5, 102.5, 103.2),
+      bar(1, 103.2, 103.5, 102.8, 103),
+      bar(2, 103.5, 104, 101, 101.5),
+      bar(3, 101.5, 102, 101, 101.3),
+    ];
+    const range = 104 - 101;
+    const third1 = 101 + range / 3;
+    const third2 = 101 + range * 2 / 3;
+    return {
+      title: 'Down-Close Candle',
+      data,
+      rightOffset: 7,
+      barSpacing: 28,
+      scaleMargins: { top: 0.15, bottom: 0.12 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(1.5), timeEnd: t(2.5), priceHigh: 104, priceLow: third2, fillColor: '#6b7280', fillOpacity: 5 }),
+        new ZonePrimitive({ timeStart: t(1.5), timeEnd: t(2.5), priceHigh: third2, priceLow: third1, fillColor: '#6b7280', fillOpacity: 5 }),
+        new ZonePrimitive({ timeStart: t(1.5), timeEnd: t(2.5), priceHigh: third1, priceLow: 101, fillColor: '#ef4444', fillOpacity: 12, text: 'TERCIO INFERIOR', textColor: hexToRgba('#ef4444', 0.6), textPos: 'middle-center' }),
+        new TextBadge({ time: t(2), price: 100, text: 'Close en tercio inferior = Bearish OB', color: '#ef4444', fontSize: 10, bg: 'rgba(239,68,68,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(2), fromPrice: 100.4, toTime: t(2), toPrice: 100.9, color: '#ef4444', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ CLIMAX / EXHAUSTION ═══
+  'climax': () => {
+    const data = [
+      bar(0, 100, 101, 99.5, 100.8),
+      bar(1, 100.8, 102, 100.5, 101.8),
+      bar(2, 101.8, 103.5, 101.5, 103.2),
+      bar(3, 103.2, 105, 103, 104.8),
+      // CLIMAX — biggest bar
+      bar(4, 104.8, 110, 104.5, 109.5),
+      // Reversal
+      bar(5, 109.5, 110, 107, 107.5),
+      bar(6, 107.5, 108, 106, 106.5),
+    ];
+    return {
+      title: 'Climax — Williams Range Expansion',
+      data,
+      rightOffset: 6,
+      barSpacing: 22,
+      scaleMargins: { top: 0.1, bottom: 0.15 },
+      primitives: [
+        new BracketPrimitive({ time: t(4), priceHigh: 110, priceLow: 104.5, color: '#f59e0b', text: 'CLIMAX', offset: 50 }),
+        new TextBadge({ time: t(2), price: 98.5, text: 'Cada barra mas grande que la anterior...', color: '#9ca3af', fontSize: 10, bg: 'rgba(156,163,175,0.08)' }),
+        new TextBadge({ time: t(4), price: 111.5, text: 'La barra mas grande = ULTIMA del movimiento', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(4), fromPrice: 111, toTime: t(4), toPrice: 110.2, color: '#f59e0b', dash: [3,3] }),
+        // Show reversal
+        new TextBadge({ time: t(5.5), price: 105, text: 'Reversion', color: '#ef4444', fontSize: 10, bg: 'rgba(239,68,68,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(5.5), fromPrice: 105.5, toTime: t(6), toPrice: 106, color: '#ef4444', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ MARKET STRUCTURE (HH/HL) ═══
+  'market-structure': () => {
+    const data = [
+      bar(0, 100, 101, 99.5, 100.5),
+      bar(1, 100.5, 102.5, 100, 102),    // Swing High
+      bar(2, 102, 102.2, 100.8, 101),    // Pullback
+      bar(3, 101, 101.5, 100.5, 101.3),  // Swing Low
+      bar(4, 101.3, 104, 101, 103.5),    // Higher High
+      bar(5, 103.5, 103.8, 102, 102.3),  // Pullback
+      bar(6, 102.3, 102.5, 101.8, 102),  // Higher Low
+      bar(7, 102, 105.5, 101.8, 105),    // Higher High
+    ];
+    return {
+      title: 'Estructura de Mercado — Bullish',
+      data,
+      rightOffset: 5,
+      barSpacing: 22,
+      scaleMargins: { top: 0.1, bottom: 0.1 },
+      primitives: [
+        // Labels ABOVE swing highs
+        new TextBadge({ time: t(1), price: 103.3, text: 'HH', color: '#22c55e', fontSize: 11, bg: 'rgba(34,197,94,0.15)' }),
+        new TextBadge({ time: t(4), price: 104.8, text: 'HH', color: '#22c55e', fontSize: 11, bg: 'rgba(34,197,94,0.15)' }),
+        new TextBadge({ time: t(7), price: 106.3, text: 'HH', color: '#22c55e', fontSize: 11, bg: 'rgba(34,197,94,0.15)' }),
+        // Labels BELOW swing lows
+        new TextBadge({ time: t(3), price: 99.7, text: 'HL', color: '#3b82f6', fontSize: 11, bg: 'rgba(59,130,246,0.15)' }),
+        new TextBadge({ time: t(6), price: 101, text: 'HL', color: '#3b82f6', fontSize: 11, bg: 'rgba(59,130,246,0.15)' }),
+        // Connectors HH to HH
+        new ConnectorLine({ time1: t(1), price1: 102.5, time2: t(4), price2: 104, color: '#22c55e' }),
+        new ConnectorLine({ time1: t(4), price1: 104, time2: t(7), price2: 105.5, color: '#22c55e' }),
+        // Connectors HL to HL
+        new ConnectorLine({ time1: t(3), price1: 100.5, time2: t(6), price2: 101.8, color: '#3b82f6' }),
+        // Arrows from labels to swing points
+        new ArrowPrimitive({ fromTime: t(1), fromPrice: 103, toTime: t(1), toPrice: 102.6, color: '#22c55e', dash: [2,2] }),
+        new ArrowPrimitive({ fromTime: t(4), fromPrice: 104.5, toTime: t(4), toPrice: 104.1, color: '#22c55e', dash: [2,2] }),
+        new ArrowPrimitive({ fromTime: t(3), fromPrice: 100, toTime: t(3), toPrice: 100.4, color: '#3b82f6', dash: [2,2] }),
+        new ArrowPrimitive({ fromTime: t(6), fromPrice: 101.3, toTime: t(6), toPrice: 101.7, color: '#3b82f6', dash: [2,2] }),
+      ]
+    };
+  },
+
+  // ═══ LIQUIDITY SWEEP ═══
+  'liquidity-sweep': () => {
+    const data = [
+      bar(0, 102, 103, 101.5, 102.5),
+      bar(1, 102.5, 103.5, 102, 103.2),  // High 1
+      bar(2, 103.2, 103.2, 102, 102.3),
+      bar(3, 102.3, 103.5, 102, 103.3),  // High 2 (equal)
+      bar(4, 103.3, 103.4, 102.5, 102.8),
+      // Sweep + rejection
+      bar(5, 102.8, 105, 101.5, 101.8),  // Wick above, close below
+      bar(6, 101.8, 102, 100.5, 100.8),
+    ];
+    return {
+      title: 'Liquidity Sweep',
+      data,
+      rightOffset: 6,
+      barSpacing: 24,
+      scaleMargins: { top: 0.12, bottom: 0.15 },
+      primitives: [
+        // Liquidity zone
+        new ZonePrimitive({ timeStart: t(0.5), timeEnd: t(5.5), priceHigh: 103.6, priceLow: 103.3, fillColor: '#ef4444', fillOpacity: 10, borderColor: hexToRgba('#ef4444', 0.3), borderDash: [3,3] }),
+        // Label ABOVE in clean space
+        new TextBadge({ time: t(2.5), price: 105.5, text: 'Liquidez (buy stops)', color: '#ef4444', fontSize: 10, bg: 'rgba(239,68,68,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(2.5), fromPrice: 105.1, toTime: t(3), toPrice: 103.7, color: '#ef4444', dash: [3,3] }),
+        // Sweep label
+        new TextBadge({ time: t(5), price: 106, text: 'Sweep! Mecha barre y rechaza', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(5), fromPrice: 105.6, toTime: t(5), toPrice: 105.1, color: '#f59e0b', dash: [3,3] }),
+        // Reversal
+        new TextBadge({ time: t(6), price: 99.8, text: 'Reversion', color: '#ef4444', fontSize: 10, bg: 'rgba(239,68,68,0.1)' }),
+      ]
+    };
+  },
+
+  // ═══ TRADE SIGNAL (Entry/SL/TP) ═══
+  'trade-signal': () => {
+    const data = [
+      bar(0, 100, 101, 99.5, 100.5),
+      bar(1, 100.5, 101.5, 100, 101.2),
+      bar(2, 101.2, 101.5, 100.8, 101),
+      bar(3, 101, 101.8, 100.5, 101.6),  // Entry candle
+      bar(4, 101.6, 102.5, 101.3, 102.2),
+      bar(5, 102.2, 103.2, 102, 103),
+      bar(6, 103, 104, 102.8, 103.8),
+      bar(7, 103.8, 105, 103.5, 104.8),
+    ];
+    return {
+      title: 'Trade Signal — Alpha Signal Style',
+      data,
+      rightOffset: 2,
+      barSpacing: 20,
+      scaleMargins: { top: 0.08, bottom: 0.08 },
+      primitives: [
+        // Level lines from entry to end
+        new LevelPrimitive({ timeStart: t(3), timeEnd: t(7), price: 101.6, color: '#3b82f6', text: 'Entry 101.60', dash: [6,3] }),
+        new LevelPrimitive({ timeStart: t(3), timeEnd: t(7), price: 100.5, color: '#ef4444', text: 'SL 100.50', dash: [6,3] }),
+        new LevelPrimitive({ timeStart: t(3), timeEnd: t(7), price: 103, color: '#86efac', text: 'TP1', dash: [6,3] }),
+        new LevelPrimitive({ timeStart: t(3), timeEnd: t(7), price: 104, color: '#22c55e', text: 'TP2', dash: [6,3] }),
+        new LevelPrimitive({ timeStart: t(3), timeEnd: t(7), price: 105, color: '#15803d', text: 'TP3', dash: [6,3], textColor: '#fff' }),
+        // Risk/Reward zones
+        new ZonePrimitive({ timeStart: t(3), timeEnd: t(7), priceHigh: 101.6, priceLow: 100.5, fillColor: '#ef4444', fillOpacity: 6 }),
+        new ZonePrimitive({ timeStart: t(3), timeEnd: t(7), priceHigh: 105, priceLow: 101.6, fillColor: '#22c55e', fillOpacity: 4 }),
+      ]
+    };
+  },
+
+  // ═══ CONTEXT — Reading bars in sequence ═══
+  'context': () => {
+    const data = [
+      bar(0, 101, 101.5, 100.5, 101.2),
+      bar(1, 101.2, 101.4, 101, 101.3),   // NRBs
+      bar(2, 101.3, 101.4, 101.1, 101.2),
+      bar(3, 101.2, 101.3, 101, 101.15),
+      bar(4, 101.15, 104.5, 101, 104.2),  // Expansion
+      bar(5, 104.2, 104.5, 103, 103.3),   // Pause
+      bar(6, 103.3, 105.5, 103, 105.2),   // Continuation
+      bar(7, 105.2, 109, 105, 108.5),     // Climax
+      bar(8, 108.5, 109, 106, 106.5),     // Reversal
+    ];
+    return {
+      title: 'Leyendo Barras en Contexto',
+      data,
+      rightOffset: 5,
+      barSpacing: 26,
+      scaleMargins: { top: 0.08, bottom: 0.22 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(1), timeEnd: t(3), priceHigh: 101.5, priceLow: 100.9, fillColor: '#f59e0b', fillOpacity: 8, borderColor: hexToRgba('#f59e0b', 0.2), borderDash: [3,3] }),
+        // Labels staggered: odd labels at 99.5, even at 98.2 to prevent overlap
+        new TextBadge({ time: t(2), price: 99.5, text: '1. NRBs', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        new TextBadge({ time: t(4), price: 98.2, text: '2. Expansion', color: '#22c55e', fontSize: 10, bg: 'rgba(34,197,94,0.1)' }),
+        new TextBadge({ time: t(5), price: 99.5, text: '3. Pausa', color: '#9ca3af', fontSize: 10, bg: 'rgba(156,163,175,0.1)' }),
+        new TextBadge({ time: t(6), price: 98.2, text: '4. Continuacion', color: '#22c55e', fontSize: 10, bg: 'rgba(34,197,94,0.1)' }),
+        new TextBadge({ time: t(7.5), price: 99.5, text: '5. Climax + Rev', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        // Arrows from labels to candles
+        new ArrowPrimitive({ fromTime: t(2), fromPrice: 99.8, toTime: t(2), toPrice: 100.9, color: '#f59e0b', dash: [2,2] }),
+        new ArrowPrimitive({ fromTime: t(4), fromPrice: 98.6, toTime: t(4), toPrice: 101, color: '#22c55e', dash: [2,2] }),
+        new ArrowPrimitive({ fromTime: t(5), fromPrice: 99.8, toTime: t(5), toPrice: 103, color: '#9ca3af', dash: [2,2] }),
+        new ArrowPrimitive({ fromTime: t(6), fromPrice: 98.6, toTime: t(6), toPrice: 103, color: '#22c55e', dash: [2,2] }),
+        new ArrowPrimitive({ fromTime: t(7.5), fromPrice: 99.8, toTime: t(7.5), toPrice: 105, color: '#f59e0b', dash: [2,2] }),
+      ]
+    };
+  },
+
+  // ═══ AMD Bullish ═══
+  'amd-bullish': () => {
+    const data = [
+      bar(0, 101, 101.5, 100.5, 101.2),
+      bar(1, 101.2, 101.4, 100.8, 101),
+      bar(2, 101, 101.3, 100.7, 101.1),
+      bar(3, 101.1, 101.2, 99.5, 99.8),  // Manipulation
+      bar(4, 99.8, 103, 99.5, 102.8),    // Distribution start
+      bar(5, 102.8, 104.5, 102.5, 104.2),
+      bar(6, 104.2, 105.5, 104, 105.2),
+    ];
+    return {
+      title: 'AMD — Power of Three (Bullish)',
+      data,
+      rightOffset: 5,
+      barSpacing: 24,
+      scaleMargins: { top: 0.1, bottom: 0.15 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(-0.3), timeEnd: t(2.3), priceHigh: 101.6, priceLow: 100.4, fillColor: '#3b82f6', fillOpacity: 8, borderColor: hexToRgba('#3b82f6', 0.2), borderDash: [3,3] }),
+        new ZonePrimitive({ timeStart: t(2.7), timeEnd: t(3.3), priceHigh: 101.2, priceLow: 99.3, fillColor: '#f59e0b', fillOpacity: 10, borderColor: hexToRgba('#f59e0b', 0.2), borderDash: [3,3] }),
+        new ZonePrimitive({ timeStart: t(3.7), timeEnd: t(6.3), priceHigh: 105.7, priceLow: 99.3, fillColor: '#22c55e', fillOpacity: 5, borderColor: hexToRgba('#22c55e', 0.15), borderDash: [3,3] }),
+        // Labels in clean space above
+        new TextBadge({ time: t(1), price: 102.5, text: 'A — Acumulacion', color: '#60a5fa', fontSize: 10, bg: 'rgba(59,130,246,0.12)' }),
+        new TextBadge({ time: t(3), price: 98.5, text: 'M — Manipulacion', color: '#fbbf24', fontSize: 10, bg: 'rgba(245,158,11,0.12)' }),
+        new TextBadge({ time: t(5), price: 106.5, text: 'D — Distribucion', color: '#4ade80', fontSize: 10, bg: 'rgba(34,197,94,0.12)' }),
+        // Stop hunt arrow
+        new ArrowPrimitive({ fromTime: t(3), fromPrice: 98.8, toTime: t(3), toPrice: 99.4, color: '#f59e0b', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ AMD Bearish ═══
+  'amd-bearish': () => {
+    const data = [
+      bar(0, 103, 103.5, 102.5, 103.2),
+      bar(1, 103.2, 103.4, 102.8, 103),
+      bar(2, 103, 103.3, 102.7, 103.1),
+      bar(3, 103.1, 105, 103, 104.8),  // Manipulation
+      bar(4, 104.8, 105, 101.5, 101.8),
+      bar(5, 101.8, 102, 100, 100.3),
+      bar(6, 100.3, 100.5, 99, 99.2),
+    ];
+    return {
+      title: 'AMD — Power of Three (Bearish)',
+      data,
+      rightOffset: 5,
+      barSpacing: 24,
+      scaleMargins: { top: 0.12, bottom: 0.1 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(-0.3), timeEnd: t(2.3), priceHigh: 103.6, priceLow: 102.4, fillColor: '#3b82f6', fillOpacity: 8, borderColor: hexToRgba('#3b82f6', 0.2), borderDash: [3,3] }),
+        new ZonePrimitive({ timeStart: t(2.7), timeEnd: t(3.3), priceHigh: 105.2, priceLow: 102.8, fillColor: '#f59e0b', fillOpacity: 10, borderColor: hexToRgba('#f59e0b', 0.2), borderDash: [3,3] }),
+        new ZonePrimitive({ timeStart: t(3.7), timeEnd: t(6.3), priceHigh: 105.2, priceLow: 98.8, fillColor: '#ef4444', fillOpacity: 5, borderColor: hexToRgba('#ef4444', 0.15), borderDash: [3,3] }),
+        new TextBadge({ time: t(1), price: 101.8, text: 'A — Acumulacion', color: '#60a5fa', fontSize: 10, bg: 'rgba(59,130,246,0.12)' }),
+        new TextBadge({ time: t(3), price: 106, text: 'M — Manipulacion', color: '#fbbf24', fontSize: 10, bg: 'rgba(245,158,11,0.12)' }),
+        new TextBadge({ time: t(5), price: 98, text: 'D — Distribucion', color: '#f87171', fontSize: 10, bg: 'rgba(239,68,68,0.12)' }),
+        new ArrowPrimitive({ fromTime: t(3), fromPrice: 105.7, toTime: t(3), toPrice: 105.1, color: '#f59e0b', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ SESSIONS AMD ═══
+  'sessions-amd': () => {
+    const data = [
+      // Asia (Accumulation)
+      bar(0, 101, 101.3, 100.7, 101.1),
+      bar(1, 101.1, 101.2, 100.8, 100.9),
+      bar(2, 100.9, 101.1, 100.6, 101),
+      // London (Manipulation)
+      bar(3, 101, 101, 99.5, 99.7),
+      bar(4, 99.7, 100.5, 99.3, 100.2),
+      // NY (Distribution)
+      bar(5, 100.2, 103, 100, 102.8),
+      bar(6, 102.8, 104, 102.5, 103.8),
+      bar(7, 103.8, 104.5, 103.5, 104.2),
+      // PM (Close)
+      bar(8, 104.2, 104.3, 103.5, 103.8),
+      bar(9, 103.8, 104, 103.2, 103.5),
+    ];
+    return {
+      title: 'Sesiones = Fases AMD del Dia',
+      data,
+      rightOffset: 3,
+      barSpacing: 20,
+      scaleMargins: { top: 0.12, bottom: 0.15 },
+      primitives: [
+        new ZonePrimitive({ timeStart: t(-0.3), timeEnd: t(2.3), priceHigh: 101.5, priceLow: 100.4, fillColor: '#6b7280', fillOpacity: 6, borderColor: hexToRgba('#6b7280', 0.15), borderDash: [3,3] }),
+        new ZonePrimitive({ timeStart: t(2.7), timeEnd: t(4.3), priceHigh: 101.2, priceLow: 99.1, fillColor: '#f59e0b', fillOpacity: 7, borderColor: hexToRgba('#f59e0b', 0.15), borderDash: [3,3] }),
+        new ZonePrimitive({ timeStart: t(4.7), timeEnd: t(7.3), priceHigh: 104.7, priceLow: 99.8, fillColor: '#22c55e', fillOpacity: 5, borderColor: hexToRgba('#22c55e', 0.12), borderDash: [3,3] }),
+        new ZonePrimitive({ timeStart: t(7.7), timeEnd: t(9.3), priceHigh: 104.5, priceLow: 103, fillColor: '#8b5cf6', fillOpacity: 7, borderColor: hexToRgba('#8b5cf6', 0.15), borderDash: [3,3] }),
+        // Labels below
+        new TextBadge({ time: t(1), price: 98.5, text: 'Asia = A', color: '#9ca3af', fontSize: 10, bg: 'rgba(156,163,175,0.1)' }),
+        new TextBadge({ time: t(3.5), price: 98.5, text: 'London = M', color: '#fbbf24', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        new TextBadge({ time: t(6), price: 98.5, text: 'NY = D', color: '#4ade80', fontSize: 10, bg: 'rgba(34,197,94,0.1)' }),
+        new TextBadge({ time: t(8.5), price: 98.5, text: 'PM = X', color: '#a78bfa', fontSize: 10, bg: 'rgba(139,92,246,0.1)' }),
+      ]
+    };
+  },
+
+  // ═══ VOLATILITY CYCLE — Contraction → Expansion ═══
+  'volatility-cycle': () => {
+    const data = [
+      bar(0, 101, 102, 100, 101.5),
+      // Contraction phase — decreasing ranges
+      bar(1, 101.5, 102, 101, 101.3),
+      bar(2, 101.3, 101.6, 101.1, 101.4),
+      bar(3, 101.4, 101.55, 101.25, 101.35),
+      bar(4, 101.35, 101.45, 101.2, 101.3),
+      bar(5, 101.3, 101.4, 101.22, 101.28),
+      // Expansion — explosive breakout
+      bar(6, 101.28, 104.5, 101, 104.2),
+      bar(7, 104.2, 105, 103.8, 104.6),
+      // New contraction
+      bar(8, 104.6, 104.8, 104.2, 104.5),
+      bar(9, 104.5, 104.65, 104.35, 104.45),
+    ];
+    return {
+      title: 'Ciclo de Volatilidad — Contraccion → Expansion',
+      data,
+      rightOffset: 5,
+      barSpacing: 22,
+      scaleMargins: { top: 0.08, bottom: 0.18 },
+      primitives: [
+        // Contraction zone
+        new ZonePrimitive({ timeStart: t(1), timeEnd: t(5), priceHigh: 102.1, priceLow: 101.1, fillColor: '#f59e0b', fillOpacity: 8, borderColor: hexToRgba('#f59e0b', 0.2), borderDash: [4,3], text: 'CONTRACCION', textColor: hexToRgba('#f59e0b', 0.5), textPos: 'top-center' }),
+        // Expansion bracket
+        new BracketPrimitive({ time: t(6), priceHigh: 104.5, priceLow: 101, color: '#22c55e', text: 'EXPANSION', offset: 50 }),
+        // New contraction
+        new ZonePrimitive({ timeStart: t(8), timeEnd: t(9), priceHigh: 104.9, priceLow: 104.2, fillColor: '#3b82f6', fillOpacity: 8, borderColor: hexToRgba('#3b82f6', 0.2), borderDash: [4,3], text: 'NUEVA CONTRACCION', textColor: hexToRgba('#3b82f6', 0.5), textPos: 'top-center' }),
+        // Labels
+        new TextBadge({ time: t(3), price: 99.8, text: 'Rangos decrecientes = resorte', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(3), fromPrice: 100.1, toTime: t(4), toPrice: 101.2, color: '#f59e0b', dash: [3,3] }),
+        new TextBadge({ time: t(7), price: 106, text: 'El resorte explota', color: '#22c55e', fontSize: 10, bg: 'rgba(34,197,94,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(7), fromPrice: 105.7, toTime: t(6), toPrice: 104.6, color: '#22c55e', dash: [3,3] }),
+      ]
+    };
+  },
+
+  // ═══ SWING POINTS — Swing High / Swing Low ═══
+  'swing-points': () => {
+    const data = [
+      bar(0, 100, 100.8, 99.5, 100.5),
+      bar(1, 100.5, 102, 100.2, 101.8),  // building up
+      bar(2, 101.8, 103.5, 101.5, 103.2), // Swing High
+      bar(3, 103.2, 103.3, 101.8, 102),  // down
+      bar(4, 102, 102.2, 100.5, 100.8),  // Swing Low
+      bar(5, 100.8, 102.5, 100.5, 102.2), // up
+      bar(6, 102.2, 104.5, 102, 104.2),  // Higher Swing High
+      bar(7, 104.2, 104.3, 103, 103.2),  // down
+      bar(8, 103.2, 103.5, 101.5, 101.8), // Higher Swing Low
+    ];
+    return {
+      title: 'Swing Points — Puntos de Giro',
+      data,
+      rightOffset: 5,
+      barSpacing: 24,
+      scaleMargins: { top: 0.1, bottom: 0.12 },
+      primitives: [
+        // Swing High labels
+        new TextBadge({ time: t(2), price: 104.3, text: 'Swing High', color: '#ef4444', fontSize: 10, bg: 'rgba(239,68,68,0.12)' }),
+        new ArrowPrimitive({ fromTime: t(2), fromPrice: 104, toTime: t(2), toPrice: 103.6, color: '#ef4444', dash: [2,2] }),
+        new TextBadge({ time: t(6), price: 105.3, text: 'Higher SH', color: '#ef4444', fontSize: 10, bg: 'rgba(239,68,68,0.12)' }),
+        new ArrowPrimitive({ fromTime: t(6), fromPrice: 105, toTime: t(6), toPrice: 104.6, color: '#ef4444', dash: [2,2] }),
+        // Swing Low labels
+        new TextBadge({ time: t(4), price: 99.7, text: 'Swing Low', color: '#22c55e', fontSize: 10, bg: 'rgba(34,197,94,0.12)' }),
+        new ArrowPrimitive({ fromTime: t(4), fromPrice: 100, toTime: t(4), toPrice: 100.4, color: '#22c55e', dash: [2,2] }),
+        new TextBadge({ time: t(8), price: 100.7, text: 'Higher SL', color: '#22c55e', fontSize: 10, bg: 'rgba(34,197,94,0.12)' }),
+        new ArrowPrimitive({ fromTime: t(8), fromPrice: 101, toTime: t(8), toPrice: 101.4, color: '#22c55e', dash: [2,2] }),
+        // Lookback brackets
+        new BracketPrimitive({ time: t(2), priceHigh: 103.5, priceLow: 101.5, color: '#9ca3af', text: '3-bar', annotationTime: t(-0.3), showConnector: false }),
+      ]
+    };
+  },
+
+  // ═══ ORDER BLOCK + FVG ═══
+  'ob-fvg': () => {
+    const data = [
+      bar(0, 102, 102.5, 101.5, 102.2),
+      bar(1, 102.2, 102.8, 102, 102.5),
+      bar(2, 102.5, 103, 102.3, 102.8),
+      // Order Block (last bearish before rally)
+      bar(3, 102.8, 103, 101.5, 101.8),
+      // Displacement rally creating FVG
+      bar(4, 101.8, 105, 101.5, 104.8),
+      bar(5, 104.8, 106, 104.5, 105.5),
+      bar(6, 105.5, 106, 105, 105.8),
+      // Retrace to OB
+      bar(7, 105.8, 106, 104, 104.2),
+      bar(8, 104.2, 104.5, 102, 102.2),
+      // Bounce from OB
+      bar(9, 102.2, 104, 101.8, 103.8),
+    ];
+    return {
+      title: 'Order Block + Fair Value Gap',
+      data,
+      rightOffset: 4,
+      barSpacing: 20,
+      scaleMargins: { top: 0.08, bottom: 0.12 },
+      primitives: [
+        // Order Block zone
+        new ZonePrimitive({ timeStart: t(3), timeEnd: t(9.5), priceHigh: 103, priceLow: 101.5, fillColor: '#22c55e', fillOpacity: 8, borderColor: hexToRgba('#22c55e', 0.25), borderDash: [4,3], text: 'BULLISH OB', textColor: hexToRgba('#22c55e', 0.6), textPos: 'bottom-left' }),
+        // FVG zone (gap between candle 3 high and candle 5 low)
+        new ZonePrimitive({ timeStart: t(3.5), timeEnd: t(5.5), priceHigh: 104.5, priceLow: 103, fillColor: '#3b82f6', fillOpacity: 10, borderColor: hexToRgba('#3b82f6', 0.3), borderDash: [4,3], text: 'FVG', textColor: '#60a5fa', textPos: 'middle-center' }),
+        // CE level (50% of FVG)
+        new LevelPrimitive({ timeStart: t(3.5), timeEnd: t(5.5), price: 103.75, color: '#60a5fa', text: 'CE (50%)', dash: [4,3], lineWidth: 1 }),
+        // Labels
+        new TextBadge({ time: t(3), price: 100.5, text: 'Ultima vela bajista = OB', color: '#22c55e', fontSize: 10, bg: 'rgba(34,197,94,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(3), fromPrice: 100.8, toTime: t(3), toPrice: 101.4, color: '#22c55e', dash: [3,3] }),
+        new TextBadge({ time: t(8.5), price: 100.5, text: 'Retrace al OB → rebote', color: '#f59e0b', fontSize: 10, bg: 'rgba(245,158,11,0.1)' }),
+        new ArrowPrimitive({ fromTime: t(8.5), fromPrice: 100.8, toTime: t(8.5), toPrice: 101.5, color: '#f59e0b', dash: [3,3] }),
+      ]
+    };
+  },
+
+};
+
+// ── INITIALIZATION ────────────────────────────────────────────
+
+const params = new URLSearchParams(window.location.search);
+const chartId = params.get('chart') || 'wrb';
+
+if (CHARTS[chartId]) {
+  createInnovaChart('chart', CHARTS[chartId]());
+} else {
+  document.getElementById('chart').innerHTML =
+    `<div style="color:#6b7280;padding:20px;font:14px system-ui">
+      Chart "${chartId}" no encontrado.<br>
+      Disponibles: ${Object.keys(CHARTS).join(', ')}
+    </div>`;
+}
+</script>
+</body>
+</html>
